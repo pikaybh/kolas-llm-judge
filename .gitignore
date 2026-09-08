@@ -1,0 +1,17 @@
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
+
+# Proprietary/raw evaluation data
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/PROVENANCE.md
+data/cases/*.jsonl
+
+# Run artifacts can contain production responses and Judge outputs
+runs/*
+!runs/.gitkeep

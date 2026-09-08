@@ -1,0 +1,23 @@
+rubric_version: "1.0-draft"
+semantic_match:
+  scale:
+    0: "무관하거나 서로 다른 위험"
+    1: "같은 작업 맥락일 수 있으나 위험 메커니즘이 다름"
+    2: "부분적으로 관련되나 핵심 원인/결과가 충분히 대응하지 않음"
+    3: "핵심 위험 메커니즘이 실질적으로 동일"
+    4: "핵심 위험 메커니즘과 작업 맥락이 사실상 동일"
+  match_threshold: 3
+accident_type_correctness:
+  scale: {0: "부적합", 1: "부분 적합", 2: "적합"}
+mitigation_appropriateness:
+  scale: {0: "무관하거나 위험을 줄이지 못함", 1: "일부 도움되나 핵심 위험 통제가 부족", 2: "핵심 위험을 직접적으로 통제"}
+mitigation_specificity:
+  scale: {0: "추상적 주의/교육 수준", 1: "일부 구체적 조치 포함", 2: "실행 가능한 구체적 통제조치"}
+legal_basis_relevance:
+  scale: {0: "무관/잘못된 근거", 1: "간접 또는 부분 관련", 2: "위험/통제조치와 직접 관련"}
+unsupported_claim:
+  type: boolean
+  true_when: "입력 작업 맥락 또는 합리적 건설안전 지식으로 뒷받침되지 않는 generated risk"
+critical_safety_error:
+  type: boolean
+  true_when: "잘못된 조치가 실행될 경우 중대한 안전 위해를 유발하거나 필수 통제를 반대로 안내"
