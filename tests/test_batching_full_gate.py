@@ -125,3 +125,71 @@ def test_full_run_blocks_calibration_method_mismatch(
                 calibration_gate_path=gate_path,
             )
         )
+
+
+def test_full_run_blocks_calibration_sut_setting_mismatch(
+    tmp_path: Path,
+) -> None:
+    import json
+
+    from kolas_llm_judge.judge import JudgeConfig
+    from kolas_llm_judge.manifest import (
+        capture_current_method_identity,
+        sut_evaluation_identity,
+    )
+    from kolas_llm_judge.sut_client import SutConfig
+
+    scenario = EvaluationScenario(
+        case_id="case-full-sut",
+        source_rows=[2],
+        input=ScenarioInput(process="공정"),
+        references=[
+            ReferenceRisk(
+                reference_id="case-full-sut-r2",
+                source_row=2,
+                hazard="위험",
+            )
+        ],
+    )
+    scenarios_path = tmp_path / "scenarios.jsonl"
+    scenarios_path.write_text(
+        scenario.model_dump_json() + "\n",
+        encoding="utf-8",
+    )
+    judge = JudgeConfig.from_env()
+    current_method = capture_current_method_identity(
+        project_root=tmp_path,
+        scenarios_path=scenarios_path,
+        judge=judge,
+    )
+    mismatched_sut = sut_evaluation_identity(
+        SutConfig(model_mode="pro")
+    )
+    gate_path = tmp_path / "gate_result.json"
+    gate_path.write_text(
+        json.dumps(
+            {
+                "gate_pass": True,
+                "frozen_method": {
+                    "source_run_id": "pilot-test",
+                    "method_identity": current_method,
+                    "sut_evaluation_identity": mismatched_sut,
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="SUT evaluation settings differ",
+    ):
+        asyncio.run(
+            execute_run(
+                project_root=tmp_path,
+                scenarios_path=scenarios_path,
+                mode="full",
+                calibration_gate_path=gate_path,
+            )
+        )

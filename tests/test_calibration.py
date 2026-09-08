@@ -136,6 +136,14 @@ def _build_calibration_fixture(
                 "head": "pilot-commit",
                 "dirty": False,
             },
+            "sut_evaluation_identity": {
+                "base_url": "https://api.seexr.dev/api",
+                "agent_id": "risk-assessment",
+                "risk_assessment_method": "빈도강도법 5x4",
+                "model_mode": "fast",
+                "reasoning_style": "balanced",
+                "post_improvement_mode": "blank",
+            },
             "method_identity": {
                 "dataset_sha256": "dataset-test",
                 "evaluation_artifacts": {

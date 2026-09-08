@@ -4,13 +4,13 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 ## 구현 상태
 
-- [x] 시험 규격 draft v0.3
+- [x] 시험 규격 draft v0.4
 - [x] uv / Python 3.12 독립 환경
 - [x] legacy 843-row dataset importer
 - [x] 843 reference -> 425 scenario builder
 - [x] SUT/reference input leakage 방지
 - [x] production risk_assessment XML parser
-- [x] 초기/개선 후 위험도 deterministic range / score-math 검사
+- [x] SUT mode-aware deterministic contract / range / score-math 검사
 - [x] production SEEXR Core SUT client
 - [x] token 또는 전용 non-admin 계정 자동 로그인
 - [x] GPT-5.6 Sol Pydantic Structured Output Judge
@@ -31,7 +31,8 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] SUT latency/retry + Judge token/call usage statistics
 - [x] SHA-256 run seal / tamper verification
 - [ ] 시험기관 확정 양식의 공식 XLSX 패키징
-- [ ] live smoke / pilot / full 실행
+- [x] live 10-case smoke 실행 및 two-stage 병목 검증
+- [ ] corrected-contract smoke / pilot / full 실행
 
 ## Setup
 
@@ -133,8 +134,9 @@ pilot 결과에서 human labeling template 생성:
 - human label completion = 1.00
 - match/quality/generated 각 적용 차원별 유효 sample >= 30
 
-calibration 결과에는 pilot의 dataset/code/prompt/rubric/Judge 설정을 `frozen_method`로
-고정합니다. full run의 method identity가 다르면 gate가 PASS여도 실행이 차단됩니다.
+calibration 결과에는 pilot의 dataset/code/prompt/rubric/Judge 설정과 SUT endpoint/agent/
+위험성평가 방식/model mode/reasoning style을 고정합니다. full run에서 어느 하나라도 달라지면
+gate가 PASS여도 실행이 차단됩니다.
 
 ### 4. 425-case full official candidate
 
@@ -177,6 +179,7 @@ full report의 `official_candidate_valid`는 아래 조건을 전부 만족해�
 - failed case 0
 - calibration gate PASS
 - full method identity = calibration frozen method identity
+- full SUT evaluation identity = calibration pilot SUT identity
 - 실행 시작/종료 production Core/Agents relevant source fingerprint 동일
 - calibration source evaluator와 full evaluator 모두 committed + clean
 
@@ -207,8 +210,9 @@ Wilson 95% CI, case macro mean/std가 포함됩니다. 추가로 SUT latency mea
 - `legal_basis_presence`: matched risk 중 법규가 실제 제공된 비율
 - `legal_basis_relevance`: 법규가 제공된 matched risk 중 직접 관련된 비율
 
-결정론 검사에는 초기 위험도뿐 아니라 개선 후 빈도/강도 범위,
-개선 후 점수 산술 일치, 개선 후 위험도 비증가가 포함됩니다.
+결정론 검사는 SUT model mode의 실제 production contract를 따릅니다. `fast`에서는
+`post_improvement_*` 태그의 존재+빈 값을 검증하고 개선후 산술 지표는 N/A로 기록합니다.
+그 외 formatter 경로에서는 개선후 빈도/강도 범위, 점수 산술 일치, 위험도 비증가를 검증합니다.
 
 full run 종료 후 artifact는 자동 seal됩니다. 필요하면 수동으로 다시 봉인하거나 검증할 수 있습니다.
 

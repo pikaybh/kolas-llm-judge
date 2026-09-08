@@ -20,7 +20,10 @@ from rich.progress import (
 )
 
 from .dataset import sha256_file
-from .deterministic import evaluate_deterministic
+from .deterministic import (
+    evaluate_deterministic,
+    post_improvement_mode_for_model_mode,
+)
 from .io_utils import atomic_write_json, load_json, load_scenarios
 from .judge import JudgeCallRecord, JudgeConfig, LlmJudge
 from .manifest import (
@@ -28,6 +31,7 @@ from .manifest import (
     capture_current_method_identity,
     capture_sut_source_fingerprints,
     method_identity_matches,
+    sut_evaluation_identity,
     sut_source_matches,
     write_manifest_once,
 )
@@ -178,15 +182,26 @@ async def process_case(
         stage = "parse"
         if progress_callback:
             progress_callback(stage)
+        post_improvement_mode = post_improvement_mode_for_model_mode(
+            sut.config.model_mode
+        )
         if paths["parsed"].exists():
             parsed_payload = load_json(paths["parsed"])
             parsed = ParsedRiskAssessment.model_validate(parsed_payload["parsed"])
             deterministic = DeterministicAssessmentResult.model_validate(
                 parsed_payload["deterministic"]
             )
+            if deterministic.post_improvement_mode != post_improvement_mode:
+                raise RuntimeError(
+                    "Parsed checkpoint deterministic contract differs "
+                    "from current SUT model mode"
+                )
         else:
             parsed = parse_risk_assessment(sut_result.content)
-            deterministic = evaluate_deterministic(parsed)
+            deterministic = evaluate_deterministic(
+                parsed,
+                post_improvement_mode=post_improvement_mode,
+            )
             atomic_write_json(
                 paths["parsed"],
                 {
@@ -310,6 +325,7 @@ async def execute_run(
                 else None
             ),
             "method_identity_match": None,
+            "sut_evaluation_identity_match": None,
         }
     if mode == "full" and not allow_uncalibrated_full:
         if calibration is None:
@@ -354,6 +370,17 @@ async def execute_run(
             current_method_identity,
         )
         calibration["method_identity_match"] = identity_match
+        frozen_sut_identity = (
+            frozen_method.get("sut_evaluation_identity")
+            if isinstance(frozen_method, dict)
+            else None
+        )
+        current_sut_identity = sut_evaluation_identity(sut_config)
+        sut_identity_match = (
+            isinstance(frozen_sut_identity, dict)
+            and frozen_sut_identity == current_sut_identity
+        )
+        calibration["sut_evaluation_identity_match"] = sut_identity_match
         if (
             mode == "full"
             and not allow_uncalibrated_full
@@ -362,6 +389,15 @@ async def execute_run(
             raise RuntimeError(
                 "Current evaluation/Judge method differs from the "
                 "calibrated frozen method; full run is blocked."
+            )
+        if (
+            mode == "full"
+            and not allow_uncalibrated_full
+            and not sut_identity_match
+        ):
+            raise RuntimeError(
+                "Current SUT evaluation settings differ from the "
+                "calibrated pilot; full run is blocked."
             )
 
     manifest = build_run_manifest(

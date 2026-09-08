@@ -16,6 +16,7 @@ from .manifest import (
     capture_current_method_identity,
     method_identity_from_manifest,
     method_identity_matches,
+    sut_evaluation_identity,
 )
 from .models import (
     CaseJudgeResult,
@@ -915,6 +916,18 @@ def score_human_calibration(
                     else False
                 ),
                 "method_identity": source_identity,
+                "sut_evaluation_identity": (
+                    source_manifest.get("sut_evaluation_identity")
+                    if isinstance(
+                        source_manifest.get("sut_evaluation_identity"),
+                        dict,
+                    )
+                    else (
+                        sut_evaluation_identity(source_manifest.get("sut", {}))
+                        if isinstance(source_manifest.get("sut"), dict)
+                        else None
+                    )
+                ),
             }
 
     repeatability_data: dict[str, Any] = {}
@@ -940,6 +953,19 @@ def score_human_calibration(
         "value": source_eval_clean,
         "minimum": True,
         "pass": source_eval_clean,
+    }
+
+    sut_identity_bound = bool(
+        frozen_method
+        and isinstance(
+            frozen_method.get("sut_evaluation_identity"),
+            dict,
+        )
+    )
+    checks["calibration_sut_evaluation_identity_binding"] = {
+        "value": sut_identity_bound,
+        "minimum": True,
+        "pass": sut_identity_bound,
     }
 
     semantic = match_dimensions["semantic_match"]

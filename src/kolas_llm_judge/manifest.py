@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .dataset import sha256_file
+from .deterministic import post_improvement_mode_for_model_mode
 from .judge import JudgeConfig
 from .sut_client import SutConfig
 
@@ -324,6 +325,37 @@ def _package_versions(
 
 
 
+def sut_evaluation_identity(
+    sut: SutConfig | dict[str, Any],
+) -> dict[str, Any]:
+    if isinstance(sut, SutConfig):
+        values = {
+            "base_url": sut.base_url,
+            "agent_id": sut.agent_id,
+            "risk_assessment_method": sut.risk_assessment_method,
+            "model_mode": sut.model_mode,
+            "reasoning_style": sut.reasoning_style,
+        }
+    else:
+        values = {
+            key: sut.get(key)
+            for key in (
+                "base_url",
+                "agent_id",
+                "risk_assessment_method",
+                "model_mode",
+                "reasoning_style",
+            )
+        }
+    model_mode = str(values.get("model_mode") or "")
+    return {
+        **values,
+        "post_improvement_mode": (
+            post_improvement_mode_for_model_mode(model_mode)
+        ),
+    }
+
+
 def _judge_identity(judge: JudgeConfig) -> dict[str, Any]:
     return {
         "model": judge.model,
@@ -421,7 +453,7 @@ def build_run_manifest(
     )
 
     return {
-        "manifest_version": "1.1",
+        "manifest_version": "1.2",
         "created_at_utc": _utc_now(),
         "run_id": run_id,
         "mode": mode,
@@ -462,6 +494,7 @@ def build_run_manifest(
         "sut_source": (
             capture_sut_source_fingerprints()
         ),
+        "sut_evaluation_identity": sut_evaluation_identity(sut),
         "sut": {
             "base_url": sut.base_url,
             "agent_id": sut.agent_id,
@@ -524,6 +557,7 @@ def write_manifest_once(
             "evaluation_artifacts",
             "source_tree_sha256",
             "method_identity",
+            "sut_evaluation_identity",
             "sut",
             "judge",
             "calibration",

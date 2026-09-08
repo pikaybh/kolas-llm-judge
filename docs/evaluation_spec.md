@@ -1,6 +1,6 @@
 # SEEXR KOLAS LLM-as-Judge Evaluation Specification
 
-Status: draft v0.3 (시험기관 협의 전)
+Status: draft v0.4 (시험기관 협의 전)
 Scope: app.seexr.dev 위험성평가 생성 결과의 정량 평가
 Dataset baseline: legacy KOLAS accident evaluation v7_73 test set
 
@@ -47,10 +47,10 @@ reference-only 필드가 포함되지 않도록 scenario builder와 테스트에
 - 필수 위험 항목 필드 존재 여부
 - 빈도강도법 5x4, 4x3, 3x3의 빈도/강도 허용범위
 - 초기 위험도 = 빈도 x 강도 산술 일관성
-- 개선 후 빈도/강도 허용범위
-- 개선 후 위험도 = 개선 후 빈도 x 개선 후 강도 산술 일관성
-- 개선 후 위험도 <= 초기 위험도
-- 3단계 판단법/체크리스트법의 상/중/하 값 유효성 및 개선 후 비증가
+- SUT model mode에 따른 개선후 위험도 output contract 검증
+  - `fast`: 개선후 태그가 존재하면서 비어 있어야 하며, 개선후 산술 지표는 N/A
+  - 그 외 formatter 경로: 개선후 값이 필수이며 범위/곱셈/초기 위험도 이하를 검증
+- 3단계 판단법/체크리스트법도 동일하게 `fast`는 빈 post tag, 그 외는 상/중/하 및 비증가 검증
 - API 성공/실패, latency, retry/SSE reconnect, checkpoint 상태
 
 ### LLM Judge
@@ -198,10 +198,11 @@ Stage-3 generated-safety calibration 차원:
 boolean safety event는 prevalence가 매우 낮을 경우 kappa가 불안정해질 수 있으므로
 unsupported/critical 판정의 kappa는 보고하되 hard gate에는 agreement를 사용한다.
 
-calibration gate_result.json에는 pilot run manifest SHA-256과 frozen method identity를 저장한다.
-method identity에는 dataset SHA-256, evaluation source-tree SHA-256, prompt/rubric/config/lock 해시,
-Judge model/reasoning/pipeline/max_pairs_per_call/max_concurrency/timeout/retry 설정이 포함된다.
-repeatability와 full run은 이 identity가 현재 설정과 정확히 일치하지 않으면 실행을 차단한다.
+calibration gate_result.json에는 pilot run manifest SHA-256, frozen evaluation/Judge method identity,
+그리고 frozen SUT evaluation identity를 저장한다. SUT identity에는 endpoint, agent, 위험성평가 방식,
+model mode, reasoning style, 그 mode에서 적용되는 post-improvement contract가 포함된다.
+repeatability는 frozen evaluation/Judge identity를 사용하며, full run은 evaluation/Judge identity와
+SUT evaluation identity가 pilot과 모두 정확히 일치하지 않으면 실행을 차단한다.
 
 gate가 없거나 통과하지 못한 경우 full 425-case run은 기본적으로 실행 자체를 차단한다.
 개발용 명시적 override는 제공하지만 official candidate로 사용할 수 없다.
@@ -223,6 +224,7 @@ gate가 없거나 통과하지 못한 경우 full 425-case run은 기본적으�
 - production Core/Agents 전체 repo dirty 상태 (감사용)
 - production Core/Agents 위험성평가 실행 관련 relevant source-tree fingerprint
 - calibration frozen method identity 및 current-method match 여부
+- calibration frozen SUT evaluation identity 및 full-run SUT identity match 여부
 - case별 production session/run id
 - raw SUT 최종 content와 durable SSE event
 - raw structured Judge 결과와 response metadata/usage
@@ -288,6 +290,7 @@ summary의 official_candidate_valid는 다음 조건을 모두 만족할 때만 
 - failed case = 0
 - calibration gate = PASS
 - full run의 evaluation/Judge method identity가 calibration frozen identity와 동일
+- full run의 SUT endpoint/agent/method/model mode/reasoning style가 calibration pilot과 동일
 - run 시작/종료 production SUT relevant source fingerprint 동일
 - calibration source evaluator와 full evaluator 모두 git commit 존재 + clean working tree
 

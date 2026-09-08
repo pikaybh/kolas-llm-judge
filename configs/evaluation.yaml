@@ -1,4 +1,4 @@
-spec_version: "0.3"
+spec_version: "0.4"
 dataset:
   source: "data/raw/kolas_v7_73_test.csv.bz2"
   expected_rows: 843
@@ -44,8 +44,16 @@ deterministic:
       frequency: [1, 3]
       severity: [1, 3]
   require_initial_score_math: true
-  require_post_score_math: true
-  require_post_risk_nonincreasing: true
+  post_improvement_contract:
+    fast:
+      mode: "blank"
+      require_tags_present: true
+      require_tags_blank: true
+      arithmetic_checks: "not_applicable"
+    default:
+      mode: "required"
+      require_post_score_math: true
+      require_post_risk_nonincreasing: true
 
 metrics:
   - reference_risk_coverage
@@ -84,6 +92,7 @@ calibration:
     bind_evaluation_source_tree_sha256: true
     bind_prompt_rubric_config_hashes: true
     bind_judge_model_reasoning_pipeline_chunk_config: true
+    bind_sut_endpoint_agent_method_model_mode_reasoning_style: true
 
 run:
   max_retries: 3

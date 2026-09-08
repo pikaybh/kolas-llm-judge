@@ -9,12 +9,16 @@ from .models import GeneratedRisk, ParsedRiskAssessment
 ROOT_RE = re.compile(r"<risk_assessment\b[\s\S]*?</risk_assessment>", re.IGNORECASE)
 
 
-def _text(node: ET.Element | None) -> str | None:
+def _raw_text(node: ET.Element | None) -> str | None:
     if node is None:
         return None
     value = " ".join(part.strip() for part in node.itertext() if part.strip())
-    value = html.unescape(re.sub(r"\s+", " ", value)).strip()
-    return None if not value or value == "-" else value
+    return html.unescape(re.sub(r"\s+", " ", value)).strip()
+
+
+def _text(node: ET.Element | None) -> str | None:
+    value = _raw_text(node)
+    return None if value is None or not value or value == "-" else value
 
 
 def _int(node: ET.Element | None) -> int | None:
@@ -76,6 +80,21 @@ def parse_risk_assessment(content: str) -> ParsedRiskAssessment:
             if value and value not in mitigation_parts:
                 mitigation_parts.append(value)
 
+        post_numeric_nodes = [
+            item.find("post_improvement_prob_freq"),
+            item.find("post_improvement_severity"),
+            item.find("post_improvement_risk_level"),
+        ]
+        post_numeric_present = all(node is not None for node in post_numeric_nodes)
+        post_numeric_blank = post_numeric_present and all(
+            not (_raw_text(node) or "") for node in post_numeric_nodes
+        )
+        post_verbal_node = item.find("post_improvement_risk_level_verbal")
+        post_verbal_present = post_verbal_node is not None
+        post_verbal_blank = post_verbal_present and not (
+            _raw_text(post_verbal_node) or ""
+        )
+
         risks.append(GeneratedRisk(
             generated_id=f"g{index:03d}",
             source_item_id=source_id,
@@ -93,6 +112,10 @@ def parse_risk_assessment(content: str) -> ParsedRiskAssessment:
             post_severity=_int(item.find("post_improvement_severity")),
             post_risk_score=_int(item.find("post_improvement_risk_level")),
             post_risk_level_verbal=_text(item.find("post_improvement_risk_level_verbal")),
+            post_improvement_numeric_tags_present=post_numeric_present,
+            post_improvement_numeric_tags_blank=post_numeric_blank,
+            post_improvement_verbal_tag_present=post_verbal_present,
+            post_improvement_verbal_tag_blank=post_verbal_blank,
             legal_basis=_text(item.find("basis")) or _text(item.find("legal_basis_details")),
         ))
 

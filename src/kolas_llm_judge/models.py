@@ -55,6 +55,10 @@ class GeneratedRisk(BaseModel):
     post_severity: int | None = None
     post_risk_score: int | None = None
     post_risk_level_verbal: str | None = None
+    post_improvement_numeric_tags_present: bool = False
+    post_improvement_numeric_tags_blank: bool = False
+    post_improvement_verbal_tag_present: bool = False
+    post_improvement_verbal_tag_blank: bool = False
     legal_basis: str | None = None
 
 
@@ -84,6 +88,7 @@ class DeterministicRiskCheck(BaseModel):
 class DeterministicAssessmentResult(BaseModel):
     xml_parse_success: bool
     method: str | None = None
+    post_improvement_mode: str = "required"
     item_count: int = 0
     schema_valid_items: int = 0
     checks: list[DeterministicRiskCheck] = Field(default_factory=list)

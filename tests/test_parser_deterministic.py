@@ -119,3 +119,108 @@ def test_accident_classification_falls_back_to_secondary() -> None:
     )
     parsed = parse_risk_assessment(xml)
     assert parsed.risks[0].accident_types == ["감전", "끼임"]
+
+
+def _fast_blank_numeric_xml() -> str:
+    return (
+        VALID.replace(
+            "<post_improvement_prob_freq>1</post_improvement_prob_freq>",
+            "<post_improvement_prob_freq></post_improvement_prob_freq>",
+        )
+        .replace(
+            "<post_improvement_severity>4</post_improvement_severity>",
+            "<post_improvement_severity></post_improvement_severity>",
+        )
+        .replace(
+            "<post_improvement_risk_level>4</post_improvement_risk_level>",
+            "<post_improvement_risk_level></post_improvement_risk_level>",
+        )
+    )
+
+
+def test_fast_contract_accepts_present_blank_post_tags() -> None:
+    parsed = parse_risk_assessment(_fast_blank_numeric_xml())
+    risk = parsed.risks[0]
+    assert risk.post_improvement_numeric_tags_present is True
+    assert risk.post_improvement_numeric_tags_blank is True
+
+    result = evaluate_deterministic(
+        parsed,
+        post_improvement_mode="blank",
+    )
+    assert result.post_improvement_mode == "blank"
+    assert result.schema_valid_items == 1
+    assert result.checks[0].post_frequency_in_range is None
+    assert result.checks[0].post_severity_in_range is None
+    assert result.checks[0].post_score_math_correct is None
+    assert result.checks[0].post_risk_nonincreasing is None
+    assert result.checks[0].errors == []
+
+
+def test_required_contract_rejects_blank_post_tags() -> None:
+    parsed = parse_risk_assessment(_fast_blank_numeric_xml())
+    result = evaluate_deterministic(
+        parsed,
+        post_improvement_mode="required",
+    )
+    assert result.schema_valid_items == 0
+    assert "missing_post_frequency" in result.checks[0].errors
+    assert "missing_post_severity" in result.checks[0].errors
+    assert "missing_post_risk_score" in result.checks[0].errors
+
+
+def test_fast_contract_rejects_nonblank_or_missing_post_tags() -> None:
+    nonblank = parse_risk_assessment(VALID)
+    result = evaluate_deterministic(
+        nonblank,
+        post_improvement_mode="blank",
+    )
+    assert result.schema_valid_items == 0
+    assert (
+        "post_improvement_numeric_tags_not_blank"
+        in result.checks[0].errors
+    )
+
+    missing_xml = _fast_blank_numeric_xml().replace(
+        "<post_improvement_risk_level></post_improvement_risk_level>",
+        "",
+    )
+    missing = parse_risk_assessment(missing_xml)
+    result = evaluate_deterministic(
+        missing,
+        post_improvement_mode="blank",
+    )
+    assert result.schema_valid_items == 0
+    assert (
+        "missing_post_improvement_numeric_tags"
+        in result.checks[0].errors
+    )
+
+
+def test_fast_verbal_contract_requires_present_blank_post_tag() -> None:
+    xml = '''
+<risk_assessment>
+  <method>3단계 판단법</method>
+  <items>
+    <item>
+      <id>1</id>
+      <accident_classification>추락</accident_classification>
+      <hazard_analysis>발판 단부 추락 위험</hazard_analysis>
+      <hazard>발판 단부 추락 위험</hazard>
+      <risk_level_verbal>중</risk_level_verbal>
+      <reduction_measures_detail>안전난간 설치</reduction_measures_detail>
+      <post_improvement_risk_level_verbal></post_improvement_risk_level_verbal>
+      <basis>산업안전보건기준에 관한 규칙</basis>
+    </item>
+  </items>
+</risk_assessment>
+'''
+    parsed = parse_risk_assessment(xml)
+    assert parsed.risks[0].post_improvement_verbal_tag_present is True
+    assert parsed.risks[0].post_improvement_verbal_tag_blank is True
+    result = evaluate_deterministic(
+        parsed,
+        post_improvement_mode="blank",
+    )
+    assert result.schema_valid_items == 1
+    assert result.checks[0].post_risk_nonincreasing is None

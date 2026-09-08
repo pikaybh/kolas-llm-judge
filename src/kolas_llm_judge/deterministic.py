@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from .models import (
     DeterministicAssessmentResult,
     DeterministicRiskCheck,
     ParsedRiskAssessment,
 )
+
+PostImprovementMode = Literal["required", "blank"]
+
+
+def post_improvement_mode_for_model_mode(model_mode: str) -> PostImprovementMode:
+    return "blank" if model_mode.strip().lower() == "fast" else "required"
 
 
 def _ranges(method: str | None) -> tuple[range | None, range | None]:
@@ -21,20 +29,84 @@ def _ranges(method: str | None) -> tuple[range | None, range | None]:
 def _verbal_rank(value: str | None) -> int | None:
     if not value:
         return None
-    normalized = value.strip()
-    return {"하": 1, "중": 2, "상": 3}.get(normalized)
+    return {"하": 1, "중": 2, "상": 3}.get(value.strip())
+
+
+def _validate_blank_numeric_post(
+    *,
+    risk: object,
+    errors: list[str],
+) -> bool:
+    present = bool(
+        getattr(
+            risk,
+            "post_improvement_numeric_tags_present",
+            False,
+        )
+    )
+    blank = bool(
+        getattr(
+            risk,
+            "post_improvement_numeric_tags_blank",
+            False,
+        )
+    )
+    if not present:
+        errors.append("missing_post_improvement_numeric_tags")
+        return False
+    if not blank:
+        errors.append("post_improvement_numeric_tags_not_blank")
+        return False
+    return True
+
+
+def _validate_blank_verbal_post(
+    *,
+    risk: object,
+    errors: list[str],
+) -> bool:
+    present = bool(
+        getattr(
+            risk,
+            "post_improvement_verbal_tag_present",
+            False,
+        )
+    )
+    blank = bool(
+        getattr(
+            risk,
+            "post_improvement_verbal_tag_blank",
+            False,
+        )
+    )
+    if not present:
+        errors.append("missing_post_improvement_verbal_tag")
+        return False
+    if not blank:
+        errors.append("post_improvement_verbal_tag_not_blank")
+        return False
+    return True
 
 
 def evaluate_deterministic(
     parsed: ParsedRiskAssessment,
+    *,
+    post_improvement_mode: PostImprovementMode = "required",
 ) -> DeterministicAssessmentResult:
+    if post_improvement_mode not in {"required", "blank"}:
+        raise ValueError(
+            "post_improvement_mode must be 'required' or 'blank'"
+        )
+
     frequency_range, severity_range = _ranges(parsed.method)
     checks: list[DeterministicRiskCheck] = []
 
     for risk in parsed.risks:
         errors: list[str] = []
         schema_valid = bool(
-            risk.hazard.strip() and risk.mitigation and risk.accident_types
+            risk.hazard.strip()
+            and risk.mitigation
+            and risk.accident_types
         )
         if not risk.hazard.strip():
             errors.append("missing_hazard")
@@ -51,7 +123,10 @@ def evaluate_deterministic(
         post_math_ok = None
         post_nonincreasing = None
 
-        if frequency_range is not None and severity_range is not None:
+        if (
+            frequency_range is not None
+            and severity_range is not None
+        ):
             frequency_ok = (
                 risk.likelihood in frequency_range
                 if risk.likelihood is not None
@@ -62,11 +137,13 @@ def evaluate_deterministic(
                 if risk.severity is not None
                 else False
             )
+
             if risk.likelihood is None:
                 errors.append("missing_frequency")
                 schema_valid = False
             elif not frequency_ok:
                 errors.append("frequency_out_of_range")
+
             if risk.severity is None:
                 errors.append("missing_severity")
                 schema_valid = False
@@ -77,76 +154,135 @@ def evaluate_deterministic(
                 math_ok = False
                 schema_valid = False
                 errors.append("missing_risk_score")
-            elif risk.likelihood is None or risk.severity is None:
+            elif (
+                risk.likelihood is None
+                or risk.severity is None
+            ):
                 math_ok = False
             else:
                 math_ok = (
-                    risk.risk_score == risk.likelihood * risk.severity
+                    risk.risk_score
+                    == risk.likelihood * risk.severity
                 )
                 if not math_ok:
-                    errors.append("risk_score_math_mismatch")
-
-            post_frequency_ok = (
-                risk.post_likelihood in frequency_range
-                if risk.post_likelihood is not None
-                else False
-            )
-            post_severity_ok = (
-                risk.post_severity in severity_range
-                if risk.post_severity is not None
-                else False
-            )
-            if risk.post_likelihood is None:
-                errors.append("missing_post_frequency")
-                schema_valid = False
-            elif not post_frequency_ok:
-                errors.append("post_frequency_out_of_range")
-            if risk.post_severity is None:
-                errors.append("missing_post_severity")
-                schema_valid = False
-            elif not post_severity_ok:
-                errors.append("post_severity_out_of_range")
-
-            if risk.post_risk_score is None:
-                post_math_ok = False
-                post_nonincreasing = False
-                schema_valid = False
-                errors.append("missing_post_risk_score")
-            elif (
-                risk.post_likelihood is None
-                or risk.post_severity is None
-            ):
-                post_math_ok = False
-                post_nonincreasing = False
-            else:
-                post_math_ok = (
-                    risk.post_risk_score
-                    == risk.post_likelihood * risk.post_severity
-                )
-                if not post_math_ok:
-                    errors.append("post_risk_score_math_mismatch")
-                if risk.risk_score is not None:
-                    post_nonincreasing = (
-                        risk.post_risk_score <= risk.risk_score
+                    errors.append(
+                        "risk_score_math_mismatch"
                     )
-                    if not post_nonincreasing:
-                        errors.append("post_risk_increased")
-        else:
-            initial_rank = _verbal_rank(risk.risk_level_verbal)
-            post_rank = _verbal_rank(risk.post_risk_level_verbal)
-            if parsed.method in {"3단계 판단법", "체크리스트법"}:
-                if initial_rank is None:
+
+            if post_improvement_mode == "blank":
+                if not _validate_blank_numeric_post(
+                    risk=risk,
+                    errors=errors,
+                ):
                     schema_valid = False
-                    errors.append("missing_or_invalid_risk_level_verbal")
-                if post_rank is None:
+            else:
+                post_frequency_ok = (
+                    risk.post_likelihood
+                    in frequency_range
+                    if risk.post_likelihood
+                    is not None
+                    else False
+                )
+                post_severity_ok = (
+                    risk.post_severity
+                    in severity_range
+                    if risk.post_severity
+                    is not None
+                    else False
+                )
+
+                if risk.post_likelihood is None:
+                    errors.append(
+                        "missing_post_frequency"
+                    )
+                    schema_valid = False
+                elif not post_frequency_ok:
+                    errors.append(
+                        "post_frequency_out_of_range"
+                    )
+
+                if risk.post_severity is None:
+                    errors.append(
+                        "missing_post_severity"
+                    )
+                    schema_valid = False
+                elif not post_severity_ok:
+                    errors.append(
+                        "post_severity_out_of_range"
+                    )
+
+                if risk.post_risk_score is None:
+                    post_math_ok = False
+                    post_nonincreasing = False
                     schema_valid = False
                     errors.append(
-                        "missing_or_invalid_post_risk_level_verbal"
+                        "missing_post_risk_score"
                     )
-                if initial_rank is not None and post_rank is not None:
-                    post_nonincreasing = post_rank <= initial_rank
-                    if not post_nonincreasing:
-                        errors.append("post_risk_increased")
+                elif (
+                    risk.post_likelihood is None
+                    or risk.post_severity is None
+                ):
+                    post_math_ok = False
+                    post_nonincreasing = False
+                else:
+                    post_math_ok = (
+                        risk.post_risk_score
+                        == risk.post_likelihood
+                        * risk.post_severity
+                    )
+                    if not post_math_ok:
+                        errors.append(
+                            "post_risk_score_math_mismatch"
+                        )
+                    if risk.risk_score is not None:
+                        post_nonincreasing = (
+                            risk.post_risk_score
+                            <= risk.risk_score
+                        )
+                        if not post_nonincreasing:
+                            errors.append(
+                                "post_risk_increased"
+                            )
+        else:
+            initial_rank = _verbal_rank(
+                risk.risk_level_verbal
+            )
+            if parsed.method in {
+                "3단계 판단법",
+                "체크리스트법",
+            }:
+                if initial_rank is None:
+                    schema_valid = False
+                    errors.append(
+                        "missing_or_invalid_risk_level_verbal"
+                    )
+
+                if post_improvement_mode == "blank":
+                    if not _validate_blank_verbal_post(
+                        risk=risk,
+                        errors=errors,
+                    ):
+                        schema_valid = False
+                else:
+                    post_rank = _verbal_rank(
+                        risk.post_risk_level_verbal
+                    )
+                    if post_rank is None:
+                        schema_valid = False
+                        errors.append(
+                            "missing_or_invalid_post_risk_level_verbal"
+                        )
+                    if (
+                        initial_rank is not None
+                        and post_rank is not None
+                    ):
+                        post_nonincreasing = (
+                            post_rank <= initial_rank
+                        )
+                        if not post_nonincreasing:
+                            errors.append(
+                                "post_risk_increased"
+                            )
 
         checks.append(
             DeterministicRiskCheck(
@@ -155,10 +291,18 @@ def evaluate_deterministic(
                 frequency_in_range=frequency_ok,
                 severity_in_range=severity_ok,
                 score_math_correct=math_ok,
-                post_frequency_in_range=post_frequency_ok,
-                post_severity_in_range=post_severity_ok,
-                post_score_math_correct=post_math_ok,
-                post_risk_nonincreasing=post_nonincreasing,
+                post_frequency_in_range=(
+                    post_frequency_ok
+                ),
+                post_severity_in_range=(
+                    post_severity_ok
+                ),
+                post_score_math_correct=(
+                    post_math_ok
+                ),
+                post_risk_nonincreasing=(
+                    post_nonincreasing
+                ),
                 errors=errors,
             )
         )
@@ -168,9 +312,11 @@ def evaluate_deterministic(
         errors.append("no_risk_items")
     if not parsed.method:
         errors.append("missing_method")
+
     return DeterministicAssessmentResult(
         xml_parse_success=True,
         method=parsed.method,
+        post_improvement_mode=post_improvement_mode,
         item_count=len(parsed.risks),
         schema_valid_items=sum(
             check.schema_valid for check in checks

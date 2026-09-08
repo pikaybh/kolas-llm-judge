@@ -15,7 +15,7 @@ from kolas_llm_judge.models import (
 )
 from kolas_llm_judge.report import build_summary, export_reports
 from kolas_llm_judge.runner import process_case
-from kolas_llm_judge.sut_client import SutRunResult
+from kolas_llm_judge.sut_client import SutConfig, SutRunResult
 
 
 VALID_XML = """
@@ -50,6 +50,7 @@ VALID_XML = """
 class FakeSut:
     def __init__(self) -> None:
         self.calls = 0
+        self.config = SutConfig(model_mode="pro")
 
     async def run_case(self, scenario, *, client_request_id=None):
         self.calls += 1

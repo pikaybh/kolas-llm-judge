@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .dataset import sha256_file
+from .deterministic import post_improvement_mode_for_model_mode
 from .io_utils import load_json, load_scenarios
 from .judge import JudgeConfig
 from .manifest import capture_sut_source_fingerprints
@@ -277,6 +278,15 @@ async def run_doctor(
         "seexr_max_retries",
         sut_config.max_retries >= 0,
         str(sut_config.max_retries),
+    )
+
+    post_mode = post_improvement_mode_for_model_mode(
+        sut_config.model_mode
+    )
+    add(
+        "sut_post_improvement_contract",
+        post_mode in {"blank", "required"},
+        f"model_mode={sut_config.model_mode}, post_improvement_mode={post_mode}",
     )
 
     if (

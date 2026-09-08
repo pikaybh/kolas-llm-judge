@@ -628,6 +628,15 @@ def build_summary(
         )
         for result in completed
     )
+    post_mode_counts: dict[str, int] = {}
+    for result in completed:
+        mode = str(
+            result.get("deterministic", {}).get(
+                "post_improvement_mode",
+                "unknown",
+            )
+        )
+        post_mode_counts[mode] = post_mode_counts.get(mode, 0) + 1
 
     summary = {
         "run_id": manifest["run_id"],
@@ -661,6 +670,18 @@ def build_summary(
                 or {}
             ).get("gate_pass")
         ),
+        "sut_evaluation_identity_match": (
+            (manifest.get("calibration") or {}).get(
+                "sut_evaluation_identity_match"
+            )
+        ),
+        "deterministic_contract": {
+            "post_improvement_mode_counts": post_mode_counts,
+            "note": (
+                "Post-improvement arithmetic checks are N/A when the "
+                "frozen SUT contract requires present-but-blank tags."
+            ),
+        },
         "official_candidate_valid": bool(
             manifest.get("mode")
             == "full"
@@ -685,6 +706,13 @@ def build_summary(
                 or {}
             ).get(
                 "method_identity_match"
+            )
+            is True
+            and (
+                manifest.get("calibration")
+                or {}
+            ).get(
+                "sut_evaluation_identity_match"
             )
             is True
             and bool(
