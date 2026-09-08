@@ -65,7 +65,9 @@ class FakeSut:
             retry_log=[
                 {"stage": "create_run"},
                 {"stage": "sse"},
+                {"stage": "auth", "action": "refresh"},
             ],
+            auth_recoveries=1,
         )
 
 
@@ -231,9 +233,10 @@ def test_report_aggregation(tmp_path: Path) -> None:
     assert summary["sut_runtime"]["latency_ms"]["mean"] == 123.0
     assert summary["sut_runtime"]["latency_ms"]["median"] == 123.0
     assert summary["sut_runtime"]["latency_ms"]["p95"] == 123.0
-    assert summary["sut_runtime"]["retries"]["total_retry_count"] == 2
+    assert summary["sut_runtime"]["retries"]["total_retry_count"] == 3
     assert summary["sut_runtime"]["retries"]["create_run_retry_count"] == 1
     assert summary["sut_runtime"]["retries"]["stream_reconnect_count"] == 1
+    assert summary["sut_runtime"]["retries"]["auth_recovery_count"] == 1
     assert summary["judge_usage"]["call_count"] == 1
     assert summary["judge_usage"]["input_tokens"] == 6
     assert summary["judge_usage"]["output_tokens"] == 4

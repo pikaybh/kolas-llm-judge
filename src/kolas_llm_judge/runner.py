@@ -123,6 +123,7 @@ def _load_sut(path: Path) -> SutRunResult:
         create_run_attempts=int(payload.get("create_run_attempts", 1)),
         stream_reconnects=int(payload.get("stream_reconnects", 0)),
         retry_log=payload.get("retry_log", []),
+        auth_recoveries=int(payload.get("auth_recoveries", 0)),
     )
 
 
@@ -166,6 +167,7 @@ async def process_case(
                     "create_run_attempts": sut_result.create_run_attempts,
                     "stream_reconnects": sut_result.stream_reconnects,
                     "retry_log": sut_result.retry_log,
+                    "auth_recoveries": sut_result.auth_recoveries,
                     "request_message": build_sut_message(scenario),
                     "content": sut_result.content,
                     "events": sut_result.events,
@@ -251,7 +253,12 @@ async def process_case(
                     "elapsed_ms": sut_result.elapsed_ms,
                     "create_run_attempts": sut_result.create_run_attempts,
                     "stream_reconnects": sut_result.stream_reconnects,
-                    "retry_count": max(0, sut_result.create_run_attempts - 1) + sut_result.stream_reconnects,
+                    "auth_recoveries": sut_result.auth_recoveries,
+                    "retry_count": (
+                        max(0, sut_result.create_run_attempts - 1)
+                        + sut_result.stream_reconnects
+                        + sut_result.auth_recoveries
+                    ),
                 },
                 "parsed": parsed.model_dump(mode="json"),
                 "deterministic": deterministic.model_dump(mode="json"),
@@ -446,10 +453,14 @@ async def execute_run(
                             )
                         elif sut_path.exists():
                             payload = load_json(sut_path)
-                            retry_count = max(
-                                0,
-                                int(payload.get("create_run_attempts", 1) or 1) - 1,
-                            ) + int(payload.get("stream_reconnects", 0) or 0)
+                            retry_count = (
+                                max(
+                                    0,
+                                    int(payload.get("create_run_attempts", 1) or 1) - 1,
+                                )
+                                + int(payload.get("stream_reconnects", 0) or 0)
+                                + int(payload.get("auth_recoveries", 0) or 0)
+                            )
                         total_retries += retry_count
                         observed_retry_cases.add(scenario.case_id)
                     progress.update(

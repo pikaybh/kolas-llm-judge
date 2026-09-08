@@ -214,6 +214,11 @@ SUT create-run의 retry는 동일 clientRequestId를 재사용하여 서버 dedu
 SSE stream이 transport 오류나 비정상 종료로 끊기면 마지막 durable event sequence 이후부터
 재연결하고 sequence/fingerprint 기준으로 중복 event를 제거한다. retry 횟수와 사유는 case artifact에 기록한다.
 
+장시간 official run은 전용 non-admin 계정 로그인을 사용한다. access token 만료로 401이 발생하면
+메모리에만 보관한 rotating refresh token으로 갱신하고 원 요청을 한 번 재시도한다. refresh가 실패하면
+동일 계정으로 재로그인한다. access/refresh token 값은 어떤 artifact에도 저장하지 않고 auth recovery 횟수와
+action(refresh/relogin)만 감사 로그에 남긴다. 정적 access token은 official preflight에서 renewable auth로 인정하지 않는다.
+
 production Core/Agents는 전체 repository 상태를 기록하되 official stability 판정에는
 위험성평가 실행에 관련된 source scope만 hash한다. Core는 agents/chat/auth/users/common과
 부트스트랩/패키지 설정, Agents는 src/mastra 실행 소스와 패키지 설정이 해당된다.

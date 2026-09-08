@@ -42,9 +42,12 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 1. OpenAI Judge: `OPENAI_API_KEY`
 2. SEEXR SUT:
-   - `SEEXR_API_TOKEN`, 또는
-   - 전용 non-admin 시험계정의 `SEEXR_EMAIL` + `SEEXR_PASSWORD`
+   - smoke/development: `SEEXR_API_TOKEN` 또는 non-admin 계정
+   - official pilot/full: 전용 non-admin 시험계정의 `SEEXR_EMAIL` + `SEEXR_PASSWORD`
 
+현재 Core의 access token 기본 만료가 짧기 때문에 장시간 official run은 갱신 가능한 계정 로그인을 사용합니다.
+하네스는 401 발생 시 메모리의 refresh token으로 자동 갱신하고, refresh가 실패하면 동일 non-admin
+계정으로 재로그인합니다. access/refresh token은 artifact나 manifest에 저장하지 않습니다.
 관리자 계정은 production MFA가 필요하므로 자동 시험계정으로 사용하지 않습니다.
 
 Judge pair 수가 큰 case는 기본적으로 120 pair 단위로 분할합니다.

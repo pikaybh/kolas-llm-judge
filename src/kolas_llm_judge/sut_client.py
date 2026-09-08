@@ -143,6 +143,7 @@ class SutRunResult:
     retry_log: list[dict[str, Any]] = field(
         default_factory=list
     )
+    auth_recoveries: int = 0
 
 
 def build_sut_message(
@@ -218,6 +219,10 @@ class SeexrSutClient:
                 self.config.timeout_seconds
             ),
         )
+        self._static_token_mode = bool(self.config.token)
+        self._refresh_token: str | None = None
+        self._auth_recovery_count = 0
+        self._auth_events: list[dict[str, Any]] = []
 
     async def __aenter__(
         self,
@@ -264,6 +269,124 @@ class SeexrSutClient:
             )
         return False
 
+    def _apply_auth_tokens(
+        self,
+        data: Any,
+    ) -> None:
+        data = _unwrap(data)
+        if not isinstance(data, dict):
+            raise RuntimeError(
+                "Invalid SEEXR auth response"
+            )
+        tokens = data.get("tokens")
+        if (
+            not isinstance(tokens, dict)
+            or not isinstance(
+                tokens.get("accessToken"),
+                str,
+            )
+        ):
+            raise RuntimeError(
+                "SEEXR auth response did not return an access token. "
+                "Do not use an admin/MFA account for automated evaluation."
+            )
+        access_token = str(tokens["accessToken"])
+        self.client.headers["Authorization"] = f"Bearer {access_token}"
+        refresh_token = tokens.get("refreshToken")
+        if isinstance(refresh_token, str) and refresh_token:
+            self._refresh_token = refresh_token
+        self.config = replace(self.config, token=None)
+
+    async def _login_with_password(
+        self,
+    ) -> None:
+        if not self.config.email or not self.config.password:
+            raise RuntimeError(
+                "SEEXR email/password credentials are unavailable for login."
+            )
+        response = await self.client.post(
+            "/auth/login",
+            json={
+                "email": self.config.email,
+                "password": self.config.password,
+            },
+        )
+        response.raise_for_status()
+        self._apply_auth_tokens(response.json())
+
+    async def _refresh_access_token(
+        self,
+    ) -> bool:
+        if not self._refresh_token:
+            return False
+        response = await self.client.post(
+            "/auth/refresh",
+            json={"refreshToken": self._refresh_token},
+        )
+        if response.status_code >= 400:
+            return False
+        self._apply_auth_tokens(response.json())
+        return True
+
+    async def _recover_auth(
+        self,
+        *,
+        reason: str = "401",
+    ) -> bool:
+        if self._static_token_mode and not (
+            self.config.email and self.config.password
+        ):
+            return False
+        action: str | None = None
+        try:
+            if await self._refresh_access_token():
+                action = "refresh"
+            elif self.config.email and self.config.password:
+                await self._login_with_password()
+                action = "relogin"
+        except Exception:
+            if self.config.email and self.config.password:
+                try:
+                    await self._login_with_password()
+                    action = "relogin"
+                except Exception:
+                    return False
+            else:
+                return False
+        if action is None:
+            return False
+        self._auth_recovery_count += 1
+        self._auth_events.append(
+            {
+                "stage": "auth",
+                "action": action,
+                "reason": reason,
+            }
+        )
+        return True
+
+    async def _request_with_auth_retry(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        response = await self.client.request(
+            method,
+            url,
+            **kwargs,
+        )
+        if response.status_code == 401:
+            recovered = await self._recover_auth()
+            if recovered:
+                response = await self.client.request(
+                    method,
+                    url,
+                    **kwargs,
+                )
+        response.raise_for_status()
+        return response
+
     async def ensure_authenticated(
         self,
     ) -> None:
@@ -279,55 +402,15 @@ class SeexrSutClient:
                 "SEEXR_EMAIL + SEEXR_PASSWORD "
                 "for a non-admin evaluation account."
             )
-        response = await self.client.post(
-            "/auth/login",
-            json={
-                "email": self.config.email,
-                "password": (
-                    self.config.password
-                ),
-            },
-        )
-        response.raise_for_status()
-        data = _unwrap(response.json())
-        if not isinstance(data, dict):
-            raise RuntimeError(
-                "Invalid SEEXR login response"
-            )
-        tokens = data.get("tokens")
-        if (
-            not isinstance(tokens, dict)
-            or not isinstance(
-                tokens.get("accessToken"),
-                str,
-            )
-        ):
-            raise RuntimeError(
-                "SEEXR login did not return "
-                "an access token. Do not use "
-                "an admin/MFA account for "
-                "automated evaluation."
-            )
-        token = str(
-            tokens["accessToken"]
-        )
-        self.client.headers[
-            "Authorization"
-        ] = f"Bearer {token}"
-        # Do not persist the acquired token in
-        # config/manifest metadata.
-        self.config = replace(
-            self.config,
-            token=None,
-        )
+        await self._login_with_password()
 
     async def healthcheck_auth(
         self,
     ) -> dict[str, Any]:
-        response = await self.client.get(
-            "/agents"
+        response = await self._request_with_auth_retry(
+            "GET",
+            "/agents",
         )
-        response.raise_for_status()
         data = _unwrap(response.json())
         return (
             data
@@ -339,7 +422,8 @@ class SeexrSutClient:
         self,
         case_id: str,
     ) -> str:
-        response = await self.client.post(
+        response = await self._request_with_auth_retry(
+            "POST",
             "/chat/sessions",
             json={
                 "agentId": (
@@ -351,7 +435,6 @@ class SeexrSutClient:
                 "title": f"KOLAS {case_id}",
             },
         )
-        response.raise_for_status()
         data = _unwrap(response.json())
         if (
             isinstance(data, dict)
@@ -401,14 +484,14 @@ class SeexrSutClient:
                 client_request_id
             ),
         }
-        response = await self.client.post(
+        response = await self._request_with_auth_retry(
+            "POST",
             (
                 f"/agents/"
                 f"{self.config.agent_id}/runs"
             ),
             json=payload,
         )
-        response.raise_for_status()
         data = _unwrap(response.json())
         if (
             not isinstance(data, dict)
@@ -504,30 +587,41 @@ class SeexrSutClient:
     ) -> AsyncIterator[
         dict[str, Any]
     ]:
-        async with self.client.stream(
-            "GET",
-            (
-                f"/agents/runs/{run_id}/"
-                f"events?after={after}"
-            ),
-        ) as response:
-            response.raise_for_status()
-            async for line in (
-                response.aiter_lines()
-            ):
-                if not line.startswith(
-                    "data:"
+        auth_retried = False
+        while True:
+            async with self.client.stream(
+                "GET",
+                (
+                    f"/agents/runs/{run_id}/"
+                    f"events?after={after}"
+                ),
+            ) as response:
+                if (
+                    response.status_code == 401
+                    and not auth_retried
                 ):
-                    continue
-                raw = line[5:].strip()
-                if not raw:
-                    continue
-                try:
-                    event = json.loads(raw)
-                except json.JSONDecodeError:
-                    continue
-                if isinstance(event, dict):
-                    yield event
+                    recovered = await self._recover_auth()
+                    if recovered:
+                        auth_retried = True
+                        continue
+                response.raise_for_status()
+                async for line in (
+                    response.aiter_lines()
+                ):
+                    if not line.startswith(
+                        "data:"
+                    ):
+                        continue
+                    raw = line[5:].strip()
+                    if not raw:
+                        continue
+                    try:
+                        event = json.loads(raw)
+                    except json.JSONDecodeError:
+                        continue
+                    if isinstance(event, dict):
+                        yield event
+                return
 
     @staticmethod
     def _completed_content(
@@ -555,6 +649,7 @@ class SeexrSutClient:
         retry_log: list[
             dict[str, Any]
         ] = []
+        auth_event_start = len(self._auth_events)
 
         session_id = (
             await self.create_session(
@@ -668,7 +763,13 @@ class SeexrSutClient:
                             stream_reconnects=(
                                 reconnects
                             ),
-                            retry_log=retry_log,
+                            retry_log=[
+                                *retry_log,
+                                *self._auth_events[auth_event_start:],
+                            ],
+                            auth_recoveries=len(
+                                self._auth_events[auth_event_start:]
+                            ),
                         )
                     if event_type in {
                         "run-failed",

@@ -223,6 +223,22 @@ async def run_doctor(
         sut_config.auth_mode != "missing",
         f"auth_mode={sut_config.auth_mode}",
     )
+    if official:
+        renewable = sut_config.auth_mode == "email_password"
+        add(
+            "seexr_renewable_auth",
+            renewable,
+            (
+                "email_password with refresh/relogin support"
+                if renewable
+                else "official long run requires SEEXR_EMAIL + SEEXR_PASSWORD; static access tokens cannot be renewed"
+            ),
+        )
+    elif sut_config.auth_mode == "token":
+        warn(
+            "seexr_static_token",
+            "SEEXR_API_TOKEN is suitable only if it remains valid for the whole run; email/password supports automatic refresh.",
+        )
     add(
         "openai_credentials",
         bool(os.getenv("OPENAI_API_KEY")),

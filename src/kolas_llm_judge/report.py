@@ -358,6 +358,15 @@ def _aggregate_sut_runtime(
         )
         for result in results
     )
+    auth_recoveries = sum(
+        _safe_int(
+            result.get("sut", {}).get(
+                "auth_recoveries",
+                0,
+            )
+        )
+        for result in results
+    )
     retry_counts = [
         max(
             0,
@@ -384,6 +393,15 @@ def _aggregate_sut_runtime(
                             {},
                         ).get(
                             "stream_reconnects",
+                            0,
+                        )
+                    )
+                    + _safe_int(
+                        result.get(
+                            "sut",
+                            {},
+                        ).get(
+                            "auth_recoveries",
                             0,
                         )
                     ),
@@ -459,6 +477,9 @@ def _aggregate_sut_runtime(
             ),
             "stream_reconnect_count": (
                 stream_reconnects
+            ),
+            "auth_recovery_count": (
+                auth_recoveries
             ),
             "max_retry_count_per_case": (
                 max(retry_counts)
@@ -795,6 +816,7 @@ def export_reports(
             "retry_count",
             "create_run_attempts",
             "stream_reconnects",
+            "auth_recoveries",
             "judge_call_count",
             "judge_input_tokens",
             "judge_output_tokens",
@@ -881,6 +903,12 @@ def export_reports(
                 "stream_reconnects": (
                     sut.get(
                         "stream_reconnects",
+                        0,
+                    )
+                ),
+                "auth_recoveries": (
+                    sut.get(
+                        "auth_recoveries",
                         0,
                     )
                 ),
