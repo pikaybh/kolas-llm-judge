@@ -196,6 +196,11 @@ def report_command(
 def make_calibration_command(
     run: str = typer.Argument(..., help="Completed pilot/full run id"),
     sample_size: int = typer.Option(150, min=10),
+    quality_sample_size: int | None = typer.Option(
+        None,
+        min=10,
+        help="Matched-quality pair sample size. Defaults to sample-size.",
+    ),
     generated_sample_size: int | None = typer.Option(
         None,
         min=10,
@@ -210,6 +215,7 @@ def make_calibration_command(
         scenarios_path=DEFAULT_SCENARIOS,
         output_dir=output_dir,
         sample_size=sample_size,
+        quality_sample_size=quality_sample_size,
         generated_sample_size=generated_sample_size,
         seed=seed,
     )
@@ -245,6 +251,10 @@ def score_calibration_command(
         None,
         help="Filled human_pairs.csv. Defaults to run calibration directory.",
     ),
+    labeled_quality_pairs: Path | None = typer.Option(
+        None,
+        help="Filled human_quality_pairs.csv. Defaults to run calibration directory.",
+    ),
     labeled_generated: Path | None = typer.Option(
         None,
         help="Filled human_generated.csv. Defaults to run calibration directory.",
@@ -252,6 +262,10 @@ def score_calibration_command(
 ) -> None:
     run_dir = _resolve_run_dir(run)
     pairs = labeled_pairs or run_dir / "calibration/human_pairs.csv"
+    quality_pairs = (
+        labeled_quality_pairs
+        or run_dir / "calibration/human_quality_pairs.csv"
+    )
     generated = (
         labeled_generated
         or run_dir / "calibration/human_generated.csv"
@@ -260,6 +274,7 @@ def score_calibration_command(
     result = score_human_calibration(
         run_dir=run_dir,
         labeled_pairs_csv=pairs,
+        labeled_quality_pairs_csv=quality_pairs,
         labeled_generated_csv=generated,
         repeatability_summary=repeatability,
     )

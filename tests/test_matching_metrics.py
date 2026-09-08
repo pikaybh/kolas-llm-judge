@@ -45,3 +45,67 @@ def test_hungarian_matching_and_metrics() -> None:
     assert metrics.reference_risk_coverage.rate == 1.0
     assert metrics.unsupported_risk_rate.numerator == 1
     assert metrics.unsupported_risk_rate.denominator == 3
+
+
+def test_matching_is_independent_of_quality_scores() -> None:
+    scenario = EvaluationScenario(
+        case_id="quality-bias",
+        source_rows=[2],
+        input=ScenarioInput(process="전기"),
+        references=[
+            ReferenceRisk(
+                reference_id="r1",
+                source_row=2,
+                hazard="감전",
+            )
+        ],
+    )
+    generated = [
+        GeneratedRisk(generated_id="g1", hazard="감전 A"),
+        GeneratedRisk(generated_id="g2", hazard="감전 B"),
+    ]
+    judge = CaseJudgeResult(
+        pair_evaluations=[
+            PairJudgeResult(
+                reference_id="r1",
+                generated_id="g1",
+                semantic_match=4,
+                accident_type_correctness=2,
+                mitigation_appropriateness=0,
+                mitigation_specificity=0,
+                legal_basis_relevance=0,
+                quality_evaluated=True,
+                explanation="",
+            ),
+            PairJudgeResult(
+                reference_id="r1",
+                generated_id="g2",
+                semantic_match=4,
+                accident_type_correctness=2,
+                mitigation_appropriateness=2,
+                mitigation_specificity=2,
+                legal_basis_relevance=2,
+                quality_evaluated=True,
+                explanation="",
+            ),
+        ],
+        generated_evaluations=[
+            GeneratedJudgeResult(
+                generated_id="g1",
+                unsupported_claim=False,
+                critical_safety_error=False,
+                explanation="",
+            ),
+            GeneratedJudgeResult(
+                generated_id="g2",
+                unsupported_claim=False,
+                critical_safety_error=False,
+                explanation="",
+            ),
+        ],
+    )
+    matches = match_risks(scenario, generated, judge)
+    assert len(matches) == 1
+    # Exact semantic/accident ties are resolved by stable input order,
+    # not by downstream mitigation/legal quality.
+    assert matches[0].generated_id == "g1"

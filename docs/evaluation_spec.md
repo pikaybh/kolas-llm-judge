@@ -1,6 +1,6 @@
 # SEEXR KOLAS LLM-as-Judge Evaluation Specification
 
-Status: draft v0.2 (시험기관 협의 전)
+Status: draft v0.3 (시험기관 협의 전)
 Scope: app.seexr.dev 위험성평가 생성 결과의 정량 평가
 Dataset baseline: legacy KOLAS accident evaluation v7_73 test set
 
@@ -65,28 +65,50 @@ reference-only 필드가 포함되지 않도록 scenario builder와 테스트에
 
 LLM Judge는 위험도 수치 계산이나 범위 검사를 추정하지 않는다.
 
-## 4. Judge structured output 및 chunking
+## 4. Judge two-stage structured evaluation
 
-Judge는 Pydantic Structured Outputs로 스키마를 강제한다.
-모든 reference-generated pair와 모든 generated risk가 정확히 한 번씩
-평가됐는지 Python에서 완전성을 검증하며 누락/중복이 있으면 case를 실패시킨다.
+Judge는 Pydantic Structured Outputs로 스키마를 강제하며 `two-stage-v1` 파이프라인을 사용한다.
 
-pair 수가 설정된 한도 이하이면 case당 한 번의 structured call을 사용한다.
-한도를 초과하는 큰 case는 reference-generated pair matrix를 고정 크기로
-분할하고 generated-only 안전 판정을 별도 call로 수행한다. 모든 batch를
-합친 뒤 전체 pair matrix를 다시 검증한다.
+### Stage 1 — Match matrix
 
-기본 max_pairs_per_call은 120이며 실제 값은 run manifest에 기록한다. 대형 pair batch는
-reference/generated 본문을 ID table로 한 번씩만 전달하여 pair마다 본문이 반복되지 않도록 한다.
+모든 reference-generated pair에 대해 다음 두 값만 평가한다.
+- semantic_match 0~4
+- accident_type_correctness 0~2
+
+Stage 1 입력에는 감소대책과 법규 필드를 포함하지 않는다. 따라서 downstream quality가
+위험요인 matching에 영향을 줄 수 없다. Cartesian matrix 결과에는 설명문을 출력하지 않고
+compact key schema를 사용한다.
+
+대형 matrix는 기본 80 pair씩 분할하며 최대 3개의 batch를 병렬 실행한다. 각 batch는
+reference/generated 본문을 ID table에 한 번씩만 싣고 pair에는 ID만 전달한다.
+
+### Stage 2 — Matched quality
+
+Python 1:1 matching이 끝난 뒤 실제 matched pair에 대해서만 다음을 평가한다.
+- mitigation_appropriateness
+- mitigation_specificity
+- legal_basis_relevance
+
+### Stage 3 — Generated safety
+
+모든 generated risk에 대해 reference matching과 독립적으로 다음을 평가한다.
+- unsupported_claim
+- critical_safety_error
+
+Python은 Stage 1 전체 pair matrix, Stage 2 matched quality, Stage 3 generated safety의
+expected/actual ID 완전성을 각각 검증한다. 누락 또는 중복이 있으면 case를 실패시킨다.
+
+기본 설정은 max_pairs_per_call=80, max_concurrency=3이며 model/reasoning/timeout/retry와 함께
+run manifest의 frozen Judge identity에 기록한다.
 
 ## 5. Matching
 
-Judge는 reference/generated 위험 항목 쌍의 semantic_match를 0~4로 판정한다.
-semantic_match >= 3인 pair만 match 후보가 된다.
+semantic_match >= 3인 pair만 match 후보가 된다. 최종 대응은 Python scipy의
+maximum-weight bipartite matching으로 1:1 확정한다.
 
-최종 대응은 Python scipy의 maximum-weight bipartite matching으로 1:1 확정한다.
-semantic match가 최우선이며 사고유형, 감소대책, 법규 점수는 동률 해소를 위한
-하위 가중치로 사용한다. 사용한 scipy 버전과 평가 코드 hash는 manifest에 기록한다.
+가중치는 `semantic_match`가 지배하고 `accident_type_correctness`만 하위 tie-breaker로 사용한다.
+감소대책·법규 품질은 matching 가중치에 절대 사용하지 않는다. semantic/accident까지 완전 동률인
+경우 stable input order로 결정한다. 사용한 scipy 버전과 평가 코드 hash는 manifest에 기록한다.
 
 ## 6. 대표 KPI
 
@@ -133,50 +155,53 @@ aggregate report에는 Wilson 95% confidence interval과 case-level macro 평균
 
 ## 7. Judge calibration gate
 
-공식 full run 전에 Judge model, reasoning effort, chunk 설정, prompt, rubric,
-평가 코드와 dataset identity를 pilot manifest에 동결하고 human validation으로 검증한다.
+공식 full run 전에 Judge model, reasoning effort, two-stage pipeline, chunk/concurrency 설정,
+prompt, rubric, 평가 코드와 dataset identity를 pilot manifest에 동결하고 human validation으로 검증한다.
 
 기본 계획:
 - 50-case pilot 결과 활용
-- human_pairs.csv: 최대 150 reference-generated pair
-- human_generated.csv: 최대 150 generated risk
+- `human_pairs.csv`: 최대 150 Stage-1 match 후보 pair
+- `human_quality_pairs.csv`: 최대 150 실제 matched/quality-evaluated pair
+- `human_generated.csv`: 최대 150 generated risk
 - 안전전문가 2인 독립평가 + disagreement adjudication
-- Judge 예측은 두 인간 라벨링 파일에 노출하지 않음
-- pair sampling은 Judge 점수가 아닌 deterministic accident-label-overlap proxy 활용
+- Judge 점수는 세 인간 라벨링 CSV에 노출하지 않음
+- match pair sampling은 Judge 점수가 아닌 deterministic accident-label-overlap proxy 활용
+- quality pair는 실제 Stage-1 matched pair에서 고정 seed로 표본화하되 quality 점수는 sampling에 사용하지 않음
 - generated sampling은 고정 seed 기반 deterministic shuffle
-- 동일 frozen Judge를 3회 반복 실행해 차원별 repeatability 측정
+- 동일 frozen Judge를 3회 반복 실행해 차원별 repeatability와 1:1 match assignment 안정성 측정
 
-pair calibration 차원:
+Stage-1 match calibration 차원:
 - semantic_match
 - accident_type_correctness
+
+Stage-2 matched-quality calibration 차원:
 - mitigation_appropriateness
 - mitigation_specificity
 - legal_basis_relevance (generated legal basis가 있는 경우만)
 
-generated-only calibration 차원:
+Stage-3 generated-safety calibration 차원:
 - unsupported_claim
 - critical_safety_error
 
 초기 gate:
 - Semantic Human-Judge binary agreement >= 0.90
 - Semantic Cohen's kappa >= 0.70
-- 나머지 pair 차원 Human-Judge binary agreement >= 0.85
-- 나머지 pair 차원 Cohen's kappa >= 0.60
-- generated boolean 차원 Human-Judge agreement >= 0.90
+- 사고유형 및 quality 차원 Human-Judge binary agreement >= 0.85
+- 사고유형 및 quality 차원 Cohen's kappa >= 0.60
+- generated safety boolean Human-Judge agreement >= 0.90
 - Overall repeatability >= 0.95
-- Minimum per-dimension repeatability >= 0.95
+- Minimum per-dimension repeatability >= 0.95 (`match_assignment` 포함)
 - Structured-output completion >= 0.99
 - Human label completion = 1.00
-- pair 차원별 유효 sample >= 30
-- generated 차원별 유효 sample >= 30
+- match/quality/generated 각 적용 차원별 유효 sample >= 30
 
 boolean safety event는 prevalence가 매우 낮을 경우 kappa가 불안정해질 수 있으므로
 unsupported/critical 판정의 kappa는 보고하되 hard gate에는 agreement를 사용한다.
 
 calibration gate_result.json에는 pilot run manifest SHA-256과 frozen method identity를 저장한다.
-method identity에는 dataset SHA-256, evaluation source-tree SHA-256, prompt/rubric/config/lock
-해시, Judge model/reasoning/max_pairs_per_call이 포함된다. repeatability와 full run은
-이 identity가 현재 설정과 정확히 일치하지 않으면 실행을 차단한다.
+method identity에는 dataset SHA-256, evaluation source-tree SHA-256, prompt/rubric/config/lock 해시,
+Judge model/reasoning/pipeline/max_pairs_per_call/max_concurrency/timeout/retry 설정이 포함된다.
+repeatability와 full run은 이 identity가 현재 설정과 정확히 일치하지 않으면 실행을 차단한다.
 
 gate가 없거나 통과하지 못한 경우 full 425-case run은 기본적으로 실행 자체를 차단한다.
 개발용 명시적 override는 제공하지만 official candidate로 사용할 수 없다.

@@ -11,6 +11,7 @@ from sklearn.metrics import cohen_kappa_score
 from .dataset import sha256_file
 from .io_utils import atomic_write_json, load_json, load_scenarios
 from .judge import JudgeConfig, LlmJudge
+from .matching import select_match_ids
 from .manifest import (
     capture_current_method_identity,
     method_identity_from_manifest,
@@ -23,12 +24,20 @@ from .models import (
 )
 
 
-PAIR_DIMENSIONS: dict[str, dict[str, Any]] = {
+MATCH_DIMENSIONS: dict[str, dict[str, Any]] = {
     "semantic_match": {"max_score": 4, "pass_threshold": 3},
     "accident_type_correctness": {"max_score": 2, "pass_threshold": 2},
+}
+
+QUALITY_DIMENSIONS: dict[str, dict[str, Any]] = {
     "mitigation_appropriateness": {"max_score": 2, "pass_threshold": 2},
     "mitigation_specificity": {"max_score": 2, "pass_threshold": 2},
     "legal_basis_relevance": {"max_score": 2, "pass_threshold": 2},
+}
+
+PAIR_DIMENSIONS: dict[str, dict[str, Any]] = {
+    **MATCH_DIMENSIONS,
+    **QUALITY_DIMENSIONS,
 }
 
 GENERATED_DIMENSIONS = (
@@ -132,6 +141,7 @@ def make_human_calibration_template(
     scenarios_path: Path,
     output_dir: Path,
     sample_size: int = 150,
+    quality_sample_size: int | None = None,
     generated_sample_size: int | None = None,
     seed: int = 20260908,
 ) -> dict[str, Path]:
@@ -139,7 +149,8 @@ def make_human_calibration_template(
         scenario.case_id: scenario
         for scenario in load_scenarios(scenarios_path)
     }
-    pair_candidates: list[dict[str, Any]] = []
+    match_candidates: list[dict[str, Any]] = []
+    quality_candidates: list[dict[str, Any]] = []
     generated_candidates: list[dict[str, Any]] = []
 
     for bundle in _case_bundles(run_dir):
@@ -162,26 +173,14 @@ def make_human_calibration_template(
                     "case_id": case_id,
                     "process": scenario.input.process,
                     "subprocess": scenario.input.subprocess or "",
-                    "equipment": "; ".join(
-                        scenario.input.equipment
-                    ),
-                    "materials": "; ".join(
-                        scenario.input.materials
-                    ),
+                    "equipment": "; ".join(scenario.input.equipment),
+                    "materials": "; ".join(scenario.input.materials),
                     "generated_id": risk.generated_id,
                     "generated_hazard": risk.hazard,
-                    "generated_risk_cause": (
-                        risk.risk_cause or ""
-                    ),
-                    "generated_accident_types": "; ".join(
-                        risk.accident_types
-                    ),
-                    "generated_mitigation": (
-                        risk.mitigation or ""
-                    ),
-                    "generated_legal_basis": (
-                        risk.legal_basis or ""
-                    ),
+                    "generated_risk_cause": risk.risk_cause or "",
+                    "generated_accident_types": "; ".join(risk.accident_types),
+                    "generated_mitigation": risk.mitigation or "",
+                    "generated_legal_basis": risk.legal_basis or "",
                 }
             )
 
@@ -190,36 +189,25 @@ def make_human_calibration_template(
             risk = generated.get(pair.generated_id)
             if reference is None or risk is None:
                 continue
-            pair_candidates.append(
+            common = {
+                "case_id": case_id,
+                "process": scenario.input.process,
+                "subprocess": scenario.input.subprocess or "",
+                "reference_id": reference.reference_id,
+                "reference_hazard": reference.hazard,
+                "reference_accident_types": "; ".join(reference.accident_types),
+                "reference_mitigation": reference.mitigation or "",
+                "reference_legal_basis": reference.legal_basis or "",
+                "generated_id": risk.generated_id,
+                "generated_hazard": risk.hazard,
+                "generated_risk_cause": risk.risk_cause or "",
+                "generated_accident_types": "; ".join(risk.accident_types),
+                "generated_mitigation": risk.mitigation or "",
+                "generated_legal_basis": risk.legal_basis or "",
+            }
+            match_candidates.append(
                 {
-                    "case_id": case_id,
-                    "process": scenario.input.process,
-                    "subprocess": scenario.input.subprocess or "",
-                    "reference_id": reference.reference_id,
-                    "reference_hazard": reference.hazard,
-                    "reference_accident_types": "; ".join(
-                        reference.accident_types
-                    ),
-                    "reference_mitigation": (
-                        reference.mitigation or ""
-                    ),
-                    "reference_legal_basis": (
-                        reference.legal_basis or ""
-                    ),
-                    "generated_id": risk.generated_id,
-                    "generated_hazard": risk.hazard,
-                    "generated_risk_cause": (
-                        risk.risk_cause or ""
-                    ),
-                    "generated_accident_types": "; ".join(
-                        risk.accident_types
-                    ),
-                    "generated_mitigation": (
-                        risk.mitigation or ""
-                    ),
-                    "generated_legal_basis": (
-                        risk.legal_basis or ""
-                    ),
+                    **common,
                     "_proxy_positive": bool(
                         {
                             _normalize_label(value)
@@ -232,10 +220,16 @@ def make_human_calibration_template(
                     ),
                 }
             )
+            if pair.quality_evaluated:
+                quality_candidates.append(common)
 
-    if not pair_candidates:
+    if not match_candidates:
         raise RuntimeError(
-            "No completed judged cases are available for calibration"
+            "No completed judged cases are available for match calibration"
+        )
+    if not quality_candidates:
+        raise RuntimeError(
+            "No matched quality-evaluated pairs are available for calibration"
         )
     if not generated_candidates:
         raise RuntimeError(
@@ -243,25 +237,29 @@ def make_human_calibration_template(
         )
 
     rng = random.Random(seed)
-    selected_pairs = _balanced_pair_sample(
-        pair_candidates,
-        sample_size=min(sample_size, len(pair_candidates)),
+    selected_matches = _balanced_pair_sample(
+        match_candidates,
+        sample_size=min(sample_size, len(match_candidates)),
         rng=rng,
     )
 
-    generated_target = generated_sample_size or sample_size
+    quality_target = min(
+        quality_sample_size or sample_size,
+        len(quality_candidates),
+    )
+    rng.shuffle(quality_candidates)
+    selected_quality = quality_candidates[:quality_target]
+
     generated_target = min(
-        generated_target,
+        generated_sample_size or sample_size,
         len(generated_candidates),
     )
     rng.shuffle(generated_candidates)
-    selected_generated = generated_candidates[
-        :generated_target
-    ]
+    selected_generated = generated_candidates[:generated_target]
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    pair_fields = [
+    match_fields = [
         "sample_id",
         "case_id",
         "process",
@@ -269,45 +267,62 @@ def make_human_calibration_template(
         "reference_id",
         "reference_hazard",
         "reference_accident_types",
-        "reference_mitigation",
-        "reference_legal_basis",
         "generated_id",
         "generated_hazard",
         "generated_risk_cause",
         "generated_accident_types",
-        "generated_mitigation",
-        "generated_legal_basis",
     ]
-    for dimension in PAIR_DIMENSIONS:
-        pair_fields.extend(
+    for dimension in MATCH_DIMENSIONS:
+        match_fields.extend(
             [
                 f"rater1_{dimension}",
                 f"rater2_{dimension}",
                 f"adjudicated_{dimension}",
             ]
         )
-    pair_fields.append("notes")
+    match_fields.append("notes")
 
     pairs_path = output_dir / "human_pairs.csv"
-    with pairs_path.open(
-        "w",
-        encoding="utf-8-sig",
-        newline="",
-    ) as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=pair_fields,
-        )
+    with pairs_path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=match_fields)
         writer.writeheader()
-        for index, row in enumerate(
-            selected_pairs,
-            start=1,
-        ):
-            public = {
-                key: row.get(key, "")
-                for key in pair_fields
-            }
+        for index, row in enumerate(selected_matches, start=1):
+            public = {key: row.get(key, "") for key in match_fields}
             public["sample_id"] = f"P{index:04d}"
+            writer.writerow(public)
+
+    quality_fields = [
+        "sample_id",
+        "case_id",
+        "process",
+        "subprocess",
+        "reference_id",
+        "reference_hazard",
+        "reference_mitigation",
+        "reference_legal_basis",
+        "generated_id",
+        "generated_hazard",
+        "generated_risk_cause",
+        "generated_mitigation",
+        "generated_legal_basis",
+    ]
+    for dimension in QUALITY_DIMENSIONS:
+        quality_fields.extend(
+            [
+                f"rater1_{dimension}",
+                f"rater2_{dimension}",
+                f"adjudicated_{dimension}",
+            ]
+        )
+    quality_fields.append("notes")
+
+    quality_path = output_dir / "human_quality_pairs.csv"
+    with quality_path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=quality_fields)
+        writer.writeheader()
+        for index, row in enumerate(selected_quality, start=1):
+            public = {key: row.get(key, "") for key in quality_fields}
+            public["sample_id"] = f"Q{index:04d}"
             writer.writerow(public)
 
     generated_fields = [
@@ -335,24 +350,11 @@ def make_human_calibration_template(
     generated_fields.append("notes")
 
     generated_path = output_dir / "human_generated.csv"
-    with generated_path.open(
-        "w",
-        encoding="utf-8-sig",
-        newline="",
-    ) as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=generated_fields,
-        )
+    with generated_path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=generated_fields)
         writer.writeheader()
-        for index, row in enumerate(
-            selected_generated,
-            start=1,
-        ):
-            public = {
-                key: row.get(key, "")
-                for key in generated_fields
-            }
+        for index, row in enumerate(selected_generated, start=1):
+            public = {key: row.get(key, "") for key in generated_fields}
             public["sample_id"] = f"G{index:04d}"
             writer.writerow(public)
 
@@ -362,10 +364,9 @@ def make_human_calibration_template(
 
 두 평가자는 상대방의 점수와 Judge 점수를 보지 않고 독립적으로 평가합니다.
 
-## human_pairs.csv
+## human_pairs.csv — Stage 1 match validation
 
-각 reference-generated pair에 대해 다음을 평가합니다.
-
+모든 후보 pair 중 표본에 대해 위험 의미와 사고유형만 평가합니다.
 - semantic_match: 0~4
   - 0: 무관/서로 다른 위험
   - 1: 작업 맥락은 비슷할 수 있으나 위험 메커니즘이 다름
@@ -373,17 +374,19 @@ def make_human_calibration_template(
   - 3: 핵심 위험 메커니즘이 실질적으로 동일
   - 4: 위험 메커니즘과 작업 맥락이 사실상 동일
 - accident_type_correctness: 0~2
+  - 0=부적합, 1=부분 적합, 2=적합
+
+## human_quality_pairs.csv — Stage 2 matched-quality validation
+
+Stage 1에서 실제 1:1 match되어 Judge가 quality를 평가한 pair만 표본화합니다.
 - mitigation_appropriateness: 0~2
 - mitigation_specificity: 0~2
 - legal_basis_relevance: 0~2
   - generated_legal_basis가 비어 있으면 이 차원은 평가하지 않습니다.
 
-0~2 차원은 0=부적합, 1=부분 적합, 2=적합입니다.
-
-## human_generated.csv
+## human_generated.csv — Stage 3 safety validation
 
 reference와 무관하게 generated risk 자체를 평가합니다.
-
 - unsupported_claim: 0/1
   - 1 = 입력 작업 맥락 또는 합리적 건설안전 지식으로 뒷받침되지 않음
 - critical_safety_error: 0/1
@@ -391,7 +394,7 @@ reference와 무관하게 generated risk 자체를 평가합니다.
 
 두 평가자의 값이 다르면 협의 후 adjudicated_* 열에 최종값을 입력합니다.
 두 값이 같으면 adjudicated_*는 비워도 동일값을 consensus로 사용합니다.
-Judge 예측은 두 CSV에 포함되지 않습니다.
+Judge 점수는 세 CSV에 포함되지 않습니다.
 """,
         encoding="utf-8",
     )
@@ -400,22 +403,23 @@ Judge 예측은 두 CSV에 포함되지 않습니다.
     atomic_write_json(
         metadata_path,
         {
-            "pair_sample_size_requested": sample_size,
-            "pair_sample_size_actual": len(selected_pairs),
-            "generated_sample_size_requested": (
-                generated_sample_size or sample_size
-            ),
-            "generated_sample_size_actual": (
-                len(selected_generated)
-            ),
+            "match_sample_size_requested": sample_size,
+            "match_sample_size_actual": len(selected_matches),
+            "quality_sample_size_requested": quality_sample_size or sample_size,
+            "quality_sample_size_actual": len(selected_quality),
+            "generated_sample_size_requested": generated_sample_size or sample_size,
+            "generated_sample_size_actual": len(selected_generated),
             "seed": seed,
-            "pair_sampling": (
-                "balanced by deterministic accident-label-overlap "
-                "proxy vs non-overlap; Judge scores not used"
+            "match_sampling": (
+                "balanced by deterministic accident-label-overlap proxy vs "
+                "non-overlap; Judge scores not used"
+            ),
+            "quality_sampling": (
+                "uniform fixed-seed sample from actual Stage-1 matched pairs; "
+                "Judge quality scores not used"
             ),
             "generated_sampling": (
-                "uniform deterministic shuffle by fixed seed; "
-                "Judge scores not used"
+                "uniform deterministic shuffle by fixed seed; Judge scores not used"
             ),
             "source_run": str(run_dir),
             "source_scenarios": str(scenarios_path),
@@ -424,11 +428,11 @@ Judge 예측은 두 CSV에 포함되지 않습니다.
     )
     return {
         "pairs": pairs_path,
+        "quality_pairs": quality_path,
         "generated": generated_path,
         "instructions": instructions_path,
         "manifest": metadata_path,
     }
-
 
 def _parse_score(
     value: str,
@@ -782,71 +786,48 @@ def _structured_completion(
 ) -> dict[str, Any]:
     pair_completed = 0
     pair_expected = 0
+    quality_completed = 0
+    quality_expected = 0
     generated_completed = 0
     generated_expected = 0
 
-    for case_dir in sorted(
-        (run_dir / "cases").glob("case-*")
-    ):
+    for case_dir in sorted((run_dir / "cases").glob("case-*")):
         parsed_path = case_dir / "parsed.json"
         judge_path = case_dir / "judge.json"
         result_path = case_dir / "result.json"
-        if not (
-            parsed_path.exists()
-            and judge_path.exists()
-            and result_path.exists()
-        ):
+        if not (parsed_path.exists() and judge_path.exists() and result_path.exists()):
             continue
-
-        parsed = ParsedRiskAssessment.model_validate(
-            load_json(parsed_path)["parsed"]
-        )
-        judge = CaseJudgeResult.model_validate(
-            load_json(judge_path)["result"]
-        )
-        reference_count = int(
-            load_json(result_path)["reference_count"]
-        )
-        pair_expected += (
-            reference_count * len(parsed.risks)
-        )
-        pair_completed += len(
-            judge.pair_evaluations
-        )
+        parsed = ParsedRiskAssessment.model_validate(load_json(parsed_path)["parsed"])
+        judge = CaseJudgeResult.model_validate(load_json(judge_path)["result"])
+        result = load_json(result_path)
+        reference_count = int(result["reference_count"])
+        pair_expected += reference_count * len(parsed.risks)
+        pair_completed += len(judge.pair_evaluations)
+        quality_expected += len(result.get("matches", []))
+        quality_completed += sum(pair.quality_evaluated for pair in judge.pair_evaluations)
         generated_expected += len(parsed.risks)
-        generated_completed += len(
-            judge.generated_evaluations
-        )
+        generated_completed += len(judge.generated_evaluations)
 
-    pair_rate = (
-        pair_completed / pair_expected
-        if pair_expected
-        else None
-    )
-    generated_rate = (
-        generated_completed / generated_expected
-        if generated_expected
-        else None
-    )
-    rates = [
-        value
-        for value in [pair_rate, generated_rate]
-        if value is not None
-    ]
+    def rate(done: int, expected: int) -> float | None:
+        return done / expected if expected else None
+
+    pair_rate = rate(pair_completed, pair_expected)
+    quality_rate = rate(quality_completed, quality_expected)
+    generated_rate = rate(generated_completed, generated_expected)
+    rates = [value for value in [pair_rate, quality_rate, generated_rate] if value is not None]
     return {
-        "pair": {
-            "completed": pair_completed,
-            "expected": pair_expected,
-            "rate": pair_rate,
+        "match_pair": {"completed": pair_completed, "expected": pair_expected, "rate": pair_rate},
+        "matched_quality": {
+            "completed": quality_completed,
+            "expected": quality_expected,
+            "rate": quality_rate,
         },
         "generated": {
             "completed": generated_completed,
             "expected": generated_expected,
             "rate": generated_rate,
         },
-        "minimum_rate": (
-            min(rates) if rates else None
-        ),
+        "minimum_rate": min(rates) if rates else None,
     }
 
 
@@ -854,6 +835,7 @@ def score_human_calibration(
     *,
     run_dir: Path,
     labeled_pairs_csv: Path,
+    labeled_quality_pairs_csv: Path | None = None,
     labeled_generated_csv: Path | None = None,
     repeatability_summary: Path | None = None,
     semantic_agreement_min: float = 0.90,
@@ -865,42 +847,43 @@ def score_human_calibration(
     structured_completion_min: float = 0.99,
     human_label_completion_min: float = 1.0,
     min_pair_samples: int = 30,
+    min_quality_samples: int = 30,
     min_generated_samples: int = 30,
 ) -> dict[str, Any]:
+    if labeled_quality_pairs_csv is None:
+        labeled_quality_pairs_csv = labeled_pairs_csv.parent / "human_quality_pairs.csv"
     if labeled_generated_csv is None:
-        labeled_generated_csv = (
-            labeled_pairs_csv.parent
-            / "human_generated.csv"
-        )
-    if not labeled_generated_csv.exists():
-        raise FileNotFoundError(
-            "Generated-risk human calibration file is missing: "
-            f"{labeled_generated_csv}"
-        )
+        labeled_generated_csv = labeled_pairs_csv.parent / "human_generated.csv"
+    for name, path in [
+        ("quality-pair", labeled_quality_pairs_csv),
+        ("generated-risk", labeled_generated_csv),
+    ]:
+        if not path.exists():
+            raise FileNotFoundError(f"{name} human calibration file is missing: {path}")
 
-    with labeled_pairs_csv.open(
-        "r",
-        encoding="utf-8-sig",
-        newline="",
-    ) as f:
+    with labeled_pairs_csv.open("r", encoding="utf-8-sig", newline="") as f:
         pair_rows = list(csv.DictReader(f))
-    with labeled_generated_csv.open(
-        "r",
-        encoding="utf-8-sig",
-        newline="",
-    ) as f:
+    with labeled_quality_pairs_csv.open("r", encoding="utf-8-sig", newline="") as f:
+        quality_rows = list(csv.DictReader(f))
+    with labeled_generated_csv.open("r", encoding="utf-8-sig", newline="") as f:
         generated_rows = list(csv.DictReader(f))
 
-    pair_judge_map, generated_judge_map = (
-        _judge_maps(run_dir)
-    )
-    pair_dimensions = {
+    pair_judge_map, generated_judge_map = _judge_maps(run_dir)
+    match_dimensions = {
         dimension: _score_pair_dimension(
             rows=pair_rows,
             judge_map=pair_judge_map,
             dimension=dimension,
         )
-        for dimension in PAIR_DIMENSIONS
+        for dimension in MATCH_DIMENSIONS
+    }
+    quality_dimensions = {
+        dimension: _score_pair_dimension(
+            rows=quality_rows,
+            judge_map=pair_judge_map,
+            dimension=dimension,
+        )
+        for dimension in QUALITY_DIMENSIONS
     }
     generated_dimensions = {
         dimension: _score_generated_dimension(
@@ -924,9 +907,7 @@ def score_human_calibration(
                 "source_run_id": source_manifest.get("run_id"),
                 "source_run_manifest_sha256": sha256_file(source_manifest_path),
                 "source_evaluation_git_head": (
-                    source_git.get("head")
-                    if isinstance(source_git, dict)
-                    else None
+                    source_git.get("head") if isinstance(source_git, dict) else None
                 ),
                 "source_evaluation_git_clean": (
                     not bool(source_git.get("dirty"))
@@ -937,20 +918,11 @@ def score_human_calibration(
             }
 
     repeatability_data: dict[str, Any] = {}
-    if (
-        repeatability_summary
-        and repeatability_summary.exists()
-    ):
-        repeatability_data = load_json(
-            repeatability_summary
-        )
-    repeatability = repeatability_data.get(
-        "repeatability"
-    )
-    min_dimension_repeatability = (
-        repeatability_data.get(
-            "minimum_dimension_repeatability"
-        )
+    if repeatability_summary and repeatability_summary.exists():
+        repeatability_data = load_json(repeatability_summary)
+    repeatability = repeatability_data.get("repeatability")
+    min_dimension_repeatability = repeatability_data.get(
+        "minimum_dimension_repeatability"
     )
 
     checks: dict[str, dict[str, Any]] = {}
@@ -970,164 +942,103 @@ def score_human_calibration(
         "pass": source_eval_clean,
     }
 
-    semantic = pair_dimensions["semantic_match"]
+    semantic = match_dimensions["semantic_match"]
     checks["semantic_agreement"] = {
-        "value": semantic[
-            "judge_human_binary_agreement"
-        ],
+        "value": semantic["judge_human_binary_agreement"],
         "minimum": semantic_agreement_min,
         "pass": (
-            semantic[
-                "judge_human_binary_agreement"
-            ]
-            is not None
-            and semantic[
-                "judge_human_binary_agreement"
-            ]
-            >= semantic_agreement_min
+            semantic["judge_human_binary_agreement"] is not None
+            and semantic["judge_human_binary_agreement"] >= semantic_agreement_min
         ),
     }
     checks["semantic_kappa"] = {
-        "value": semantic[
-            "judge_human_binary_kappa"
-        ],
+        "value": semantic["judge_human_binary_kappa"],
         "minimum": semantic_kappa_min,
         "pass": (
-            semantic[
-                "judge_human_binary_kappa"
-            ]
-            is not None
-            and semantic[
-                "judge_human_binary_kappa"
-            ]
-            >= semantic_kappa_min
+            semantic["judge_human_binary_kappa"] is not None
+            and semantic["judge_human_binary_kappa"] >= semantic_kappa_min
         ),
     }
 
-    for dimension in (
-        "accident_type_correctness",
-        "mitigation_appropriateness",
-        "mitigation_specificity",
-        "legal_basis_relevance",
-    ):
-        score = pair_dimensions[dimension]
-        checks[f"{dimension}_agreement"] = {
-            "value": score[
-                "judge_human_binary_agreement"
-            ],
-            "minimum": dimension_agreement_min,
-            "pass": (
-                score[
-                    "judge_human_binary_agreement"
-                ]
-                is not None
-                and score[
-                    "judge_human_binary_agreement"
-                ]
-                >= dimension_agreement_min
-            ),
+    accident = match_dimensions["accident_type_correctness"]
+    for suffix, metric_key, minimum in [
+        ("agreement", "judge_human_binary_agreement", dimension_agreement_min),
+        ("kappa", "judge_human_binary_kappa", dimension_kappa_min),
+    ]:
+        value = accident[metric_key]
+        checks[f"accident_type_correctness_{suffix}"] = {
+            "value": value,
+            "minimum": minimum,
+            "pass": value is not None and value >= minimum,
         }
-        checks[f"{dimension}_kappa"] = {
-            "value": score[
-                "judge_human_binary_kappa"
-            ],
-            "minimum": dimension_kappa_min,
-            "pass": (
-                score[
-                    "judge_human_binary_kappa"
-                ]
-                is not None
-                and score[
-                    "judge_human_binary_kappa"
-                ]
-                >= dimension_kappa_min
-            ),
-        }
+
+    for dimension, score in quality_dimensions.items():
+        for suffix, metric_key, minimum in [
+            ("agreement", "judge_human_binary_agreement", dimension_agreement_min),
+            ("kappa", "judge_human_binary_kappa", dimension_kappa_min),
+        ]:
+            value = score[metric_key]
+            checks[f"{dimension}_{suffix}"] = {
+                "value": value,
+                "minimum": minimum,
+                "pass": value is not None and value >= minimum,
+            }
 
     for dimension in GENERATED_DIMENSIONS:
         score = generated_dimensions[dimension]
+        value = score["judge_human_agreement"]
         checks[f"{dimension}_agreement"] = {
-            "value": score[
-                "judge_human_agreement"
-            ],
+            "value": value,
             "minimum": generated_agreement_min,
-            "pass": (
-                score["judge_human_agreement"]
-                is not None
-                and score[
-                    "judge_human_agreement"
-                ]
-                >= generated_agreement_min
-            ),
+            "pass": value is not None and value >= generated_agreement_min,
             "note": (
-                "Kappa is reported descriptively but not "
-                "used as a hard gate because rare safety "
-                "events can make kappa prevalence-sensitive."
+                "Kappa is reported descriptively but not used as a hard gate "
+                "because rare safety events can make kappa prevalence-sensitive."
             ),
         }
 
-    pair_completion_values = [
+    all_dimension_scores = [
+        *match_dimensions.values(),
+        *quality_dimensions.values(),
+        *generated_dimensions.values(),
+    ]
+    completion_values = [
         score["label_completion"]
-        for score in pair_dimensions.values()
-        if score["applicable_rows"] > 0
+        for score in all_dimension_scores
+        if score["applicable_rows"] > 0 and score["label_completion"] is not None
     ]
-    generated_completion_values = [
-        score["label_completion"]
-        for score in generated_dimensions.values()
-        if score["applicable_rows"] > 0
-    ]
-    all_completion_values = [
-        value
-        for value in (
-            pair_completion_values
-            + generated_completion_values
-        )
-        if value is not None
-    ]
-    minimum_human_completion = (
-        min(all_completion_values)
-        if all_completion_values
-        else None
-    )
+    minimum_human_completion = min(completion_values) if completion_values else None
     checks["human_label_completion"] = {
         "value": minimum_human_completion,
         "minimum": human_label_completion_min,
         "pass": (
             minimum_human_completion is not None
-            and minimum_human_completion
-            >= human_label_completion_min
+            and minimum_human_completion >= human_label_completion_min
         ),
     }
 
-    pair_sample_min = min(
-        (
-            score["sample_count"]
-            for score in pair_dimensions.values()
-            if score["applicable_rows"] > 0
-        ),
+    match_sample_min = min(
+        (score["sample_count"] for score in match_dimensions.values() if score["applicable_rows"] > 0),
+        default=0,
+    )
+    quality_sample_min = min(
+        (score["sample_count"] for score in quality_dimensions.values() if score["applicable_rows"] > 0),
         default=0,
     )
     generated_sample_min = min(
-        (
-            score["sample_count"]
-            for score in generated_dimensions.values()
-            if score["applicable_rows"] > 0
-        ),
+        (score["sample_count"] for score in generated_dimensions.values() if score["applicable_rows"] > 0),
         default=0,
     )
-    checks["pair_sample_size"] = {
-        "value": pair_sample_min,
-        "minimum": min_pair_samples,
-        "pass": pair_sample_min >= min_pair_samples,
-    }
-    checks["generated_sample_size"] = {
-        "value": generated_sample_min,
-        "minimum": min_generated_samples,
-        "pass": (
-            generated_sample_min
-            >= min_generated_samples
-        ),
-    }
+    for name, value, minimum in [
+        ("match_pair_sample_size", match_sample_min, min_pair_samples),
+        ("quality_pair_sample_size", quality_sample_min, min_quality_samples),
+        ("generated_sample_size", generated_sample_min, min_generated_samples),
+    ]:
+        checks[name] = {
+            "value": value,
+            "minimum": minimum,
+            "pass": value >= minimum,
+        }
 
     structured_rate = structured["minimum_rate"]
     checks["structured_completion"] = {
@@ -1135,45 +1046,80 @@ def score_human_calibration(
         "minimum": structured_completion_min,
         "pass": (
             structured_rate is not None
-            and structured_rate
-            >= structured_completion_min
+            and structured_rate >= structured_completion_min
         ),
     }
     checks["repeatability"] = {
         "value": repeatability,
         "minimum": repeatability_min,
-        "pass": (
-            repeatability is not None
-            and repeatability
-            >= repeatability_min
-        ),
+        "pass": repeatability is not None and repeatability >= repeatability_min,
     }
     if min_dimension_repeatability is not None:
-        checks[
-            "minimum_dimension_repeatability"
-        ] = {
+        checks["minimum_dimension_repeatability"] = {
             "value": min_dimension_repeatability,
             "minimum": repeatability_min,
-            "pass": (
-                min_dimension_repeatability
-                >= repeatability_min
-            ),
+            "pass": min_dimension_repeatability >= repeatability_min,
         }
 
     return {
-        "pair_rows": len(pair_rows),
+        "match_pair_rows": len(pair_rows),
+        "quality_pair_rows": len(quality_rows),
         "generated_rows": len(generated_rows),
-        "pair_dimensions": pair_dimensions,
+        "match_dimensions": match_dimensions,
+        "quality_dimensions": quality_dimensions,
         "generated_dimensions": generated_dimensions,
         "structured_completion": structured,
         "repeatability": repeatability_data,
         "frozen_method": frozen_method,
         "checks": checks,
-        "gate_pass": all(
-            check["pass"]
-            for check in checks.values()
-        ),
+        "gate_pass": all(check["pass"] for check in checks.values()),
     }
+
+
+def _append_repeatability_decisions(
+    *,
+    scenario: Any,
+    generated: list[GeneratedRisk],
+    result: CaseJudgeResult,
+    decisions: dict[str, dict[str, list[Any]]],
+) -> None:
+    selected = dict(
+        select_match_ids(
+            scenario,
+            generated,
+            result,
+        )
+    )
+    for reference in scenario.references:
+        key = f"{scenario.case_id}:{reference.reference_id}"
+        decisions["match_assignment"][key].append(
+            selected.get(reference.reference_id, "__NONE__")
+        )
+
+    for pair in result.pair_evaluations:
+        key = (
+            f"{scenario.case_id}:"
+            f"{pair.reference_id}:"
+            f"{pair.generated_id}"
+        )
+        for dimension, cfg in MATCH_DIMENSIONS.items():
+            score = int(getattr(pair, dimension))
+            decisions[dimension][key].append(
+                int(score >= int(cfg["pass_threshold"]))
+            )
+        if pair.quality_evaluated:
+            for dimension, cfg in QUALITY_DIMENSIONS.items():
+                score = int(getattr(pair, dimension))
+                decisions[dimension][key].append(
+                    int(score >= int(cfg["pass_threshold"]))
+                )
+
+    for item in result.generated_evaluations:
+        key = f"{scenario.case_id}:{item.generated_id}"
+        for dimension in GENERATED_DIMENSIONS:
+            decisions[dimension][key].append(
+                int(bool(getattr(item, dimension)))
+            )
 
 
 async def run_judge_repeatability(
@@ -1241,12 +1187,13 @@ async def run_judge_repeatability(
     output_dir.mkdir(parents=True, exist_ok=True)
     decisions: dict[
         str,
-        dict[str, list[int]],
+        dict[str, list[Any]],
     ] = {
         dimension: defaultdict(list)
         for dimension in (
             *PAIR_DIMENSIONS.keys(),
             *GENERATED_DIMENSIONS,
+            "match_assignment",
         )
     }
 
@@ -1301,56 +1248,15 @@ async def run_judge_repeatability(
                     },
                 )
 
-            for pair in result.pair_evaluations:
-                key = (
-                    f"{case_dir.name}:"
-                    f"{pair.reference_id}:"
-                    f"{pair.generated_id}"
-                )
-                for dimension, cfg in (
-                    PAIR_DIMENSIONS.items()
-                ):
-                    score = int(
-                        getattr(pair, dimension)
-                    )
-                    decisions[dimension][
-                        key
-                    ].append(
-                        int(
-                            score
-                            >= int(
-                                cfg[
-                                    "pass_threshold"
-                                ]
-                            )
-                        )
-                    )
-
-            for item in (
-                result.generated_evaluations
-            ):
-                key = (
-                    f"{case_dir.name}:"
-                    f"{item.generated_id}"
-                )
-                for dimension in (
-                    GENERATED_DIMENSIONS
-                ):
-                    decisions[dimension][
-                        key
-                    ].append(
-                        int(
-                            bool(
-                                getattr(
-                                    item,
-                                    dimension,
-                                )
-                            )
-                        )
-                    )
+            _append_repeatability_decisions(
+                scenario=scenario,
+                generated=parsed.risks,
+                result=result,
+                decisions=decisions,
+            )
 
     by_dimension: dict[str, Any] = {}
-    all_complete: list[list[int]] = []
+    all_complete: list[list[Any]] = []
 
     for dimension, dimension_values in (
         decisions.items()

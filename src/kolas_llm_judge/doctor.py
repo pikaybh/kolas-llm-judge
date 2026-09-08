@@ -264,6 +264,16 @@ async def run_doctor(
         ),
     )
     add(
+        "judge_pipeline",
+        judge_config.pipeline_version == "two-stage-v1",
+        judge_config.pipeline_version,
+    )
+    add(
+        "judge_max_concurrency",
+        judge_config.max_concurrency > 0,
+        str(judge_config.max_concurrency),
+    )
+    add(
         "seexr_max_retries",
         sut_config.max_retries >= 0,
         str(sut_config.max_retries),

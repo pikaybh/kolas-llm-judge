@@ -89,30 +89,63 @@ class DeterministicAssessmentResult(BaseModel):
     checks: list[DeterministicRiskCheck] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
 
+class PairMatchJudgeResult(BaseModel):
+    # Compact structured-output schema: r=reference id, g=generated id,
+    # s=semantic score, a=accident score. Explanations are intentionally
+    # omitted for the full Cartesian matrix and are retained only for
+    # selected matched pairs in the quality stage.
+    r: str
+    g: str
+    s: int = Field(ge=0, le=4)
+    a: int = Field(ge=0, le=2)
+
+
+class PairQualityJudgeResult(BaseModel):
+    r: str
+    g: str
+    m: int = Field(ge=0, le=2)
+    p: int = Field(ge=0, le=2)
+    l: int = Field(ge=0, le=2)
+    e: str = Field(max_length=160)
+
+
+class GeneratedSafetyJudgeResult(BaseModel):
+    g: str
+    u: bool
+    c: bool
+    e: str = Field(max_length=160)
+
+
 class PairJudgeResult(BaseModel):
     reference_id: str
     generated_id: str
     semantic_match: int = Field(ge=0, le=4)
     accident_type_correctness: int = Field(ge=0, le=2)
-    mitigation_appropriateness: int = Field(ge=0, le=2)
-    mitigation_specificity: int = Field(ge=0, le=2)
-    legal_basis_relevance: int = Field(ge=0, le=2)
-    explanation: str = Field(max_length=240)
+    mitigation_appropriateness: int = Field(default=0, ge=0, le=2)
+    mitigation_specificity: int = Field(default=0, ge=0, le=2)
+    legal_basis_relevance: int = Field(default=0, ge=0, le=2)
+    quality_evaluated: bool = True
+    explanation: str = Field(max_length=160)
+    quality_explanation: str | None = Field(default=None, max_length=160)
 
 
 class GeneratedJudgeResult(BaseModel):
     generated_id: str
     unsupported_claim: bool
     critical_safety_error: bool
-    explanation: str = Field(max_length=240)
+    explanation: str = Field(max_length=160)
 
 
-class PairBatchJudgeResult(BaseModel):
-    pair_evaluations: list[PairJudgeResult]
+class PairMatchBatchJudgeResult(BaseModel):
+    rows: list[PairMatchJudgeResult]
+
+
+class PairQualityBatchJudgeResult(BaseModel):
+    rows: list[PairQualityJudgeResult]
 
 
 class GeneratedBatchJudgeResult(BaseModel):
-    generated_evaluations: list[GeneratedJudgeResult]
+    rows: list[GeneratedSafetyJudgeResult]
 
 
 class CaseJudgeResult(BaseModel):

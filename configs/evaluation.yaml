@@ -1,4 +1,4 @@
-spec_version: "0.2"
+spec_version: "0.3"
 dataset:
   source: "data/raw/kolas_v7_73_test.csv.bz2"
   expected_rows: 843
@@ -24,7 +24,11 @@ judge:
   model_env: "JUDGE_MODEL"
   default_model: "gpt-5.6-sol"
   reasoning_effort: "medium"
-  max_pairs_per_call: 120
+  pipeline_version: "two-stage-v1"
+  max_pairs_per_call: 80
+  max_concurrency: 3
+  request_timeout_seconds: 300
+  max_retries: 3
   prompt: "prompts/judge_v1.md"
   rubric: "configs/rubric_v1.yaml"
 
@@ -57,7 +61,8 @@ metrics:
 
 calibration:
   source: "pilot"
-  pair_sample_size: 150
+  match_pair_sample_size: 150
+  quality_pair_sample_size: 150
   generated_sample_size: 150
   repeated_runs: 3
   sampling_seed: 20260908
@@ -71,13 +76,14 @@ calibration:
     minimum_dimension_repeatability_min: 0.95
     structured_completion_min: 0.99
     human_label_completion_min: 1.00
-    min_pair_samples_per_dimension: 30
+    min_match_pair_samples_per_dimension: 30
+    min_quality_pair_samples_per_dimension: 30
     min_generated_samples_per_dimension: 30
   freeze:
     bind_dataset_sha256: true
     bind_evaluation_source_tree_sha256: true
     bind_prompt_rubric_config_hashes: true
-    bind_judge_model_reasoning_chunk_config: true
+    bind_judge_model_reasoning_pipeline_chunk_config: true
 
 run:
   max_retries: 3

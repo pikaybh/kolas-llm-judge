@@ -32,6 +32,23 @@ def _csv_values(node: ET.Element | None) -> list[str]:
     return [part.strip() for part in value.split(",") if part.strip() and part.strip() != "-"]
 
 
+def _accident_values(item: ET.Element) -> list[str]:
+    # accident_classification is the canonical formatter output.
+    # hazard_secondary_category is a broader/fallback category and may
+    # contain a semicolon-joined menu of possibilities. Never append both.
+    value = _text(item.find("accident_classification"))
+    if not value:
+        value = _text(item.find("hazard_secondary_category"))
+    if not value:
+        return []
+    values: list[str] = []
+    for part in value.split(";"):
+        label = part.strip()
+        if label and label != "-" and label not in values:
+            values.append(label)
+    return values
+
+
 def extract_risk_assessment_xml(content: str) -> tuple[str, str]:
     match = ROOT_RE.search(content)
     if not match:
@@ -51,11 +68,7 @@ def parse_risk_assessment(content: str) -> ParsedRiskAssessment:
     for index, item in enumerate(root.findall("./items/item"), start=1):
         source_id = _text(item.find("id"))
         hazard = _text(item.find("hazard")) or _text(item.find("hazard_analysis")) or ""
-        accident_values: list[str] = []
-        for tag in ("accident_classification", "hazard_secondary_category"):
-            value = _text(item.find(tag))
-            if value and value not in accident_values:
-                accident_values.append(value)
+        accident_values = _accident_values(item)
 
         mitigation_parts: list[str] = []
         for tag in ("current_safety_measures", "reduction_measures_detail"):

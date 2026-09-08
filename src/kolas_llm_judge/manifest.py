@@ -328,7 +328,11 @@ def _judge_identity(judge: JudgeConfig) -> dict[str, Any]:
     return {
         "model": judge.model,
         "reasoning_effort": judge.reasoning_effort,
+        "pipeline_version": judge.pipeline_version,
         "max_pairs_per_call": judge.max_pairs_per_call,
+        "max_concurrency": judge.max_concurrency,
+        "request_timeout_seconds": judge.request_timeout_seconds,
+        "max_retries": judge.max_retries,
         "prompt_path": str(judge.prompt_path),
         "rubric_path": str(judge.rubric_path),
     }

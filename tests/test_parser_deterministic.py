@@ -95,3 +95,27 @@ def test_verbal_method_detects_increased_post_risk() -> None:
     result = evaluate_deterministic(parsed)
     assert result.checks[0].post_risk_nonincreasing is False
     assert "post_risk_increased" in result.checks[0].errors
+
+
+def test_accident_classification_is_canonical_and_split() -> None:
+    xml = VALID.replace(
+        "<hazard_secondary_category>충돌</hazard_secondary_category>",
+        "<hazard_secondary_category>감전;끼임;충돌 및 접촉</hazard_secondary_category>",
+    ).replace(
+        "<accident_classification>충돌</accident_classification>",
+        "<accident_classification>감전;끼임</accident_classification>",
+    )
+    parsed = parse_risk_assessment(xml)
+    assert parsed.risks[0].accident_types == ["감전", "끼임"]
+
+
+def test_accident_classification_falls_back_to_secondary() -> None:
+    xml = VALID.replace(
+        "<hazard_secondary_category>충돌</hazard_secondary_category>",
+        "<hazard_secondary_category>감전;끼임</hazard_secondary_category>",
+    ).replace(
+        "<accident_classification>충돌</accident_classification>",
+        "",
+    )
+    parsed = parse_risk_assessment(xml)
+    assert parsed.risks[0].accident_types == ["감전", "끼임"]

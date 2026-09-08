@@ -4,7 +4,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 ## 구현 상태
 
-- [x] 시험 규격 draft v0.2
+- [x] 시험 규격 draft v0.3
 - [x] uv / Python 3.12 독립 환경
 - [x] legacy 843-row dataset importer
 - [x] 843 reference -> 425 scenario builder
@@ -14,8 +14,8 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] production SEEXR Core SUT client
 - [x] token 또는 전용 non-admin 계정 자동 로그인
 - [x] GPT-5.6 Sol Pydantic Structured Output Judge
-- [x] 대형 case Judge pair-matrix chunking
-- [x] deterministic 1:1 Hungarian matching
+- [x] two-stage Judge: match matrix → matched quality + generated safety
+- [x] quality-independent deterministic 1:1 Hungarian matching
 - [x] semantic / mitigation / legal / safety KPI aggregation
 - [x] Wilson 95% CI 및 case macro statistics
 - [x] atomic per-stage checkpoint and resume
@@ -50,9 +50,13 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 계정으로 재로그인합니다. access/refresh token은 artifact나 manifest에 저장하지 않습니다.
 관리자 계정은 production MFA가 필요하므로 자동 시험계정으로 사용하지 않습니다.
 
-Judge pair 수가 큰 case는 기본적으로 120 pair 단위로 분할합니다.
+Stage-1 match matrix는 기본 80 pair 단위로 분할하고 최대 3개 batch를 병렬 처리합니다.
+감소대책/법규는 matching 이후 실제 matched pair에 대해서만 평가합니다.
 
-    JUDGE_MAX_PAIRS_PER_CALL=120
+    JUDGE_MAX_PAIRS_PER_CALL=80
+    JUDGE_MAX_CONCURRENCY=3
+    JUDGE_TIMEOUT_SECONDS=300
+    JUDGE_MAX_RETRIES=3
 
 SUT의 일시적 408/429/5xx 또는 transport 오류는 기본 3회까지 재시도합니다.
 run 생성 재시도는 동일 `clientRequestId`를 사용하며, SSE 단절은 마지막 sequence부터 재연결합니다.
@@ -111,23 +115,23 @@ pilot 결과에서 human labeling template 생성:
 
     /home/pikaybh/.local/bin/uv run kolas-llm-judge judge-repeatability PILOT_RUN_ID
 
-두 명의 안전전문가가 `human_pairs.csv`와 `human_generated.csv`를 독립적으로 평가하고
-불일치를 adjudication한 뒤:
+두 명의 안전전문가가 `human_pairs.csv`, `human_quality_pairs.csv`, `human_generated.csv`를
+독립적으로 평가하고 불일치를 adjudication한 뒤:
 
     /home/pikaybh/.local/bin/uv run kolas-llm-judge score-calibration PILOT_RUN_ID
 
-`human_pairs.csv`는 semantic/사고유형/감소대책 적합성/구체성/법규 관련성을 검증하고,
-`human_generated.csv`는 unsupported claim과 critical safety error를 검증합니다.
+`human_pairs.csv`는 Stage-1 semantic/사고유형, `human_quality_pairs.csv`는 실제 matched pair의
+감소대책 적합성/구체성/법규 관련성, `human_generated.csv`는 unsupported claim과 critical safety error를 검증합니다.
 
 기본 calibration gate:
 
 - semantic Judge-human binary agreement >= 0.90, Cohen kappa >= 0.70
-- 나머지 pair 차원 agreement >= 0.85, Cohen kappa >= 0.60
+- 사고유형 및 matched-quality 차원 agreement >= 0.85, Cohen kappa >= 0.60
 - unsupported / critical safety boolean agreement >= 0.90
-- overall 및 차원별 repeatability >= 0.95
+- overall 및 차원별 repeatability >= 0.95 (`match_assignment` 포함)
 - structured-output completion >= 0.99
 - human label completion = 1.00
-- pair/generated 차원별 유효 sample >= 30
+- match/quality/generated 각 적용 차원별 유효 sample >= 30
 
 calibration 결과에는 pilot의 dataset/code/prompt/rubric/Judge 설정을 `frozen_method`로
 고정합니다. full run의 method identity가 다르면 gate가 PASS여도 실행이 차단됩니다.

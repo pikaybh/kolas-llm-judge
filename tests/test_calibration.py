@@ -5,7 +5,8 @@ from pathlib import Path
 
 from kolas_llm_judge.calibration import (
     GENERATED_DIMENSIONS,
-    PAIR_DIMENSIONS,
+    MATCH_DIMENSIONS,
+    QUALITY_DIMENSIONS,
     make_human_calibration_template,
     score_human_calibration,
 )
@@ -119,6 +120,12 @@ def _build_calibration_fixture(
             "status": "completed",
             "case_id": "case-cal",
             "reference_count": 1,
+            "matches": [
+                {
+                    "reference_id": "case-cal-r2",
+                    "generated_id": "g001",
+                }
+            ],
         },
     )
     atomic_write_json(
@@ -165,6 +172,43 @@ def _fill_pair_labels(
     defaults = {
         "semantic_match": "4",
         "accident_type_correctness": "2",
+    }
+    if override:
+        defaults.update(override)
+
+    for dimension, value in defaults.items():
+        rows[0][f"rater1_{dimension}"] = value
+        rows[0][f"rater2_{dimension}"] = value
+        rows[0][f"adjudicated_{dimension}"] = value
+
+    with path.open(
+        "w",
+        encoding="utf-8-sig",
+        newline="",
+    ) as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=fields,
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+
+def _fill_quality_labels(
+    path: Path,
+    *,
+    override: dict[str, str] | None = None,
+) -> None:
+    with path.open(
+        "r",
+        encoding="utf-8-sig",
+        newline="",
+    ) as f:
+        rows = list(csv.DictReader(f))
+        fields = list(rows[0].keys())
+
+    defaults = {
         "mitigation_appropriateness": "2",
         "mitigation_specificity": "2",
         "legal_basis_relevance": "2",
@@ -188,7 +232,6 @@ def _fill_pair_labels(
         )
         writer.writeheader()
         writer.writerows(rows)
-
 
 def _fill_generated_labels(
     path: Path,
@@ -262,19 +305,23 @@ def test_multidimensional_calibration_template_hides_judge(
     pair_text = paths["pairs"].read_text(
         encoding="utf-8-sig"
     )
+    quality_text = paths[
+        "quality_pairs"
+    ].read_text(encoding="utf-8-sig")
     generated_text = paths[
         "generated"
     ].read_text(encoding="utf-8-sig")
     assert "_judge_" not in pair_text
     assert "judge_score" not in pair_text
+    assert "_judge_" not in quality_text
+    assert "judge_score" not in quality_text
     assert "_judge_" not in generated_text
     assert "judge_score" not in generated_text
 
-    for dimension in PAIR_DIMENSIONS:
-        assert (
-            f"rater1_{dimension}"
-            in pair_text
-        )
+    for dimension in MATCH_DIMENSIONS:
+        assert f"rater1_{dimension}" in pair_text
+    for dimension in QUALITY_DIMENSIONS:
+        assert f"rater1_{dimension}" in quality_text
     for dimension in GENERATED_DIMENSIONS:
         assert (
             f"rater1_{dimension}"
@@ -282,22 +329,25 @@ def test_multidimensional_calibration_template_hides_judge(
         )
 
     _fill_pair_labels(paths["pairs"])
+    _fill_quality_labels(paths["quality_pairs"])
     _fill_generated_labels(
         paths["generated"]
     )
     result = score_human_calibration(
         run_dir=run_dir,
         labeled_pairs_csv=paths["pairs"],
+        labeled_quality_pairs_csv=paths["quality_pairs"],
         labeled_generated_csv=paths["generated"],
         repeatability_summary=(
             _repeatability_file(run_dir)
         ),
         min_pair_samples=1,
+        min_quality_samples=1,
         min_generated_samples=1,
     )
 
     assert (
-        result["pair_dimensions"][
+        result["match_dimensions"][
             "semantic_match"
         ]["judge_human_binary_agreement"]
         == 1.0
@@ -308,6 +358,7 @@ def test_multidimensional_calibration_template_hides_judge(
         ]["judge_human_agreement"]
         == 1.0
     )
+    assert result["structured_completion"]["matched_quality"]["rate"] == 1.0
     assert result["gate_pass"] is True
 
 
@@ -325,11 +376,10 @@ def test_calibration_gate_fails_when_one_dimension_disagrees(
         generated_sample_size=1,
     )
 
-    _fill_pair_labels(
-        paths["pairs"],
-        override={
-            "mitigation_appropriateness": "0"
-        },
+    _fill_pair_labels(paths["pairs"])
+    _fill_quality_labels(
+        paths["quality_pairs"],
+        override={"mitigation_appropriateness": "0"},
     )
     _fill_generated_labels(
         paths["generated"]
@@ -337,11 +387,13 @@ def test_calibration_gate_fails_when_one_dimension_disagrees(
     result = score_human_calibration(
         run_dir=run_dir,
         labeled_pairs_csv=paths["pairs"],
+        labeled_quality_pairs_csv=paths["quality_pairs"],
         labeled_generated_csv=paths["generated"],
         repeatability_summary=(
             _repeatability_file(run_dir)
         ),
         min_pair_samples=1,
+        min_quality_samples=1,
         min_generated_samples=1,
     )
 
@@ -368,11 +420,12 @@ def test_calibration_gate_requires_complete_human_labels(
     )
 
     _fill_pair_labels(paths["pairs"])
+    _fill_quality_labels(paths["quality_pairs"])
     _fill_generated_labels(
         paths["generated"]
     )
 
-    with paths["pairs"].open(
+    with paths["quality_pairs"].open(
         "r",
         encoding="utf-8-sig",
         newline="",
@@ -388,7 +441,7 @@ def test_calibration_gate_requires_complete_human_labels(
     rows[0][
         "adjudicated_mitigation_specificity"
     ] = ""
-    with paths["pairs"].open(
+    with paths["quality_pairs"].open(
         "w",
         encoding="utf-8-sig",
         newline="",
@@ -403,11 +456,13 @@ def test_calibration_gate_requires_complete_human_labels(
     result = score_human_calibration(
         run_dir=run_dir,
         labeled_pairs_csv=paths["pairs"],
+        labeled_quality_pairs_csv=paths["quality_pairs"],
         labeled_generated_csv=paths["generated"],
         repeatability_summary=(
             _repeatability_file(run_dir)
         ),
         min_pair_samples=0,
+        min_quality_samples=0,
         min_generated_samples=1,
     )
     assert (
@@ -417,3 +472,84 @@ def test_calibration_gate_requires_complete_human_labels(
         is False
     )
     assert result["gate_pass"] is False
+
+
+def test_repeatability_tracks_match_assignment_changes() -> None:
+    from collections import defaultdict
+    from kolas_llm_judge.calibration import _append_repeatability_decisions
+
+    scenario = EvaluationScenario(
+        case_id="case-repeat",
+        source_rows=[2],
+        input=ScenarioInput(process="전기"),
+        references=[
+            ReferenceRisk(
+                reference_id="r1",
+                source_row=2,
+                hazard="감전",
+            )
+        ],
+    )
+    generated = [
+        GeneratedRisk(generated_id="g1", hazard="감전 A"),
+        GeneratedRisk(generated_id="g2", hazard="감전 B"),
+    ]
+
+    def make_result(g1_score: int, g2_score: int) -> CaseJudgeResult:
+        return CaseJudgeResult(
+            pair_evaluations=[
+                PairJudgeResult(
+                    reference_id="r1",
+                    generated_id="g1",
+                    semantic_match=g1_score,
+                    accident_type_correctness=2,
+                    quality_evaluated=(g1_score > g2_score),
+                    explanation="",
+                ),
+                PairJudgeResult(
+                    reference_id="r1",
+                    generated_id="g2",
+                    semantic_match=g2_score,
+                    accident_type_correctness=2,
+                    quality_evaluated=(g2_score > g1_score),
+                    explanation="",
+                ),
+            ],
+            generated_evaluations=[
+                GeneratedJudgeResult(
+                    generated_id="g1",
+                    unsupported_claim=False,
+                    critical_safety_error=False,
+                    explanation="",
+                ),
+                GeneratedJudgeResult(
+                    generated_id="g2",
+                    unsupported_claim=False,
+                    critical_safety_error=False,
+                    explanation="",
+                ),
+            ],
+        )
+
+    decisions = {
+        dimension: defaultdict(list)
+        for dimension in (
+            *MATCH_DIMENSIONS.keys(),
+            *QUALITY_DIMENSIONS.keys(),
+            *GENERATED_DIMENSIONS,
+            "match_assignment",
+        )
+    }
+    _append_repeatability_decisions(
+        scenario=scenario,
+        generated=generated,
+        result=make_result(4, 3),
+        decisions=decisions,
+    )
+    _append_repeatability_decisions(
+        scenario=scenario,
+        generated=generated,
+        result=make_result(3, 4),
+        decisions=decisions,
+    )
+    assert decisions["match_assignment"]["case-repeat:r1"] == ["g1", "g2"]
