@@ -19,6 +19,7 @@ from .doctor import run_doctor
 from .io_utils import atomic_write_json
 from .report import export_reports
 from .runner import execute_run
+from .seal import seal_run, verify_run
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCENARIOS = PROJECT_ROOT / "data/cases/scenarios_v1.jsonl"
@@ -272,6 +273,29 @@ def score_calibration_command(
     )
     if not result["gate_pass"]:
         raise typer.Exit(code=3)
+
+
+@app.command("seal")
+def seal_command(
+    run: str = typer.Argument(..., help="Run id or run directory"),
+) -> None:
+    run_dir = _resolve_run_dir(run)
+    seal = seal_run(run_dir)
+    console.print(
+        f"[green]SEALED[/green] {seal['artifact_root_sha256']} "
+        f"({seal['artifact_count']} artifacts)"
+    )
+
+
+@app.command("verify")
+def verify_command(
+    run: str = typer.Argument(..., help="Run id or run directory"),
+) -> None:
+    run_dir = _resolve_run_dir(run)
+    result = verify_run(run_dir)
+    console.print_json(json=json.dumps(result, ensure_ascii=False))
+    if not result.get("ok"):
+        raise typer.Exit(code=4)
 
 
 @app.command("show-manifest")

@@ -89,9 +89,22 @@ def build_pair_batch_input(
     scenario: EvaluationScenario,
     pairs: list[tuple[Any, GeneratedRisk]],
 ) -> str:
+    references: dict[str, Any] = {}
+    generated: dict[str, GeneratedRisk] = {}
+    pair_ids: list[dict[str, str]] = []
+    for reference, risk in pairs:
+        references[reference.reference_id] = reference
+        generated[risk.generated_id] = risk
+        pair_ids.append(
+            {
+                "reference_id": reference.reference_id,
+                "generated_id": risk.generated_id,
+            }
+        )
     payload = {
         "task": (
             "Evaluate exactly the listed reference-generated pairs. "
+            "Resolve pair IDs against the reference/generated tables. "
             "Do not add or omit pairs."
         ),
         "requirements": {
@@ -99,13 +112,15 @@ def build_pair_batch_input(
             "include_every_pair_exactly_once": True,
         },
         "scenario_input": scenario.input.model_dump(mode="json"),
-        "pairs": [
-            {
-                "reference": reference.model_dump(mode="json"),
-                "generated": generated.model_dump(mode="json"),
-            }
-            for reference, generated in pairs
+        "references": [
+            value.model_dump(mode="json")
+            for value in references.values()
         ],
+        "generated_risks": [
+            value.model_dump(mode="json")
+            for value in generated.values()
+        ],
+        "pairs": pair_ids,
     }
     return json.dumps(
         payload,

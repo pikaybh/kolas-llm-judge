@@ -247,6 +247,11 @@ async def run_doctor(
             judge_config.max_pairs_per_call
         ),
     )
+    add(
+        "seexr_max_retries",
+        sut_config.max_retries >= 0,
+        str(sut_config.max_retries),
+    )
 
     if (
         live

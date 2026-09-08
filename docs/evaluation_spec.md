@@ -51,7 +51,7 @@ reference-only 필드가 포함되지 않도록 scenario builder와 테스트에
 - 개선 후 위험도 = 개선 후 빈도 x 개선 후 강도 산술 일관성
 - 개선 후 위험도 <= 초기 위험도
 - 3단계 판단법/체크리스트법의 상/중/하 값 유효성 및 개선 후 비증가
-- API 성공/실패, latency, checkpoint 상태
+- API 성공/실패, latency, retry/SSE reconnect, checkpoint 상태
 
 ### LLM Judge
 
@@ -76,7 +76,8 @@ pair 수가 설정된 한도 이하이면 case당 한 번의 structured call을 
 분할하고 generated-only 안전 판정을 별도 call로 수행한다. 모든 batch를
 합친 뒤 전체 pair matrix를 다시 검증한다.
 
-기본 max_pairs_per_call은 120이며 실제 값은 run manifest에 기록한다.
+기본 max_pairs_per_call은 120이며 실제 값은 run manifest에 기록한다. 대형 pair batch는
+reference/generated 본문을 ID table로 한 번씩만 전달하여 pair마다 본문이 반복되지 않도록 한다.
 
 ## 5. Matching
 
@@ -200,11 +201,18 @@ gate가 없거나 통과하지 못한 경우 full 425-case run은 기본적으�
 - case별 production session/run id
 - raw SUT 최종 content와 durable SSE event
 - raw structured Judge 결과와 response metadata/usage
+- SUT create-run retry 및 SSE reconnect log
+- SUT latency mean/median/p95와 retry rate
+- Judge call/input/output/total/reasoning/cached token aggregate
 - deterministic check 결과
 - matching 결과
 - case별/aggregate metrics
 
 API key, token, password는 artifact에 저장하지 않는다.
+
+SUT create-run의 retry는 동일 clientRequestId를 재사용하여 서버 dedupe 계약을 유지한다.
+SSE stream이 transport 오류나 비정상 종료로 끊기면 마지막 durable event sequence 이후부터
+재연결하고 sequence/fingerprint 기준으로 중복 event를 제거한다. retry 횟수와 사유는 case artifact에 기록한다.
 
 production Core/Agents는 전체 repository 상태를 기록하되 official stability 판정에는
 위험성평가 실행에 관련된 source scope만 hash한다. Core는 agents/chat/auth/users/common과
@@ -225,6 +233,7 @@ resume 시에도 기존 manifest와 현재 relevant SUT fingerprint 또는 evalu
 
 중단 후 같은 run id로 재개하면 완료된 가장 깊은 checkpoint부터 이어간다.
 예를 들어 Judge 단계에서 실패하면 이미 완료된 production SUT 호출은 반복하지 않는다.
+batch 실행 중 progress bar는 processed/total, percentage, 현재 case, stage, 누적 retry, elapsed, ETA를 표시한다.
 
 ## 10. 실행 단계
 
@@ -250,6 +259,7 @@ summary의 official_candidate_valid는 다음 조건을 모두 만족할 때만 
 - calibration gate = PASS
 - full run의 evaluation/Judge method identity가 calibration frozen identity와 동일
 - run 시작/종료 production SUT relevant source fingerprint 동일
+- calibration source evaluator와 full evaluator 모두 git commit 존재 + clean working tree
 
 ## 12. 비고
 
@@ -257,5 +267,9 @@ summary의 official_candidate_valid는 다음 조건을 모두 만족할 때만 
 최종 시험항목, 합격기준, 보고서 양식은 의뢰할 KOLAS 공인시험기관과 협의 후 freeze한다.
 
 현재 프로젝트는 감사 가능한 JSON/CSV를 canonical 결과로 저장한다.
+full run 완료 후 모든 canonical artifact의 path/size/SHA-256을 `run_seal.json`에 기록하고
+정렬된 artifact 목록으로 root SHA-256을 계산한다. `verify`는 누락, 변조, 예상 외 추가 파일과
+root digest 불일치를 검출한다. 재봉인 시 이전 seal의 SHA-256을 기록하여 이력을 남긴다.
+
 시험기관이 요구하는 XLSX 등 최종 제출 양식은 canonical frozen artifact에서
 별도 생성한다.

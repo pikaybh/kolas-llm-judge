@@ -19,3 +19,43 @@ def test_judge_matrix_must_be_complete() -> None:
         generated_evaluations=[GeneratedJudgeResult(generated_id="g", unsupported_claim=False, critical_safety_error=False, explanation="ok")],
     )
     validate_judge_completeness(scenario, generated, complete)
+
+
+def test_pair_batch_input_deduplicates_payload_objects() -> None:
+    import json
+    from kolas_llm_judge.judge import build_pair_batch_input
+
+    scenario = EvaluationScenario(
+        case_id="batch",
+        source_rows=[2, 3],
+        input=ScenarioInput(process="철근공사"),
+        references=[
+            ReferenceRisk(reference_id="r1", source_row=2, hazard="고유위험문구A"),
+            ReferenceRisk(reference_id="r2", source_row=3, hazard="고유위험문구B"),
+        ],
+    )
+    generated = [
+        GeneratedRisk(generated_id="g1", hazard="고유생성문구1"),
+        GeneratedRisk(generated_id="g2", hazard="고유생성문구2"),
+        GeneratedRisk(generated_id="g3", hazard="고유생성문구3"),
+    ]
+    pairs = [
+        (reference, risk)
+        for reference in scenario.references
+        for risk in generated
+    ]
+    raw = build_pair_batch_input(scenario, pairs)
+    payload = json.loads(raw)
+
+    assert len(payload["references"]) == 2
+    assert len(payload["generated_risks"]) == 3
+    assert len(payload["pairs"]) == 6
+    assert all(
+        set(pair) == {"reference_id", "generated_id"}
+        for pair in payload["pairs"]
+    )
+    assert raw.count("고유위험문구A") == 1
+    assert raw.count("고유위험문구B") == 1
+    assert raw.count("고유생성문구1") == 1
+    assert raw.count("고유생성문구2") == 1
+    assert raw.count("고유생성문구3") == 1

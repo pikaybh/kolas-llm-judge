@@ -919,9 +919,20 @@ def score_human_calibration(
         source_manifest = load_json(source_manifest_path)
         source_identity = method_identity_from_manifest(source_manifest)
         if source_identity is not None:
+            source_git = source_manifest.get("git")
             frozen_method = {
                 "source_run_id": source_manifest.get("run_id"),
                 "source_run_manifest_sha256": sha256_file(source_manifest_path),
+                "source_evaluation_git_head": (
+                    source_git.get("head")
+                    if isinstance(source_git, dict)
+                    else None
+                ),
+                "source_evaluation_git_clean": (
+                    not bool(source_git.get("dirty"))
+                    if isinstance(source_git, dict)
+                    else False
+                ),
                 "method_identity": source_identity,
             }
 
@@ -947,6 +958,16 @@ def score_human_calibration(
         "value": bool(frozen_method),
         "minimum": True,
         "pass": bool(frozen_method),
+    }
+    source_eval_clean = bool(
+        frozen_method
+        and frozen_method.get("source_evaluation_git_head")
+        and frozen_method.get("source_evaluation_git_clean") is True
+    )
+    checks["calibration_source_evaluator_committed_clean"] = {
+        "value": source_eval_clean,
+        "minimum": True,
+        "pass": source_eval_clean,
     }
 
     semantic = pair_dimensions["semantic_match"]

@@ -24,9 +24,12 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] 실행 전/후 SUT source stability 검증
 - [x] human calibration template and calibration gate
 - [x] Judge repeatability runner
-- [x] smoke / pilot / full batch runner with progress
+- [x] smoke / pilot / full batch runner with case/stage/retry/elapsed/ETA progress
 - [x] full run calibration gate 강제
 - [x] JSON / CSV canonical report exporter
+- [x] SUT retry/SSE reconnect with idempotent clientRequestId
+- [x] SUT latency/retry + Judge token/call usage statistics
+- [x] SHA-256 run seal / tamper verification
 - [ ] 시험기관 확정 양식의 공식 XLSX 패키징
 - [ ] live smoke / pilot / full 실행
 
@@ -47,6 +50,12 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 Judge pair 수가 큰 case는 기본적으로 120 pair 단위로 분할합니다.
 
     JUDGE_MAX_PAIRS_PER_CALL=120
+
+SUT의 일시적 408/429/5xx 또는 transport 오류는 기본 3회까지 재시도합니다.
+run 생성 재시도는 동일 `clientRequestId`를 사용하며, SSE 단절은 마지막 sequence부터 재연결합니다.
+
+    SEEXR_MAX_RETRIES=3
+    SEEXR_RETRY_BACKOFF_SECONDS=0.5
 
 ## Preflight
 
@@ -162,6 +171,7 @@ full report의 `official_candidate_valid`는 아래 조건을 전부 만족해�
 - calibration gate PASS
 - full method identity = calibration frozen method identity
 - 실행 시작/종료 production Core/Agents relevant source fingerprint 동일
+- calibration source evaluator와 full evaluator 모두 committed + clean
 
 production repos의 전체 dirty 상태는 감사 정보로 남기지만, official stability는
 위험성평가 실행 관련 source scope의 content hash로 판정합니다. 따라서 SUS/admin/결제처럼
@@ -179,9 +189,11 @@ Canonical artifacts:
 - case별 raw/checkpoint JSON
 - immutable `manifest.json`
 - `completion.json`
+- full run의 `run_seal.json`
 
 Aggregate report에는 주요 비율의 numerator/denominator/rate,
-Wilson 95% CI, case macro mean/std가 포함됩니다.
+Wilson 95% CI, case macro mean/std가 포함됩니다. 추가로 SUT latency mean/median/p95,
+재시도 및 SSE 재연결 통계, Judge call/input/output/total/reasoning/cached token 합계를 기록합니다.
 
 법규는 다음 두 지표로 분리합니다.
 
@@ -190,6 +202,13 @@ Wilson 95% CI, case macro mean/std가 포함됩니다.
 
 결정론 검사에는 초기 위험도뿐 아니라 개선 후 빈도/강도 범위,
 개선 후 점수 산술 일치, 개선 후 위험도 비증가가 포함됩니다.
+
+full run 종료 후 artifact는 자동 seal됩니다. 필요하면 수동으로 다시 봉인하거나 검증할 수 있습니다.
+
+    /home/pikaybh/.local/bin/uv run kolas-llm-judge seal RUN_ID
+    /home/pikaybh/.local/bin/uv run kolas-llm-judge verify RUN_ID
+
+`verify`는 파일 누락, 내용 변경, 예상하지 않은 추가 artifact, root digest 불일치를 탐지합니다.
 
 ## Final KOLAS packaging
 

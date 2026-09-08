@@ -60,6 +60,12 @@ class FakeSut:
             content=VALID_XML,
             elapsed_ms=123,
             events=[{"type": "run-completed", "content": VALID_XML}],
+            create_run_attempts=2,
+            stream_reconnects=1,
+            retry_log=[
+                {"stage": "create_run"},
+                {"stage": "sse"},
+            ],
         )
 
 
@@ -93,7 +99,26 @@ class FakeJudge:
             result=result,
             response_id="judge-1",
             response_model="fake",
-            usage={"total_tokens": 10},
+            usage={
+                "input_tokens": 6,
+                "output_tokens": 4,
+                "total_tokens": 10,
+                "input_tokens_details": {"cached_tokens": 2},
+                "output_tokens_details": {"reasoning_tokens": 1},
+            },
+            calls=[
+                {
+                    "response_id": "judge-1",
+                    "response_model": "fake",
+                    "usage": {
+                        "input_tokens": 6,
+                        "output_tokens": 4,
+                        "total_tokens": 10,
+                        "input_tokens_details": {"cached_tokens": 2},
+                        "output_tokens_details": {"reasoning_tokens": 1},
+                    },
+                }
+            ],
         )
 
 
@@ -125,6 +150,7 @@ def test_process_case_checkpoints_and_resume(tmp_path: Path) -> None:
     judge = FakeJudge()
     scenario = _scenario()
 
+    stages: list[str] = []
     status = asyncio.run(
         process_case(
             scenario=scenario,
@@ -132,9 +158,11 @@ def test_process_case_checkpoints_and_resume(tmp_path: Path) -> None:
             evaluation_run_id="eval-1",
             sut=sut,
             judge=judge,
+            progress_callback=stages.append,
         )
     )
     assert status == "completed"
+    assert stages == ["sut", "parse", "judge", "matching"]
     assert sut.calls == 1
     assert judge.calls == 1
 
@@ -200,6 +228,18 @@ def test_report_aggregation(tmp_path: Path) -> None:
     assert summary["completed_cases"] == 1
     assert summary["metrics"]["reference_risk_coverage"]["rate"] == 1.0
     assert summary["schema_compliance"]["rate"] == 1.0
+    assert summary["sut_runtime"]["latency_ms"]["mean"] == 123.0
+    assert summary["sut_runtime"]["latency_ms"]["median"] == 123.0
+    assert summary["sut_runtime"]["latency_ms"]["p95"] == 123.0
+    assert summary["sut_runtime"]["retries"]["total_retry_count"] == 2
+    assert summary["sut_runtime"]["retries"]["create_run_retry_count"] == 1
+    assert summary["sut_runtime"]["retries"]["stream_reconnect_count"] == 1
+    assert summary["judge_usage"]["call_count"] == 1
+    assert summary["judge_usage"]["input_tokens"] == 6
+    assert summary["judge_usage"]["output_tokens"] == 4
+    assert summary["judge_usage"]["total_tokens"] == 10
+    assert summary["judge_usage"]["reasoning_tokens"] == 1
+    assert summary["judge_usage"]["cached_input_tokens"] == 2
 
     paths = export_reports(tmp_path)
     assert all(path.exists() for path in paths.values())

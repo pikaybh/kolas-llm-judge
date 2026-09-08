@@ -125,6 +125,10 @@ def _build_calibration_fixture(
         run_dir / "manifest.json",
         {
             "run_id": "pilot-test",
+            "git": {
+                "head": "pilot-commit",
+                "dirty": False,
+            },
             "method_identity": {
                 "dataset_sha256": "dataset-test",
                 "evaluation_artifacts": {

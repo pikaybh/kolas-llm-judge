@@ -6,7 +6,7 @@ import traceback
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from rich.console import Console
 from rich.progress import (
@@ -16,6 +16,7 @@ from rich.progress import (
     TaskProgressColumn,
     TextColumn,
     TimeElapsedColumn,
+    TimeRemainingColumn,
 )
 
 from .dataset import sha256_file
@@ -35,6 +36,7 @@ from .metrics import calculate_case_metrics
 from .models import CaseJudgeResult, DeterministicAssessmentResult, EvaluationScenario, ParsedRiskAssessment
 from .parser import parse_risk_assessment
 from .report import export_reports
+from .seal import seal_run
 from .sut_client import SeexrSutClient, SutConfig, SutRunResult, build_sut_message
 
 console = Console()
@@ -118,6 +120,9 @@ def _load_sut(path: Path) -> SutRunResult:
         content=payload["content"],
         elapsed_ms=int(payload["elapsed_ms"]),
         events=payload.get("events", []),
+        create_run_attempts=int(payload.get("create_run_attempts", 1)),
+        stream_reconnects=int(payload.get("stream_reconnects", 0)),
+        retry_log=payload.get("retry_log", []),
     )
 
 
@@ -129,6 +134,7 @@ async def process_case(
     sut: SeexrSutClient,
     judge: LlmJudge,
     match_threshold: int = 3,
+    progress_callback: Callable[[str], None] | None = None,
 ) -> str:
     paths = _checkpoint_paths(run_dir, scenario.case_id)
     paths["root"].mkdir(parents=True, exist_ok=True)
@@ -137,6 +143,8 @@ async def process_case(
         return "skipped"
 
     stage = "sut"
+    if progress_callback:
+        progress_callback(stage)
     try:
         if paths["sut"].exists():
             sut_result = _load_sut(paths["sut"])
@@ -155,6 +163,9 @@ async def process_case(
                     "session_id": sut_result.session_id,
                     "run_id": sut_result.run_id,
                     "elapsed_ms": sut_result.elapsed_ms,
+                    "create_run_attempts": sut_result.create_run_attempts,
+                    "stream_reconnects": sut_result.stream_reconnects,
+                    "retry_log": sut_result.retry_log,
                     "request_message": build_sut_message(scenario),
                     "content": sut_result.content,
                     "events": sut_result.events,
@@ -163,6 +174,8 @@ async def process_case(
             )
 
         stage = "parse"
+        if progress_callback:
+            progress_callback(stage)
         if paths["parsed"].exists():
             parsed_payload = load_json(paths["parsed"])
             parsed = ParsedRiskAssessment.model_validate(parsed_payload["parsed"])
@@ -182,6 +195,8 @@ async def process_case(
             )
 
         stage = "judge"
+        if progress_callback:
+            progress_callback(stage)
         if paths["judge"].exists():
             judge_payload = load_json(paths["judge"])
             judge_result = CaseJudgeResult.model_validate(judge_payload["result"])
@@ -207,6 +222,8 @@ async def process_case(
             )
 
         stage = "matching"
+        if progress_callback:
+            progress_callback(stage)
         matches = match_risks(
             scenario,
             parsed.risks,
@@ -232,6 +249,9 @@ async def process_case(
                     "session_id": sut_result.session_id,
                     "run_id": sut_result.run_id,
                     "elapsed_ms": sut_result.elapsed_ms,
+                    "create_run_attempts": sut_result.create_run_attempts,
+                    "stream_reconnects": sut_result.stream_reconnects,
+                    "retry_count": max(0, sut_result.create_run_attempts - 1) + sut_result.stream_reconnects,
                 },
                 "parsed": parsed.model_dump(mode="json"),
                 "deterministic": deterministic.model_dump(mode="json"),
@@ -347,6 +367,13 @@ async def execute_run(
         judge=judge_config,
         calibration=calibration,
     )
+    if mode == "full" and not allow_uncalibrated_full:
+        git_state = manifest.get("git") or {}
+        if not git_state.get("head") or git_state.get("dirty"):
+            raise RuntimeError(
+                "Official full run requires a committed, clean "
+                "evaluation harness; full run is blocked."
+            )
     write_manifest_once(run_dir / "manifest.json", manifest)
 
     async with SeexrSutClient(sut_config) as sut:
@@ -360,11 +387,29 @@ async def execute_run(
             BarColumn(),
             TaskProgressColumn(),
             MofNCompleteColumn(),
+            TextColumn("case={task.fields[current_case]}"),
+            TextColumn("stage={task.fields[stage]}"),
+            TextColumn("retry={task.fields[retry_count]}"),
             TimeElapsedColumn(),
+            TimeRemainingColumn(),
             console=console,
         ) as progress:
-            task = progress.add_task(mode, total=len(selected))
+            task = progress.add_task(
+                mode,
+                total=len(selected),
+                current_case="-",
+                stage="pending",
+                retry_count=0,
+            )
+            observed_retry_cases: set[str] = set()
+            total_retries = 0
             for scenario in selected:
+                progress.update(
+                    task,
+                    current_case=scenario.case_id,
+                    stage="starting",
+                    retry_count=total_retries,
+                )
                 try:
                     status = await process_case(
                         scenario=scenario,
@@ -372,6 +417,10 @@ async def execute_run(
                         evaluation_run_id=actual_run_id,
                         sut=sut,
                         judge=judge,
+                        progress_callback=lambda stage: progress.update(
+                            task,
+                            stage=stage,
+                        ),
                     )
                     if status == "skipped":
                         skipped += 1
@@ -385,6 +434,29 @@ async def execute_run(
                     if not continue_on_error:
                         raise
                 finally:
+                    if scenario.case_id not in observed_retry_cases:
+                        case_root = run_dir / "cases" / scenario.case_id
+                        retry_count = 0
+                        result_path = case_root / "result.json"
+                        sut_path = case_root / "sut.json"
+                        if result_path.exists():
+                            payload = load_json(result_path)
+                            retry_count = int(
+                                payload.get("sut", {}).get("retry_count", 0) or 0
+                            )
+                        elif sut_path.exists():
+                            payload = load_json(sut_path)
+                            retry_count = max(
+                                0,
+                                int(payload.get("create_run_attempts", 1) or 1) - 1,
+                            ) + int(payload.get("stream_reconnects", 0) or 0)
+                        total_retries += retry_count
+                        observed_retry_cases.add(scenario.case_id)
+                    progress.update(
+                        task,
+                        stage="done",
+                        retry_count=total_retries,
+                    )
                     progress.advance(task)
 
     end_sut_source = capture_sut_source_fingerprints()
@@ -407,6 +479,8 @@ async def execute_run(
         key: str(value) for key, value in reports.items()
     }
     atomic_write_json(run_dir / "completion.json", completion_payload)
+    if mode == "full":
+        seal_run(run_dir)
     if not sut_source_stable:
         raise RuntimeError(
             "Production SUT source changed during the evaluation run; "

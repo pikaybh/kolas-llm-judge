@@ -471,6 +471,8 @@ def build_run_manifest(
             "timeout_seconds": (
                 sut.timeout_seconds
             ),
+            "max_retries": sut.max_retries,
+            "retry_backoff_seconds": sut.retry_backoff_seconds,
             "auth_mode": sut.auth_mode,
         },
         "judge": _judge_identity(judge),
