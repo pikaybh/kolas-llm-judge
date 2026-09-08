@@ -1,4 +1,4 @@
-spec_version: "0.4"
+spec_version: "0.5"
 dataset:
   source: "data/raw/kolas_v7_73_test.csv.bz2"
   expected_rows: 843
@@ -98,7 +98,10 @@ run:
   max_retries: 3
   request_timeout_seconds: 180
   smoke_cases: 10
+  smoke_sampling: "evenly-spaced-dataset-v1"
   pilot_cases: 50
+  pilot_sampling: "process-diverse-evenly-spaced-median-v1"
+  pilot_sampling_goal: "maximize distinct process coverage for calibration and edge-case exposure"
   full_cases: 425
   require_calibration_gate_for_full: true
   require_stable_sut_source_for_official_candidate: true

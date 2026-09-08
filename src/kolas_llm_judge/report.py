@@ -642,6 +642,7 @@ def build_summary(
         "run_id": manifest["run_id"],
         "mode": manifest["mode"],
         "selected_cases": selected,
+        "selection": manifest.get("selection"),
         "completed_cases": len(
             completed
         ),

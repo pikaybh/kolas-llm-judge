@@ -56,6 +56,74 @@ def make_run_id(mode: str) -> str:
     return f"{stamp}-{mode}-{uuid.uuid4().hex[:8]}"
 
 
+def _evenly_spaced_indexes(total: int, limit: int) -> list[int]:
+    if total <= 0 or limit <= 0:
+        return []
+    limit = min(total, limit)
+    if limit == 1:
+        return [total // 2]
+    indexes = {
+        round(i * (total - 1) / (limit - 1))
+        for i in range(limit)
+    }
+    # Rounding can theoretically collapse adjacent positions. Fill any gap
+    # deterministically from the remaining ordered positions.
+    if len(indexes) < limit:
+        indexes.update(
+            index
+            for index in range(total)
+            if index not in indexes
+        )
+    return sorted(indexes)[:limit]
+
+
+def _select_process_diverse_cases(
+    scenarios: list[EvaluationScenario],
+    *,
+    limit: int,
+) -> list[EvaluationScenario]:
+    """Prefer one representative scenario per distinct process.
+
+    Pilot is primarily used to expose Judge/calibration edge cases, so process
+    breadth is more useful than repeatedly sampling large process strata.
+    Process order follows first appearance in the frozen dataset; selected
+    processes are evenly spaced across that ordered list. Within each process,
+    the median scenario is chosen to avoid systematically taking the first row.
+    """
+    groups: dict[str, list[EvaluationScenario]] = {}
+    for scenario in scenarios:
+        groups.setdefault(
+            scenario.input.process,
+            [],
+        ).append(scenario)
+
+    process_names = list(groups)
+    selected: list[EvaluationScenario] = []
+    for process_index in _evenly_spaced_indexes(
+        len(process_names),
+        min(limit, len(process_names)),
+    ):
+        process_cases = groups[process_names[process_index]]
+        selected.append(
+            process_cases[(len(process_cases) - 1) // 2]
+        )
+
+    if len(selected) < limit:
+        used = {scenario.case_id for scenario in selected}
+        remaining = [
+            scenario
+            for scenario in scenarios
+            if scenario.case_id not in used
+        ]
+        for index in _evenly_spaced_indexes(
+            len(remaining),
+            limit - len(selected),
+        ):
+            selected.append(remaining[index])
+
+    return selected[:limit]
+
+
 def select_cases(
     scenarios: list[EvaluationScenario],
     *,
@@ -70,23 +138,48 @@ def select_cases(
     if limit <= 0:
         return []
 
-    # Evenly sample the full ordered dataset rather than taking only the first rows.
-    if limit == 1:
-        return [scenarios[len(scenarios) // 2]]
-    indexes = {
-        round(i * (len(scenarios) - 1) / (limit - 1))
-        for i in range(limit)
+    if mode == "pilot":
+        return _select_process_diverse_cases(
+            scenarios,
+            limit=limit,
+        )
+
+    # Smoke remains an evenly spaced system/integration sample over the full
+    # frozen dataset. Pilot uses the process-diversity strategy above.
+    return [
+        scenarios[index]
+        for index in _evenly_spaced_indexes(
+            len(scenarios),
+            limit,
+        )
+    ]
+
+
+def _selection_metadata(
+    scenarios: list[EvaluationScenario],
+    selected: list[EvaluationScenario],
+    *,
+    mode: str,
+) -> dict[str, Any]:
+    strategy = {
+        "smoke": "evenly-spaced-dataset-v1",
+        "pilot": "process-diverse-evenly-spaced-median-v1",
+        "full": "all-frozen-scenarios-v1",
+    }[mode]
+    selected_processes = [
+        scenario.input.process
+        for scenario in selected
+    ]
+    return {
+        "strategy": strategy,
+        "available_case_count": len(scenarios),
+        "selected_case_count": len(selected),
+        "available_process_count": len(
+            {scenario.input.process for scenario in scenarios}
+        ),
+        "selected_process_count": len(set(selected_processes)),
+        "selected_processes": selected_processes,
     }
-    selected = [scenarios[index] for index in sorted(indexes)]
-    if len(selected) < limit:
-        used = {case.case_id for case in selected}
-        for scenario in scenarios:
-            if scenario.case_id not in used:
-                selected.append(scenario)
-                used.add(scenario.case_id)
-            if len(selected) == limit:
-                break
-    return selected[:limit]
 
 
 def _checkpoint_paths(run_dir: Path, case_id: str) -> dict[str, Path]:
@@ -409,6 +502,11 @@ async def execute_run(
         sut=sut_config,
         judge=judge_config,
         calibration=calibration,
+    )
+    manifest["selection"] = _selection_metadata(
+        scenarios,
+        selected,
+        mode=mode,
     )
     if mode == "full" and not allow_uncalibrated_full:
         git_state = manifest.get("git") or {}

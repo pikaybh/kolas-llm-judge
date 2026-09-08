@@ -4,7 +4,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 ## 구현 상태
 
-- [x] 시험 규격 draft v0.4
+- [x] 시험 규격 draft v0.5
 - [x] uv / Python 3.12 독립 환경
 - [x] legacy 843-row dataset importer
 - [x] 843 reference -> 425 scenario builder
@@ -99,6 +99,8 @@ SUT에는 공정, 세부공정, 원본에 명시된 설비, 물질/자재만 입
     /home/pikaybh/.local/bin/uv run kolas-llm-judge run --mode smoke
 
 ### 2. 50-case pilot
+
+Pilot은 전체 성능 추정용 random sample이 아니라 **Judge calibration / edge-case 노출용 process-diversity sample**입니다. baseline 168개 공정 중 서로 다른 50개 공정을 deterministic하게 선택하고, 각 공정에서는 중앙 위치 scenario를 대표 case로 사용합니다. 최종 모집단 성능은 425-case full에서 계산합니다.
 
     /home/pikaybh/.local/bin/uv run kolas-llm-judge run --mode pilot
 

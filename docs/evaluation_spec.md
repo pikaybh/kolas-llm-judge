@@ -1,6 +1,6 @@
 # SEEXR KOLAS LLM-as-Judge Evaluation Specification
 
-Status: draft v0.4 (시험기관 협의 전)
+Status: draft v0.5 (시험기관 협의 전)
 Scope: app.seexr.dev 위험성평가 생성 결과의 정량 평가
 Dataset baseline: legacy KOLAS accident evaluation v7_73 test set
 
@@ -153,6 +153,18 @@ maximum-weight bipartite matching으로 1:1 확정한다.
 모든 비율형 지표는 numerator, denominator, rate를 저장한다.
 aggregate report에는 Wilson 95% confidence interval과 case-level macro 평균/표준편차도 저장한다.
 
+## 6.1 Smoke / pilot sampling
+
+Smoke와 pilot의 목적을 분리한다.
+
+- Smoke 10-case: frozen dataset 전체 순서를 기준으로 균등 간격 표본을 선택하여 API, parser, Judge, checkpoint 등 시스템 통합 동작을 확인한다.
+- Pilot 50-case: human calibration과 edge-case 노출이 목적이므로 공정(process) 다양성을 우선한다. frozen dataset에서 공정의 최초 등장 순서를 유지한 distinct process 목록을 만들고, 그 목록에서 50개를 균등 간격으로 선택한다. 각 선택 공정 내에서는 첫 행 편향을 피하기 위해 해당 공정 scenario의 중앙값 위치를 대표 case로 선택한다.
+- distinct process 수가 pilot case 수보다 적은 데이터셋에서는 모든 공정을 1회 포함한 뒤 남은 case를 frozen dataset에서 deterministic하게 보충한다.
+- 표본 선택은 seed나 외부 상태에 의존하지 않으며 동일 frozen dataset에서 항상 동일 case ID를 생성한다.
+- run manifest에는 sampling strategy, available/selected case 수, available/selected process 수, selected process 목록과 selected case ID를 기록한다.
+
+현재 baseline에서는 pilot 50-case가 **50개 서로 다른 공정**을 포함한다. 이 pilot은 전체 성능의 최종 모집단 추정치가 아니라 Judge calibration과 실패 유형 탐색에 사용하며, 최종 성능치는 425-case full에서 산출한다.
+
 ## 7. Judge calibration gate
 
 공식 full run 전에 Judge model, reasoning effort, two-stage pipeline, chunk/concurrency 설정,
@@ -218,6 +230,7 @@ gate가 없거나 통과하지 못한 경우 full 425-case run은 기본적으�
 - 평가 harness git HEAD 및 dirty 상태
 - Python/platform/package versions
 - SUT endpoint 및 risk-assessment format/model mode/reasoning style
+- smoke/pilot/full sampling strategy와 selected process/case 목록
 - Judge model/reasoning effort/max_pairs_per_call
 - calibration gate file SHA-256 및 pass 여부
 - production Core/Agents git HEAD

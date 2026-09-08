@@ -553,6 +553,7 @@ def write_manifest_once(
             "run_id",
             "mode",
             "selected_case_ids",
+            "selection",
             "dataset",
             "evaluation_artifacts",
             "source_tree_sha256",
