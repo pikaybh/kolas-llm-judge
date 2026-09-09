@@ -383,12 +383,18 @@ def official_live_command(
         raise typer.BadParameter("--case-limit requires --development")
     if skip_qualification and not development:
         raise typer.BadParameter("--skip-qualification requires --development")
+    if (case_concurrency is not None or sut_concurrency is not None) and not development:
+        raise typer.BadParameter(
+            "concurrency overrides require --development; official mode uses frozen runtime"
+        )
 
-    runner = ParallelRunnerConfig.from_env()
-    if case_concurrency is not None:
-        runner = replace(runner, case_concurrency=case_concurrency)
-    if sut_concurrency is not None:
-        runner = replace(runner, sut_concurrency=sut_concurrency)
+    runner = None
+    if development:
+        runner = ParallelRunnerConfig.from_env()
+        if case_concurrency is not None:
+            runner = replace(runner, case_concurrency=case_concurrency)
+        if sut_concurrency is not None:
+            runner = replace(runner, sut_concurrency=sut_concurrency)
 
     expected_total = case_limit or 425
     with Progress(

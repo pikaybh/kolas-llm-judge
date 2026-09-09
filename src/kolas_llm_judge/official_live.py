@@ -13,6 +13,7 @@ from .binary_judge import BinaryChecklistJudge, BinaryJudgeConfig
 from .doctor import run_doctor
 from .io_utils import atomic_write_json, load_scenarios
 from .manifest import capture_sut_source_fingerprints, sut_source_matches
+from .official_runtime import validate_official_runtime
 from .parallel_runner import ParallelRunnerConfig, run_parallel_cases
 from .qualification import run_qualification, write_qualification_artifacts
 from .qualification_controls import load_generated_control_suite
@@ -77,6 +78,17 @@ async def execute_official_live(
         raise ValueError("case_limit is development-only; official mode must use all frozen scenarios")
     if skip_qualification and not development_mode:
         raise ValueError("skip_qualification is development-only")
+    if runner_config is not None and not development_mode:
+        raise ValueError("runner_config override is development-only")
+
+    official_runtime = (
+        validate_official_runtime(
+            project_root=project_root,
+            scenarios_path=scenarios_path,
+        )
+        if not development_mode
+        else None
+    )
 
     actual_run_id = run_id or make_official_run_id()
     run_dir = project_root / "runs" / actual_run_id
@@ -113,9 +125,17 @@ async def execute_official_live(
     if not selected:
         raise RuntimeError("No scenarios selected")
 
-    sut_config = SutConfig.from_env()
-    judge_config = BinaryJudgeConfig.from_env()
-    runner_config = runner_config or ParallelRunnerConfig.from_env()
+    env_sut_config = SutConfig.from_env()
+    if official_runtime is not None:
+        sut_config = official_runtime.sut_config_with_credentials(env_sut_config)
+        judge_config = official_runtime.judge_config()
+        runner_config = official_runtime.runner_config()
+        qualification_repeats = official_runtime.qualification.repeats
+    else:
+        sut_config = env_sut_config
+        judge_config = BinaryJudgeConfig.from_env()
+        runner_config = runner_config or ParallelRunnerConfig.from_env()
+        qualification_repeats = 2
     source_start = capture_sut_source_fingerprints()
 
     judge = BinaryChecklistJudge(judge_config)
@@ -150,7 +170,7 @@ async def execute_official_live(
     else:
         qualification_result = await run_qualification(
             judge=judge,
-            repeats=2,
+            repeats=qualification_repeats,
         )
         write_qualification_artifacts(qualification_result, qualification_dir)
         qualification_summary = qualification_result.summary

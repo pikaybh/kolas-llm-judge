@@ -59,7 +59,7 @@ class SafetyChecklistBatch(BaseModel):
 class BinaryJudgeConfig:
     model: str = "gpt-5.6-sol"
     reasoning_effort: str = "medium"
-    max_concurrency: int = 8
+    max_concurrency: int = 12
     request_timeout_seconds: float = 180.0
     max_retries: int = 3
     pipeline_version: str = "binary-checklist-v1"

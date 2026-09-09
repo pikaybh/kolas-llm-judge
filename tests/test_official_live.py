@@ -2,6 +2,7 @@ import asyncio
 
 import pytest
 
+from kolas_llm_judge.parallel_runner import ParallelRunnerConfig
 from kolas_llm_judge.official_live import (
     _evenly_spaced_subset,
     execute_official_live,
@@ -35,5 +36,17 @@ def test_official_live_rejects_skipped_qualification_in_official_mode(tmp_path) 
                 scenarios_path=tmp_path / "missing.jsonl",
                 development_mode=False,
                 skip_qualification=True,
+            )
+        )
+
+
+def test_official_live_rejects_runtime_override_in_official_mode(tmp_path) -> None:
+    with pytest.raises(ValueError, match="development-only"):
+        asyncio.run(
+            execute_official_live(
+                project_root=tmp_path,
+                scenarios_path=tmp_path / "missing.jsonl",
+                development_mode=False,
+                runner_config=ParallelRunnerConfig(case_concurrency=99),
             )
         )

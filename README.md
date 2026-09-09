@@ -55,6 +55,8 @@ Judge 적격성 시험만 실행:
 
 `official-live`는 **preflight → AJQG → 425-case bounded parallel evaluation → production source fingerprint 재검증 → report → SHA-256 seal → self-verification**을 자동 수행합니다. 공식 모드에서는 case 일부 실행이나 AJQG skip을 허용하지 않습니다.
 
+공식 runtime은 `configs/official_runtime_v1.yaml`에 freeze되어 있습니다: **case queue 24 / SUT 6 / Judge 12 / GPT-5.6 Sol medium**. 50-case production load test에서 255.38초, SUT p95 36.72초, retry/reconnect/auth recovery 0, source stable, procedure valid, seal verified를 확인했습니다. 공식 모드에서는 CLI/.env의 model·concurrency·chunk·SUT-method override를 무시하며 `.env`는 자격증명만 제공합니다. dataset/AJQG seed·gate·control/binary prompt·rubric SHA도 runtime에 고정됩니다.
+
 병렬 처리량 개발 benchmark 예시:
 
     /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live --development --case-limit 10 --skip-qualification

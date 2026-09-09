@@ -37,7 +37,7 @@ AUTOMATED_RUN_NAMESPACE = uuid.UUID("7be0c890-505b-4e68-b75d-bf548b5deab9")
 
 @dataclass(frozen=True)
 class ParallelRunnerConfig:
-    case_concurrency: int = 8
+    case_concurrency: int = 24
     sut_concurrency: int = 6
     match_chunk_size: int = 80
     quality_chunk_size: int = 40

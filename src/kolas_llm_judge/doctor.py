@@ -10,6 +10,7 @@ from .deterministic import post_improvement_mode_for_model_mode
 from .io_utils import load_json, load_scenarios
 from .judge import JudgeConfig
 from .manifest import capture_sut_source_fingerprints
+from .official_runtime import validate_official_runtime
 from .sut_client import SeexrSutClient, SutConfig
 
 
@@ -148,6 +149,15 @@ async def run_doctor(
         / "data/raw/PROVENANCE.md",
         project_root / "uv.lock",
     ]
+    if official:
+        required_files.extend(
+            [
+                project_root / "configs/official_runtime_v1.yaml",
+                project_root / "configs/rubric_binary_v1.yaml",
+                project_root / "prompts/judge_binary_v1.md",
+                project_root / "docs/automated_kolas_protocol_v1.md",
+            ]
+        )
     for path in required_files:
         add(
             f"file:{path.name}",
@@ -217,8 +227,37 @@ async def run_doctor(
                 ),
             )
 
-    sut_config = SutConfig.from_env()
-    judge_config = JudgeConfig.from_env()
+    env_sut_config = SutConfig.from_env()
+    official_runtime = None
+    if official:
+        try:
+            official_runtime = validate_official_runtime(
+                project_root=project_root,
+                scenarios_path=scenarios_path,
+            )
+            sut_config = official_runtime.sut_config_with_credentials(env_sut_config)
+            binary_judge_config = official_runtime.judge_config()
+            runtime_path = project_root / "configs/official_runtime_v1.yaml"
+            add(
+                "official_runtime",
+                True,
+                (
+                    f"{official_runtime.runtime_version}, "
+                    f"sha256={sha256_file(runtime_path)}"
+                ),
+            )
+        except Exception as exc:
+            sut_config = env_sut_config
+            binary_judge_config = None
+            add(
+                "official_runtime",
+                False,
+                f"{type(exc).__name__}: {exc}",
+            )
+    else:
+        sut_config = env_sut_config
+        binary_judge_config = None
+
     add(
         "seexr_credentials",
         sut_config.auth_mode != "missing",
@@ -249,31 +288,56 @@ async def run_doctor(
             else "OPENAI_API_KEY missing"
         ),
     )
-    add(
-        "judge_model",
-        bool(judge_config.model),
-        judge_config.model,
-    )
-    add(
-        "judge_max_pairs_per_call",
-        (
-            judge_config.max_pairs_per_call
-            > 0
-        ),
-        str(
-            judge_config.max_pairs_per_call
-        ),
-    )
-    add(
-        "judge_pipeline",
-        judge_config.pipeline_version == "two-stage-v1",
-        judge_config.pipeline_version,
-    )
-    add(
-        "judge_max_concurrency",
-        judge_config.max_concurrency > 0,
-        str(judge_config.max_concurrency),
-    )
+
+    if official and official_runtime is not None and binary_judge_config is not None:
+        add(
+            "judge_model",
+            binary_judge_config.model == "gpt-5.6-sol",
+            binary_judge_config.model,
+        )
+        add(
+            "judge_pipeline",
+            binary_judge_config.pipeline_version == "binary-checklist-v1",
+            binary_judge_config.pipeline_version,
+        )
+        add(
+            "judge_max_concurrency",
+            binary_judge_config.max_concurrency == 12,
+            str(binary_judge_config.max_concurrency),
+        )
+        add(
+            "official_case_concurrency",
+            official_runtime.parallel.case_concurrency == 24,
+            str(official_runtime.parallel.case_concurrency),
+        )
+        add(
+            "official_sut_concurrency",
+            official_runtime.parallel.sut_concurrency == 6,
+            str(official_runtime.parallel.sut_concurrency),
+        )
+    else:
+        judge_config = JudgeConfig.from_env()
+        add(
+            "judge_model",
+            bool(judge_config.model),
+            judge_config.model,
+        )
+        add(
+            "judge_max_pairs_per_call",
+            judge_config.max_pairs_per_call > 0,
+            str(judge_config.max_pairs_per_call),
+        )
+        add(
+            "judge_pipeline",
+            judge_config.pipeline_version == "two-stage-v1",
+            judge_config.pipeline_version,
+        )
+        add(
+            "judge_max_concurrency",
+            judge_config.max_concurrency > 0,
+            str(judge_config.max_concurrency),
+        )
+
     add(
         "seexr_max_retries",
         sut_config.max_retries >= 0,

@@ -20,10 +20,11 @@ def test_automated_identity_binds_binary_judge_runner_sut_and_controls() -> None
     )
     assert identity["protocol"] == "automated-kolas-v1"
     assert identity["judge"]["pipeline_version"] == "binary-checklist-v1"
-    assert identity["parallel_runner"]["case_concurrency"] == 8
+    assert identity["parallel_runner"]["case_concurrency"] == 24
     assert identity["sut_evaluation_identity"]["post_improvement_mode"] == "blank"
     assert identity["qualification_control_suite"]["control_count"] == 104
     assert len(identity["qualification_control_suite"]["sha256"]) == 64
+    assert len(identity["official_runtime"]["sha256"]) == 64
     assert len(identity["source_tree_sha256"]) == 64
 
 

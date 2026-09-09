@@ -331,12 +331,19 @@ Implemented:
 - `official-live` orchestration and Rich live dashboard
 - automatic production source re-check, report, double-seal, and self-verification
 
-Current engineering defaults before load-test freeze:
-- case concurrency: 8
-- SUT concurrency: 6
-- Binary Judge global concurrency: 8
-- match chunk: 80 pairs
-- matched-quality chunk: 40 pairs
-- safety chunk: 50 generated risks
+Frozen official runtime after production load testing (2026-09-09):
+- runtime file: `configs/official_runtime_v1.yaml`
+- case pipeline queue/concurrency: **24**
+- production SUT concurrency: **6**
+- Binary Judge global concurrency: **12**
+- match chunk: **80 pairs**
+- matched-quality chunk: **40 pairs**
+- safety chunk: **50 generated risks**
+- Judge: **gpt-5.6-sol / reasoning=medium / binary-checklist-v1**
+- AJQG repeats: **2**
 
-These concurrency values remain engineering defaults until production parallel benchmark and 425-case dry-run are completed. They must be frozen before the accredited test day.
+Freeze evidence: `20260909T022015Z-official-live-ebbcff7e` processed 50/50 cases in 255.38 s, SUT p95 36.72 s, harness retry/reconnect/auth-recovery 0, source stable, procedure valid, and final seal verified. This was approximately 32% faster than the 8/6/12 50-case run while keeping production SUT concurrency unchanged at 6.
+
+Official mode reads these operational values only from `configs/official_runtime_v1.yaml`. CLI/environment overrides for Judge model/reasoning/concurrency, SUT method/model mode, chunks, or pipeline concurrency are development-only. `.env` supplies secrets/credentials, not the official test method. The runtime also freezes SHA-256 values for the dataset, AJQG seed/gate/control suite, binary Judge prompt, and binary rubric.
+
+The remaining qualification step before test-day release is a clean-commit 425-case full dry-run using this frozen runtime.

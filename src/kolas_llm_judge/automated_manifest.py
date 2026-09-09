@@ -15,6 +15,7 @@ from .manifest import sut_evaluation_identity
 
 
 AUTOMATED_HASHED_PATHS = [
+    Path("configs/official_runtime_v1.yaml"),
     Path("configs/ajqg_seed_v1.yaml"),
     Path("configs/ajqg_gate_v1.yaml"),
     Path("configs/rubric_binary_v1.yaml"),
@@ -104,6 +105,7 @@ def capture_automated_method_identity(
     for relative in AUTOMATED_HASHED_PATHS:
         path = project_root / relative
         artifacts[str(relative)] = sha256_file(path) if path.exists() else None
+    runtime_path = project_root / "configs/official_runtime_v1.yaml"
     return {
         "protocol": "automated-kolas-v1",
         "dataset_sha256": sha256_file(scenarios_path),
@@ -116,6 +118,10 @@ def capture_automated_method_identity(
             "suite_version": suite.suite_version,
             "control_count": len(suite.controls),
             "sha256": suite.controls_sha256,
+        },
+        "official_runtime": {
+            "path": "configs/official_runtime_v1.yaml",
+            "sha256": sha256_file(runtime_path) if runtime_path.exists() else None,
         },
     }
 
@@ -175,4 +181,8 @@ def build_automated_manifest(
         },
         "parallel_runner": parallel_runner_identity(runner),
         "binary_judge": automated_judge_identity(judge),
+        "official_runtime": {
+            "path": "configs/official_runtime_v1.yaml",
+            "sha256": sha256_file(project_root / "configs/official_runtime_v1.yaml"),
+        },
     }

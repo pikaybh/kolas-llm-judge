@@ -1,0 +1,52 @@
+runtime_version: "official-runtime-v1"
+protocol: "automated-kolas-v1"
+evaluator_source_sha256: "5f5a8beb0f49934f2806ed1b965383d63d99fe265852e276a7d1414b346bdf17"
+dataset:
+  scenario_count: 425
+  reference_count: 843
+  scenarios_sha256: "2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c"
+qualification:
+  seed_path: "configs/ajqg_seed_v1.yaml"
+  seed_sha256: "f0f11537d77555e55fe5ae143fa92e92ddc631da1d7a1711fe2f070ad38b8586"
+  gate_path: "configs/ajqg_gate_v1.yaml"
+  gate_sha256: "2ee9934e921fa82b10697d6cf9ffca6e72f151a49159ac3aff7a8b7d17421a6b"
+  control_suite_version: "ajqg-controls-v1"
+  control_count: 104
+  control_suite_sha256: "e0a34a8179d407979fc14f6ae1987a3fbf95f76ae8b0e29181fdc1efa8e3e437"
+  repeats: 2
+judge:
+  pipeline_version: "binary-checklist-v1"
+  model: "gpt-5.6-sol"
+  reasoning_effort: "medium"
+  max_concurrency: 12
+  request_timeout_seconds: 180.0
+  max_retries: 3
+  prompt_path: "prompts/judge_binary_v1.md"
+  prompt_sha256: "97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf"
+  rubric_path: "configs/rubric_binary_v1.yaml"
+  rubric_sha256: "c6bf64d5dc3ec37647a1ec0b3f5b5b61b25f42b6a38c8e268e418c24ff62845e"
+parallel:
+  case_concurrency: 24
+  sut_concurrency: 6
+  match_chunk_size: 80
+  quality_chunk_size: 40
+  safety_chunk_size: 50
+sut:
+  base_url: "https://api.seexr.dev/api"
+  agent_id: "risk-assessment"
+  risk_assessment_method: "빈도강도법 5x4"
+  model_mode: "fast"
+  reasoning_style: "balanced"
+  timeout_seconds: 180.0
+  max_retries: 3
+  retry_backoff_seconds: 0.5
+benchmark_evidence:
+  frozen_on: "2026-09-09"
+  fifty_case_run_id: "20260909T022015Z-official-live-ebbcff7e"
+  fifty_case_wall_seconds: 255.38
+  fifty_case_completion_rate: 1.0
+  fifty_case_sut_p95_ms: 36716.95
+  fifty_case_harness_retry_count: 0
+  fifty_case_auth_recovery_count: 0
+  fifty_case_source_stable: true
+  fifty_case_procedure_valid: true
