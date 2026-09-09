@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import typer
@@ -17,6 +18,7 @@ from .calibration import (
 from .dataset import import_dataset
 from .doctor import run_doctor
 from .io_utils import atomic_write_json
+from .qualification import run_qualification, write_qualification_artifacts
 from .report import export_reports
 from .runner import execute_run
 from .seal import seal_run, verify_run
@@ -124,6 +126,61 @@ def doctor_command(
     )
     if require_ready and not result["ok"]:
         raise typer.Exit(code=2)
+
+
+@app.command("qualify-judge")
+def qualify_judge_command(
+    output: Path | None = typer.Option(
+        None,
+        help="Qualification artifact directory. Defaults to runs/_qualification/<UTC timestamp>.",
+    ),
+    repeats: int = typer.Option(2, min=2, max=5),
+    require_pass: bool = typer.Option(
+        True,
+        help="Exit non-zero when the automatic Judge qualification gate fails.",
+    ),
+) -> None:
+    if output is None:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        output = PROJECT_ROOT / "runs" / "_qualification" / stamp
+    result = asyncio.run(
+        run_qualification(
+            repeats=repeats,
+        )
+    )
+    paths = write_qualification_artifacts(result, output)
+    table = Table(title="Automatic Judge Qualification Gate")
+    table.add_column("Check")
+    table.add_column("Value")
+    table.add_column("Minimum")
+    table.add_column("Status")
+    for name, check in result.summary["checks"].items():
+        if name == "required_families":
+            table.add_row(
+                name,
+                ", ".join(check["value"]),
+                "all",
+                "[green]PASS[/green]" if check["pass"] else "[red]FAIL[/red]",
+            )
+            continue
+        value = check.get("value")
+        minimum = check.get("minimum")
+        table.add_row(
+            name,
+            f"{value:.4f}" if isinstance(value, float) else str(value),
+            f"{minimum:.4f}" if isinstance(minimum, float) else str(minimum),
+            "[green]PASS[/green]" if check["pass"] else "[red]FAIL[/red]",
+        )
+    console.print(table)
+    console.print(f"summary: {paths['summary']}")
+    console.print(f"controls: {paths['controls']}")
+    console.print(
+        "[green]AJQG PASS[/green]"
+        if result.summary["gate_pass"]
+        else "[red]AJQG FAIL[/red]"
+    )
+    if require_pass and not result.summary["gate_pass"]:
+        raise typer.Exit(code=5)
 
 
 @app.command("run")

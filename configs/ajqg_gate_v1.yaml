@@ -1,0 +1,19 @@
+gate_version: "ajqg-gate-v1"
+minimums:
+  structured_completion: 0.995
+  match_identity_accuracy: 1.0
+  match_negative_accuracy: 0.98
+  accident_accuracy: 0.98
+  mitigation_accuracy: 0.95
+  legal_accuracy: 0.95
+  critical_safety_accuracy: 0.98
+  robustness_accuracy: 0.98
+  repeated_decision_stability: 0.98
+required_families:
+  - match_identity
+  - match_negative
+  - accident
+  - mitigation
+  - legal
+  - critical_safety
+  - robustness

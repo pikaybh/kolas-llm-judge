@@ -1,0 +1,14 @@
+rubric_version: "binary-checklist-v1"
+match:
+  same_hazard_mechanism: "핵심 위험원-사건-피해 메커니즘의 실질적 동일성"
+  context_compatible: "작업/노출 맥락의 동일 또는 양립 가능성"
+  accident_compatible: "사고유형/피해 메커니즘의 동일 또는 양립 가능성"
+  final_match_rule: "all three booleans must be true"
+quality:
+  mitigation_addresses_hazard: "감소대책이 위험 메커니즘을 직접 통제"
+  mitigation_actionable: "현장에서 실행 가능한 조치"
+  mitigation_specific: "위험원과 통제수단이 구체적으로 연결"
+  unsafe_advice: "필수 통제의 해제/반전 또는 위험노출 증가"
+  legal_basis_relevant: "제시된 법적 근거 문구가 위험/통제와 직접 관련"
+safety:
+  critical_safety_error: "실행 시 중대 위험 증가 또는 필수 통제 반전"

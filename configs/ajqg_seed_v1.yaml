@@ -1,0 +1,50 @@
+suite_version: "ajqg-seed-v1"
+seeds:
+  - id: fall
+    process: "비계 작업"
+    hazard: "작업발판 단부에서 작업자가 추락할 위험"
+    accident_type: "추락"
+    mitigation: "작업발판 단부에 기준에 적합한 안전난간을 설치하고 추락방호망을 설치한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 제13조 안전난간의 구조 및 설치요건"
+  - id: electric
+    process: "전기 작업"
+    hazard: "노출된 충전부 접촉으로 작업자가 감전될 위험"
+    accident_type: "감전"
+    mitigation: "전원을 차단하고 잠금·표지(LOTO) 후 무전압 상태를 확인한 뒤 작업한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 전기작업 관련 충전전로 방호 및 정전작업 조항"
+  - id: crush
+    process: "양중 작업"
+    hazard: "인양 중인 중량물이 낙하하여 작업자가 깔릴 위험"
+    accident_type: "낙하·비래"
+    mitigation: "인양물 하부 출입을 통제하고 적정 정격하중의 인양구를 사용하며 결속상태를 확인한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 양중기 및 중량물 취급 관련 조항"
+  - id: caught
+    process: "굴착기 작업"
+    hazard: "굴착기 선회부와 구조물 사이에 작업자가 끼일 위험"
+    accident_type: "끼임"
+    mitigation: "굴착기 선회반경 내 출입을 통제하고 유도자를 배치하여 장비와 작업자를 분리한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 차량계 건설기계 접촉방지 관련 조항"
+  - id: fire
+    process: "용접 작업"
+    hazard: "용접 불티가 주변 가연물에 착화되어 화재가 발생할 위험"
+    accident_type: "화재"
+    mitigation: "가연물을 제거·격리하고 불티비산방지포를 설치하며 소화기를 배치하고 화재감시자를 둔다."
+    legal_basis: "산업안전보건기준에 관한 규칙 용접 등 화기작업의 화재예방 관련 조항"
+  - id: collapse
+    process: "거푸집동바리 작업"
+    hazard: "동바리 지지력 부족으로 거푸집이 붕괴하여 작업자가 매몰될 위험"
+    accident_type: "붕괴"
+    mitigation: "구조검토에 따른 동바리 간격과 가새를 확보하고 침하·변형 여부를 작업 전 점검한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 거푸집동바리 구조 및 조립 관련 조항"
+  - id: asphyxia
+    process: "밀폐공간 작업"
+    hazard: "밀폐공간 산소결핍으로 작업자가 질식할 위험"
+    accident_type: "질식"
+    mitigation: "작업 전과 작업 중 산소농도를 측정하고 충분히 환기하며 감시인을 배치한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 밀폐공간 작업 시 산소농도 측정 및 환기 관련 조항"
+  - id: struck
+    process: "덤프트럭 작업"
+    hazard: "후진하는 덤프트럭에 작업자가 충돌하여 재해를 입을 위험"
+    accident_type: "충돌"
+    mitigation: "후진구간 출입을 통제하고 유도자를 배치하며 후방카메라·경보장치를 정상 상태로 유지한다."
+    legal_basis: "산업안전보건기준에 관한 규칙 차량계 하역운반기계 접촉방지 관련 조항"
