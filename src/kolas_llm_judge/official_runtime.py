@@ -9,6 +9,11 @@ from pydantic import BaseModel, Field, model_validator
 
 from .binary_judge import BinaryJudgeConfig
 from .dataset import sha256_file
+from .identification import (
+    HAZARD_IDENTIFICATION_DENOMINATOR,
+    HAZARD_IDENTIFICATION_RULE,
+    HAZARD_IDENTIFICATION_RULE_VERSION,
+)
 from .io_utils import load_json, load_scenarios
 from .parallel_runner import ParallelRunnerConfig
 from .qualification_controls import load_generated_control_suite
@@ -68,6 +73,12 @@ class FrozenJudgeConfig(BaseModel):
     rubric_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+class FrozenMetricPolicy(BaseModel):
+    hazard_identification_rule_version: str
+    hazard_identification_rule: str
+    hazard_identification_denominator: str
+
+
 class FrozenParallelConfig(BaseModel):
     case_concurrency: int = Field(gt=0)
     sut_concurrency: int = Field(gt=0)
@@ -94,6 +105,7 @@ class OfficialRuntimeConfig(BaseModel):
     dataset: FrozenDatasetConfig
     qualification: FrozenQualificationConfig
     judge: FrozenJudgeConfig
+    metrics: FrozenMetricPolicy
     parallel: FrozenParallelConfig
     sut: FrozenSutConfig
     benchmark_evidence: dict[str, Any] = Field(default_factory=dict)
@@ -108,6 +120,18 @@ class OfficialRuntimeConfig(BaseModel):
             raise ValueError("Official runtime requires binary-checklist-v1")
         if self.qualification.control_suite_version != "ajqg-controls-v1":
             raise ValueError("Official runtime AJQG suite version mismatch")
+        if (
+            self.metrics.hazard_identification_rule_version
+            != HAZARD_IDENTIFICATION_RULE_VERSION
+        ):
+            raise ValueError("Official runtime hazard-identification version mismatch")
+        if self.metrics.hazard_identification_rule != HAZARD_IDENTIFICATION_RULE:
+            raise ValueError("Official runtime hazard-identification rule mismatch")
+        if (
+            self.metrics.hazard_identification_denominator
+            != HAZARD_IDENTIFICATION_DENOMINATOR
+        ):
+            raise ValueError("Official runtime hazard-identification denominator mismatch")
         return self
 
     def judge_config(self) -> BinaryJudgeConfig:

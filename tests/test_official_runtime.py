@@ -16,6 +16,13 @@ def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     assert runtime.judge.model == "gpt-5.6-sol"
     assert runtime.judge.reasoning_effort == "medium"
     assert runtime.qualification.control_count == 104
+    assert runtime.metrics.hazard_identification_rule_version == "hazard-identification-v1"
+    assert runtime.metrics.hazard_identification_rule == (
+        "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+    )
+    assert runtime.metrics.hazard_identification_denominator == (
+        "references_with_completed_binary_match_matrix"
+    )
     assert runtime.benchmark_evidence["fifty_case_wall_seconds"] == 255.38
 
 

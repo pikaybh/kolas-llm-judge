@@ -256,6 +256,24 @@ full run 종료 후 artifact는 자동 seal됩니다. 필요하면 수동으로 
 
 `verify`는 파일 누락, 내용 변경, 예상하지 않은 추가 artifact, root digest 불일치를 탐지합니다.
 
+## Reuse an existing run for identification analysis
+
+Persisted `binary_judge.json` match matrices can be re-used without any new LLM calls:
+
+```bash
+uv run kolas-llm-judge derive-identification <RUN_ID>
+```
+
+The command writes a derived JSON artifact under `derived/` and does not modify the sealed
+source run. It reports both:
+
+- `hazard_identification_accuracy`: KPI-oriented many-to-one identification using
+  `(same_hazard_mechanism AND context_compatible) OR accident_compatible`
+- `strict_reference_risk_coverage_1to1`: the original strict Hungarian 1:1 coverage
+
+The official runtime freezes the identification rule and denominator so future official runs
+cannot silently change the metric definition.
+
 ## Final KOLAS packaging
 
 현재 JSON/CSV를 canonical frozen result로 사용합니다.

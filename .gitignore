@@ -15,3 +15,7 @@ data/cases/*.jsonl
 # Run artifacts can contain production responses and Judge outputs
 runs/*
 !runs/.gitkeep
+
+# Derived analyses may summarize production evaluation artifacts
+derived/*
+!derived/.gitkeep

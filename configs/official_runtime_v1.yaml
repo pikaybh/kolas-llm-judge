@@ -1,6 +1,6 @@
 runtime_version: "official-runtime-v1"
 protocol: "automated-kolas-v1"
-evaluator_source_sha256: "5f5a8beb0f49934f2806ed1b965383d63d99fe265852e276a7d1414b346bdf17"
+evaluator_source_sha256: "3a3a02606b406f5884d3a1efca14fa3dbe6204b06b9e0a36d3410e3ae51140c5"
 dataset:
   scenario_count: 425
   reference_count: 843
@@ -25,6 +25,10 @@ judge:
   prompt_sha256: "97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf"
   rubric_path: "configs/rubric_binary_v1.yaml"
   rubric_sha256: "c6bf64d5dc3ec37647a1ec0b3f5b5b61b25f42b6a38c8e268e418c24ff62845e"
+metrics:
+  hazard_identification_rule_version: "hazard-identification-v1"
+  hazard_identification_rule: "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+  hazard_identification_denominator: "references_with_completed_binary_match_matrix"
 parallel:
   case_concurrency: 24
   sut_concurrency: 6

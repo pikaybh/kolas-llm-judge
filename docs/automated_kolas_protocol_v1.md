@@ -134,21 +134,32 @@ arbitrary Likert-score variation.
 ## 5. Official KOLAS metrics
 
 ### Primary
-1. Reference Risk Coverage
-   covered reference risks / all reference risks
+1. Hazard Identification Accuracy
+   - KPI-oriented reference-level identification rate.
+   - A reference is identified when at least one generated risk satisfies:
+     `(same_hazard_mechanism AND context_compatible) OR accident_compatible`.
+   - Matching is many-to-one for this KPI; Hungarian 1:1 uniqueness is not imposed.
+   - Denominator: reference risks for which the binary match matrix completed successfully.
+   - This metric is intentionally separated from the stricter diagnostic below.
 
-2. SUT Completion Rate
+2. Strict Reference Risk Coverage
+   - Existing maximum-cardinality 1:1 matching over
+     `same_hazard_mechanism AND context_compatible`.
+   - Retained as a stricter completeness/faithfulness diagnostic and is never overwritten
+     by Hazard Identification Accuracy.
+
+3. SUT Completion Rate
    valid risk_assessment responses / requested cases
 
-3. Schema & Numerical Consistency
+4. Schema & Numerical Consistency
    deterministic parser / range / arithmetic compliance
 
 ### Secondary
-4. Accident Classification Agreement among matched risks
-5. Mitigation Appropriateness among matched risks
-6. Mitigation Specificity among matched risks
-7. Legal Basis Presence
-8. Legal Basis Relevance
+5. Accident Classification Agreement among strict matched risks
+6. Mitigation Appropriateness among strict matched risks
+7. Mitigation Specificity among strict matched risks
+8. Legal Basis Presence
+9. Legal Basis Relevance
 
 ### Diagnostic only unless the testing laboratory explicitly approves otherwise
 - unmatched/generated-risk rate

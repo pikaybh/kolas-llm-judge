@@ -28,6 +28,7 @@ from .calibration import (
     score_human_calibration,
 )
 from .dataset import import_dataset
+from .derived_analysis import derive_identification_analysis
 from .doctor import run_doctor
 from .io_utils import atomic_write_json
 from .qualification import run_qualification, write_qualification_artifacts
@@ -479,7 +480,15 @@ def official_live_command(
         str((summary.get("sut_completion_rate") or {}).get("rate")),
     )
     table.add_row(
-        "Reference coverage",
+        "Hazard identification accuracy",
+        str(
+            (summary.get("metrics") or {})
+            .get("hazard_identification_accuracy", {})
+            .get("rate")
+        ),
+    )
+    table.add_row(
+        "Strict reference coverage",
         str((summary.get("metrics") or {}).get("reference_risk_coverage", {}).get("rate")),
     )
     table.add_row(
@@ -490,6 +499,58 @@ def official_live_command(
     console.print(f"Artifacts: {result.run_dir}")
     if not development and result.status != "VALID":
         raise typer.Exit(code=6)
+
+
+@app.command("derive-identification")
+def derive_identification_command(
+    run: str = typer.Argument(..., help="Run id or run directory"),
+    output: Path | None = typer.Option(
+        None,
+        help="Output JSON path; defaults to derived/<run>-identification.json",
+    ),
+) -> None:
+    """Recompute identification metrics from persisted Judge logs without new LLM calls."""
+    run_dir = _resolve_run_dir(run)
+    analysis = derive_identification_analysis(
+        run_dir=run_dir,
+        scenarios_path=DEFAULT_SCENARIOS,
+    )
+    if output is None:
+        output = PROJECT_ROOT / "derived" / f"{run_dir.name}-identification.json"
+    atomic_write_json(output, analysis)
+
+    metrics = analysis.get("metrics") or {}
+    coverage = analysis.get("coverage") or {}
+    table = Table(title="Derived Hazard Identification Analysis")
+    table.add_column("Item")
+    table.add_column("Value")
+    table.add_row("Source run", str(analysis.get("source_run_id")))
+    table.add_row(
+        "Hazard identification accuracy",
+        str((metrics.get("hazard_identification_accuracy") or {}).get("rate")),
+    )
+    table.add_row(
+        "Strict reference coverage (1:1)",
+        str((metrics.get("strict_reference_risk_coverage_1to1") or {}).get("rate")),
+    )
+    table.add_row(
+        "Semantic evaluable references",
+        str(coverage.get("semantic_evaluable_references")),
+    )
+    table.add_row("Dataset references", str(coverage.get("dataset_references")))
+    table.add_row(
+        "End-to-end if unjudged are failures",
+        str(
+            (
+                metrics.get(
+                    "end_to_end_hazard_identification_if_unjudged_are_failures"
+                )
+                or {}
+            ).get("rate")
+        ),
+    )
+    console.print(table)
+    console.print(f"Derived artifact: {output}")
 
 
 @app.command("seal")

@@ -112,42 +112,53 @@ maximum-weight bipartite matching으로 1:1 확정한다.
 
 ## 6. 대표 KPI
 
-1. Reference Risk Coverage
-   - matched reference risks / all reference risks
-   - 높을수록 좋음
+1. Hazard Identification Accuracy
+   - 수행계획서의 위험요인 식별 성능과 대응시키는 reference-level KPI
+   - reference별로 모든 generated risk를 확인하여 다음 조건을 하나라도 만족하면 식별 성공:
+     `(same_hazard_mechanism AND context_compatible) OR accident_compatible`
+   - 동일 generated risk가 여러 reference의 핵심 위험/사고 메커니즘을 포괄할 수 있으므로
+     본 KPI에는 1:1 제약을 적용하지 않음
+   - 분모는 binary match matrix가 정상 완료된 reference
+   - Judge의 기존 boolean 판정을 재조합하는 결정론적 지표이며 별도 LLM 호출을 추가하지 않음
 
-2. Unsupported Risk Rate
+2. Strict Reference Risk Coverage
+   - `same_hazard_mechanism AND context_compatible` 후보에 대해 Python 1:1 matching 후
+     covered reference risks / evaluable reference risks
+   - 더 엄격한 세부 재현성/완전성 진단으로 보존
+   - Hazard Identification Accuracy로 대체하거나 덮어쓰지 않음
+
+3. Unsupported Risk Rate
    - unsupported generated risks / all generated risks
    - 낮을수록 좋음
 
-3. Accident Type Correctness
+4. Accident Type Correctness
    - matched pairs 중 사고유형 적합 점수 2인 비율
    - 높을수록 좋음
 
-4. Mitigation Appropriateness
+5. Mitigation Appropriateness
    - matched pairs 중 감소대책 적합 점수 2인 비율
    - 높을수록 좋음
 
-5. Mitigation Specificity
+6. Mitigation Specificity
    - matched pairs 중 감소대책 구체성 점수 2인 비율
    - 높을수록 좋음
 
-6. Legal Basis Presence
+7. Legal Basis Presence
    - matched generated risks 중 법규 근거가 제공된 비율
    - 존재 여부와 관련성을 분리하여 측정
 
-7. Legal Basis Relevance
+8. Legal Basis Relevance
    - 법규가 실제로 제공된 matched generated risks 중 관련성 점수 2인 비율
    - 높을수록 좋음
 
-8. Critical Safety Error Rate
+9. Critical Safety Error Rate
    - critical safety error generated risks / all generated risks
    - 낮을수록 좋음
 
-9. Schema Compliance
+10. Schema Compliance
    - deterministic 필수 구조를 만족한 generated risks / all generated risks
 
-10. Deterministic Consistency
+11. Deterministic Consistency
     - 빈도/강도 범위, 초기 산술, 개선 후 산술, 개선 후 위험 비증가 각각의 통과율
 
 모든 비율형 지표는 numerator, denominator, rate를 저장한다.

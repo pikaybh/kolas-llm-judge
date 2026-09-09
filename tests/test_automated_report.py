@@ -126,3 +126,28 @@ def test_evaluator_failure_invalidates_procedure(tmp_path: Path) -> None:
     report = collect_automated_report(tmp_path)
     assert report["procedure_valid"] is False
     assert report["evaluator_or_infrastructure_failure_count"] == 1
+
+
+def test_old_result_backfills_hazard_identification_from_binary_matrix(tmp_path: Path) -> None:
+    _write_fixture(tmp_path, failure_class="sut_non_completion")
+    result_path = tmp_path / "cases" / "case-ok" / "result.json"
+    result = __import__("json").loads(result_path.read_text(encoding="utf-8"))
+    result["metrics"].pop("hazard_identification_accuracy", None)
+    atomic_write_json(result_path, result)
+
+    judge_path = tmp_path / "cases" / "case-ok" / "binary_judge.json"
+    judge = __import__("json").loads(judge_path.read_text(encoding="utf-8"))
+    judge["evaluation"]["match_matrix"] = [
+        {
+            "reference_id": "r1",
+            "generated_id": "g1",
+            "same_hazard_mechanism": False,
+            "context_compatible": False,
+            "accident_compatible": True,
+        }
+    ]
+    atomic_write_json(judge_path, judge)
+
+    report = collect_automated_report(tmp_path)
+    metric = report["metrics"]["hazard_identification_accuracy"]
+    assert metric == {"numerator": 1, "denominator": 1, "rate": 1.0}

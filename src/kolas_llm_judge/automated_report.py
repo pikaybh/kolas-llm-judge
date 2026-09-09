@@ -9,10 +9,12 @@ from typing import Any
 
 import numpy as np
 
+from .identification import identified_reference_ids
 from .io_utils import atomic_write_json, load_json
 
 
 METRIC_NAMES = (
+    "hazard_identification_accuracy",
     "reference_risk_coverage",
     "accident_classification_agreement",
     "mitigation_appropriateness",
@@ -126,13 +128,42 @@ def _deterministic_micro(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _metric_micro(results: list[dict[str, Any]]) -> dict[str, Any]:
+def _case_metric(
+    run_dir: Path,
+    result: dict[str, Any],
+    name: str,
+) -> dict[str, Any]:
+    metric = (result.get("metrics") or {}).get(name)
+    if metric is not None:
+        return metric
+    if name != "hazard_identification_accuracy":
+        return {}
+
+    judge_path = run_dir / "cases" / str(result.get("case_id")) / "binary_judge.json"
+    if not judge_path.exists():
+        return {}
+    evaluation = load_json(judge_path).get("evaluation") or {}
+    matrix = list(evaluation.get("match_matrix") or [])
+    reference_ids = {str(row.get("reference_id")) for row in matrix if row.get("reference_id")}
+    if not reference_ids:
+        return {}
+    identified = identified_reference_ids(matrix)
+    return _ratio(
+        len(reference_ids & identified),
+        len(reference_ids),
+    )
+
+
+def _metric_micro(
+    results: list[dict[str, Any]],
+    run_dir: Path,
+) -> dict[str, Any]:
     output: dict[str, Any] = {}
     for name in METRIC_NAMES:
         numerator = 0
         denominator = 0
         for result in results:
-            metric = (result.get("metrics") or {}).get(name) or {}
+            metric = _case_metric(run_dir, result, name)
             numerator += int(metric.get("numerator") or 0)
             denominator += int(metric.get("denominator") or 0)
         output[name] = _ratio(numerator, denominator)
@@ -211,7 +242,7 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
         "failure_reasons": dict(sorted(failure_reasons.items())),
         "failure_stages": dict(sorted(failure_stages.items())),
         "deterministic": _deterministic_micro(results),
-        "metrics": _metric_micro(results),
+        "metrics": _metric_micro(results, run_dir),
         "sut_runtime": {
             "latency_ms": _latency_stats(sut_latencies),
             "create_run_retry_count": create_run_retries,
@@ -274,7 +305,7 @@ def export_automated_report(run_dir: Path) -> dict[str, Path]:
                     "generated_count": row.get("generated_count"),
                     "sut_elapsed_ms": (row.get("sut") or {}).get("elapsed_ms"),
                     **{
-                        name: (metrics.get(name) or {}).get("rate")
+                        name: _case_metric(run_dir, row, name).get("rate")
                         for name in METRIC_NAMES
                     },
                 }

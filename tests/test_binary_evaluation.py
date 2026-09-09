@@ -179,3 +179,37 @@ def test_binary_case_with_no_match_has_nullable_matched_metrics() -> None:
     assert result.metrics.accident_classification_agreement.rate is None
     assert result.metrics.mitigation_appropriateness.rate is None
     assert result.metrics.legal_basis_presence.rate is None
+
+
+def test_hazard_identification_accuracy_is_broader_than_strict_1to1_coverage() -> None:
+    scenario, generated = scenario_fixture()
+
+    class AccidentOnlyJudge(FakeBinaryJudge):
+        async def evaluate_match_pairs(self, scenario, pairs):
+            rows = []
+            for reference, risk in pairs:
+                accident = (
+                    reference.reference_id == "r1"
+                    and risk.generated_id == "g3"
+                )
+                rows.append(
+                    MatchChecklistDecision(
+                        id=f"{reference.reference_id}::{risk.generated_id}",
+                        same_hazard_mechanism=False,
+                        context_compatible=False,
+                        accident_compatible=accident,
+                    )
+                )
+            return BinaryJudgeCall("match", rows, "m", "fake", {}, 1)
+
+    result = asyncio.run(
+        evaluate_binary_case(
+            judge=AccidentOnlyJudge(),
+            scenario=scenario,
+            generated=generated,
+        )
+    )
+    assert result.metrics.reference_risk_coverage.rate == 0.0
+    assert result.metrics.hazard_identification_accuracy.numerator == 1
+    assert result.metrics.hazard_identification_accuracy.denominator == 2
+    assert result.metrics.hazard_identification_accuracy.rate == 0.5

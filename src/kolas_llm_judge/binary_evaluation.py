@@ -14,6 +14,7 @@ from .binary_judge import (
     QualityChecklistDecision,
     SafetyChecklistDecision,
 )
+from .identification import hazard_identification_metric
 from .models import (
     EvaluationScenario,
     GeneratedRisk,
@@ -46,6 +47,13 @@ class BinarySafetyRecord(BaseModel):
 
 
 class AutomatedCaseMetrics(BaseModel):
+    # KPI-compatible, reference-level identification metric.
+    # A reference is identified when at least one generated risk either
+    # (a) matches the same hazard mechanism in a compatible context, or
+    # (b) captures a safety-engineering-compatible accident/damage mechanism.
+    # This is intentionally many-to-one and is kept separate from the stricter
+    # 1:1 Reference Risk Coverage diagnostic.
+    hazard_identification_accuracy: MetricValue
     reference_risk_coverage: MetricValue
     accident_classification_agreement: MetricValue
     mitigation_appropriateness: MetricValue
@@ -294,6 +302,7 @@ async def _evaluate_safety(
 def _calculate_metrics(
     scenario: EvaluationScenario,
     generated: list[GeneratedRisk],
+    match_matrix: list[BinaryMatchRecord],
     matches: list[BinaryMatchRecord],
     quality: list[BinaryQualityRecord],
     safety: list[BinarySafetyRecord],
@@ -319,7 +328,13 @@ def _calculate_metrics(
         for x in legal_matches
     ]
 
+    identification = hazard_identification_metric(
+        match_matrix,
+        (reference.reference_id for reference in scenario.references),
+    )
+
     return AutomatedCaseMetrics(
+        hazard_identification_accuracy=identification,
         reference_risk_coverage=_metric(len(matches), len(scenario.references)),
         accident_classification_agreement=_metric(
             sum(x.accident_compatible for x in matches),
@@ -392,6 +407,7 @@ async def evaluate_binary_case(
     metrics = _calculate_metrics(
         scenario,
         generated,
+        match_matrix,
         matches,
         quality,
         safety,
