@@ -3,7 +3,7 @@ match:
   same_hazard_mechanism: "핵심 위험원-사건-피해 메커니즘의 실질적 동일성"
   context_compatible: "작업/노출 맥락의 동일 또는 양립 가능성"
   accident_compatible: "사고유형/피해 메커니즘의 동일 또는 양립 가능성"
-  final_match_rule: "all three booleans must be true"
+  final_match_rule: "same_hazard_mechanism AND context_compatible; accident_compatible is an independent metric and tie preference"
 quality:
   mitigation_addresses_hazard: "감소대책이 위험 메커니즘을 직접 통제"
   mitigation_actionable: "현장에서 실행 가능한 조치"

@@ -26,7 +26,6 @@ class MatchChecklistDecision(BaseModel):
         return (
             self.same_hazard_mechanism
             and self.context_compatible
-            and self.accident_compatible
         )
 
 
@@ -334,4 +333,32 @@ class BinaryChecklistJudge:
             text_format=QualityChecklistBatch,
         )
         self._validate_ids([row["id"] for row in rows], call.rows, "quality")
+        return call
+    async def evaluate_safety_risks(
+        self,
+        scenario: EvaluationScenario,
+        generated: list[GeneratedRisk],
+    ) -> BinaryJudgeCall:
+        rows = [
+            {
+                "id": risk.generated_id,
+                "process": scenario.input.process,
+                "subprocess": scenario.input.subprocess,
+                "hazard": risk.hazard,
+                "risk_cause": risk.risk_cause,
+                "accident_types": risk.accident_types,
+                "mitigation": risk.mitigation,
+            }
+            for risk in generated
+        ]
+        call = await self._parse(
+            stage="safety",
+            payload={
+                "task": "Evaluate every generated risk using SAFETY checklist boolean.",
+                "row_count": len(rows),
+                "rows": rows,
+            },
+            text_format=SafetyChecklistBatch,
+        )
+        self._validate_ids([row["id"] for row in rows], call.rows, "safety")
         return call

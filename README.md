@@ -30,9 +30,38 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] SUT retry/SSE reconnect with idempotent clientRequestId
 - [x] SUT latency/retry + Judge token/call usage statistics
 - [x] SHA-256 run seal / tamper verification
+- [x] 104-control Automatic Judge Qualification Gate (AJQG)
+- [x] binary-checklist Judge (`binary-checklist-v1`)
+- [x] bounded case/SUT/Judge parallel worker pool
+- [x] concurrency-safe rotating auth refresh
+- [x] automated SUT/evaluator/infrastructure failure taxonomy
+- [x] automated official report / manifest / source recheck
+- [x] `official-live` one-command orchestrator + live dashboard + seal/verify
 - [ ] 시험기관 확정 양식의 공식 XLSX 패키징
 - [x] live 10-case smoke 실행 및 two-stage 병목 검증
 - [ ] corrected-contract smoke / pilot / full 실행
+
+## KOLAS official automated path
+
+KOLAS 현장 시험용 경로는 multi-day human calibration을 요구하지 않습니다. 시험 시작 시 construction-defined 104-control **Automatic Judge Qualification Gate (AJQG)** 를 자동 실행하고, PASS한 frozen binary-checklist Judge만 본시험에 사용합니다.
+
+Judge 적격성 시험만 실행:
+
+    /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge qualify-judge
+
+시험 당일 one-click 전체 실행:
+
+    /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live
+
+`official-live`는 **preflight → AJQG → 425-case bounded parallel evaluation → production source fingerprint 재검증 → report → SHA-256 seal → self-verification**을 자동 수행합니다. 공식 모드에서는 case 일부 실행이나 AJQG skip을 허용하지 않습니다.
+
+병렬 처리량 개발 benchmark 예시:
+
+    /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live --development --case-limit 10 --skip-qualification
+
+실패는 자동 분류합니다. `sut_non_completion`(예: `<ask_user>`, 누락/비정상 risk XML)은 제품의 completion 측정값으로 남기되 시험 절차 자체를 무효화하지 않습니다. `evaluator_failure` 또는 retry 후 지속되는 `infrastructure_failure`는 official candidate를 무효화합니다.
+
+현재 AJQG v1은 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록합니다. Human calibration 명령은 FACE/연구용 meta-evaluation 경로로 유지합니다.
 
 ## Setup
 
@@ -92,7 +121,9 @@ Expected:
 SUT에는 공정, 세부공정, 원본에 명시된 설비, 물질/자재만 입력합니다.
 유해위험요인, 사고분류, 위험도, 감소대책, 법규는 reference-only입니다.
 
-## Recommended execution sequence
+## Legacy / FACE research execution sequence
+
+아래 human calibration 기반 흐름은 학술/FACE/meta-evaluation 용으로 보존합니다. KOLAS official 시험 당일에는 위 `official-live` 자동 경로를 사용합니다.
 
 ### 1. 10-case smoke
 

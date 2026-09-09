@@ -8,6 +8,8 @@ MATCH 체크리스트:
 - context_compatible: 두 위험이 동일하거나 양립 가능한 작업/노출 맥락에 속하는가. 명백히 다른 작업·위험원이면 false.
 - accident_compatible: 사고유형/피해 메커니즘이 동일하거나 안전공학적으로 양립 가능한가.
 
+최종 reference-generated match는 Python이 same_hazard_mechanism AND context_compatible로 결정하며, accident_compatible은 독립 정확도 지표와 동률 우선순위에만 사용합니다.
+
 QUALITY 체크리스트:
 - mitigation_addresses_hazard: 제시된 감소대책이 해당 위험 메커니즘을 직접 줄이거나 제거하는가.
 - mitigation_actionable: 현장에서 실제 행동·설비·절차로 실행 가능한 조치인가. 단순 '주의한다/교육한다'만 있으면 false.

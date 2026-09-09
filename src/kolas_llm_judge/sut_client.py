@@ -223,6 +223,8 @@ class SeexrSutClient:
         self._refresh_token: str | None = None
         self._auth_recovery_count = 0
         self._auth_events: list[dict[str, Any]] = []
+        self._auth_lock = asyncio.Lock()
+        self._auth_version = 0
 
     async def __aenter__(
         self,
@@ -292,6 +294,7 @@ class SeexrSutClient:
             )
         access_token = str(tokens["accessToken"])
         self.client.headers["Authorization"] = f"Bearer {access_token}"
+        self._auth_version += 1
         refresh_token = tokens.get("refreshToken")
         if isinstance(refresh_token, str) and refresh_token:
             self._refresh_token = refresh_token
@@ -332,38 +335,51 @@ class SeexrSutClient:
         self,
         *,
         reason: str = "401",
+        observed_version: int | None = None,
     ) -> bool:
         if self._static_token_mode and not (
             self.config.email and self.config.password
         ):
             return False
-        action: str | None = None
-        try:
-            if await self._refresh_access_token():
-                action = "refresh"
-            elif self.config.email and self.config.password:
-                await self._login_with_password()
-                action = "relogin"
-        except Exception:
-            if self.config.email and self.config.password:
-                try:
+        async with self._auth_lock:
+            # Another concurrent request may already have refreshed the token
+            # after this request was sent. In that case simply retry with the
+            # newer Authorization header instead of rotating the refresh token
+            # a second time.
+            if (
+                observed_version is not None
+                and self._auth_version != observed_version
+            ):
+                return True
+
+            action: str | None = None
+            try:
+                if await self._refresh_access_token():
+                    action = "refresh"
+                elif self.config.email and self.config.password:
                     await self._login_with_password()
                     action = "relogin"
-                except Exception:
+            except Exception:
+                if self.config.email and self.config.password:
+                    try:
+                        await self._login_with_password()
+                        action = "relogin"
+                    except Exception:
+                        return False
+                else:
                     return False
-            else:
+            if action is None:
                 return False
-        if action is None:
-            return False
-        self._auth_recovery_count += 1
-        self._auth_events.append(
-            {
-                "stage": "auth",
-                "action": action,
-                "reason": reason,
-            }
-        )
-        return True
+            self._auth_recovery_count += 1
+            self._auth_events.append(
+                {
+                    "stage": "auth",
+                    "action": action,
+                    "reason": reason,
+                    "auth_version": self._auth_version,
+                }
+            )
+            return True
 
     async def _request_with_auth_retry(
         self,
@@ -371,13 +387,16 @@ class SeexrSutClient:
         url: str,
         **kwargs: Any,
     ) -> httpx.Response:
+        observed_version = self._auth_version
         response = await self.client.request(
             method,
             url,
             **kwargs,
         )
         if response.status_code == 401:
-            recovered = await self._recover_auth()
+            recovered = await self._recover_auth(
+                observed_version=observed_version
+            )
             if recovered:
                 response = await self.client.request(
                     method,
@@ -589,6 +608,7 @@ class SeexrSutClient:
     ]:
         auth_retried = False
         while True:
+            observed_version = self._auth_version
             async with self.client.stream(
                 "GET",
                 (
@@ -600,7 +620,9 @@ class SeexrSutClient:
                     response.status_code == 401
                     and not auth_retried
                 ):
-                    recovered = await self._recover_auth()
+                    recovered = await self._recover_auth(
+                        observed_version=observed_version
+                    )
                     if recovered:
                         auth_retried = True
                         continue

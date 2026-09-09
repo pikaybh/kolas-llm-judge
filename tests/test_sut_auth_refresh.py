@@ -142,6 +142,7 @@ def test_401_refreshes_rotating_token_and_retries_session() -> None:
             "stage": "auth",
             "action": "refresh",
             "reason": "401",
+            "auth_version": 2,
         }
     ]
 
@@ -253,3 +254,41 @@ def test_sse_401_refreshes_before_streaming_events() -> None:
         client._auth_recovery_count
         == 1
     )
+
+
+
+def test_concurrent_401_recovery_rotates_refresh_token_once() -> None:
+    client = SeexrSutClient(
+        SutConfig(
+            base_url="https://example.test/api",
+            email="eval@example.test",
+            password="password",
+        )
+    )
+    client._auth_version = 1
+    refresh_calls = 0
+
+    async def fake_refresh() -> bool:
+        nonlocal refresh_calls
+        refresh_calls += 1
+        await asyncio.sleep(0.02)
+        client._auth_version += 1
+        return True
+
+    client._refresh_access_token = fake_refresh  # type: ignore[method-assign]
+
+    async def run() -> tuple[bool, bool]:
+        return tuple(
+            await asyncio.gather(
+                client._recover_auth(observed_version=1),
+                client._recover_auth(observed_version=1),
+            )
+        )  # type: ignore[return-value]
+
+    recovered = asyncio.run(run())
+    asyncio.run(client.client.aclose())
+
+    assert recovered == (True, True)
+    assert refresh_calls == 1
+    assert client._auth_recovery_count == 1
+    assert client._auth_version == 2

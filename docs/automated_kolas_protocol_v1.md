@@ -315,3 +315,28 @@ This protocol is designed to be technically defensible and operationally compati
 same-day live test, but the accredited testing laboratory must agree that the frozen automated
 Judge qualification and reference-conformance measurand are acceptable within its accredited
 scope and chosen test method before the official accredited report is issued.
+
+## 14. Implementation status (2026-09-09)
+
+Implemented:
+- 104-control construction-defined AJQG suite and canonical SHA-256 identity
+- GPT-5.6 Sol binary-checklist Judge
+- live `qualify-judge` command and automatic gate artifacts
+- match eligibility based on hazard mechanism + work context; accident compatibility remains an independent metric and secondary matching preference
+- matched-only mitigation/legal quality evaluation and generated-risk critical safety diagnostics
+- concurrency-safe rotating SEEXR authentication
+- bounded case/SUT/Judge concurrency with atomic checkpoints and resume
+- SUT non-completion vs evaluator/infrastructure failure taxonomy
+- automated JSON/CSV aggregate report and automated method manifest
+- `official-live` orchestration and Rich live dashboard
+- automatic production source re-check, report, double-seal, and self-verification
+
+Current engineering defaults before load-test freeze:
+- case concurrency: 8
+- SUT concurrency: 6
+- Binary Judge global concurrency: 8
+- match chunk: 80 pairs
+- matched-quality chunk: 40 pairs
+- safety chunk: 50 generated risks
+
+These concurrency values remain engineering defaults until production parallel benchmark and 425-case dry-run are completed. They must be frozen before the accredited test day.

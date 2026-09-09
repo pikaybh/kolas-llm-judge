@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+from collections import Counter
+from dataclasses import replace
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -8,6 +10,16 @@ from pathlib import Path
 import typer
 from dotenv import load_dotenv
 from rich.console import Console
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 from rich.table import Table
 
 from .calibration import (
@@ -19,6 +31,8 @@ from .dataset import import_dataset
 from .doctor import run_doctor
 from .io_utils import atomic_write_json
 from .qualification import run_qualification, write_qualification_artifacts
+from .official_live import execute_official_live
+from .parallel_runner import ParallelRunnerConfig
 from .report import export_reports
 from .runner import execute_run
 from .seal import seal_run, verify_run
@@ -345,6 +359,131 @@ def score_calibration_command(
     )
     if not result["gate_pass"]:
         raise typer.Exit(code=3)
+
+
+@app.command("official-live")
+def official_live_command(
+    case_limit: int | None = typer.Option(
+        None,
+        min=1,
+        help="Development-only case limit. Omit for the official 425-case run.",
+    ),
+    development: bool = typer.Option(
+        False,
+        help="Development/benchmark mode. Required when using --case-limit or --skip-qualification.",
+    ),
+    skip_qualification: bool = typer.Option(
+        False,
+        help="Development-only: skip live AJQG to benchmark case throughput.",
+    ),
+    case_concurrency: int | None = typer.Option(None, min=1),
+    sut_concurrency: int | None = typer.Option(None, min=1),
+) -> None:
+    if case_limit is not None and not development:
+        raise typer.BadParameter("--case-limit requires --development")
+    if skip_qualification and not development:
+        raise typer.BadParameter("--skip-qualification requires --development")
+
+    runner = ParallelRunnerConfig.from_env()
+    if case_concurrency is not None:
+        runner = replace(runner, case_concurrency=case_concurrency)
+    if sut_concurrency is not None:
+        runner = replace(runner, sut_concurrency=sut_concurrency)
+
+    expected_total = case_limit or 425
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[bold]{task.fields[phase]}[/bold]"),
+        BarColumn(),
+        TaskProgressColumn(),
+        MofNCompleteColumn(),
+        TextColumn("ok={task.fields[ok]} fail={task.fields[fail]} active={task.fields[active]}"),
+        TextColumn("{task.fields[stages]}"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task(
+            "official-live",
+            total=expected_total,
+            phase="PREPARING",
+            ok=0,
+            fail=0,
+            active=0,
+            stages="",
+        )
+
+        def on_progress(payload: dict[str, object]) -> None:
+            phase = str(payload.get("phase") or "").upper()
+            status = str(payload.get("status") or "")
+            if phase != "EVALUATION":
+                progress.update(
+                    task,
+                    phase=f"{phase} {status}".strip(),
+                )
+                return
+            total = int(payload.get("selected") or expected_total)
+            completed = int(payload.get("completed") or 0)
+            failed = int(payload.get("failed") or 0)
+            skipped = int(payload.get("skipped") or 0)
+            processed = int(payload.get("processed") or (completed + failed + skipped))
+            active = int(payload.get("active") or 0)
+            stage_map = payload.get("stages")
+            counts = Counter(
+                str(value)
+                for value in (stage_map.values() if isinstance(stage_map, dict) else [])
+            )
+            stage_text = " ".join(
+                f"{name}={count}"
+                for name, count in sorted(counts.items())
+            )
+            progress.update(
+                task,
+                total=total,
+                completed=processed,
+                phase=f"EVALUATION {status}".strip(),
+                ok=completed + skipped,
+                fail=failed,
+                active=active,
+                stages=stage_text,
+            )
+
+        result = asyncio.run(
+            execute_official_live(
+                project_root=PROJECT_ROOT,
+                scenarios_path=DEFAULT_SCENARIOS,
+                case_limit=case_limit,
+                development_mode=development,
+                skip_qualification=skip_qualification,
+                runner_config=runner,
+                progress_callback=on_progress,
+            )
+        )
+
+    summary = result.summary
+    table = Table(title="Automated KOLAS Live Result")
+    table.add_column("Item")
+    table.add_column("Value")
+    table.add_row("Status", result.status)
+    table.add_row("Run", result.run_dir.name)
+    table.add_row("Procedure valid", str(result.procedure_valid))
+    table.add_row("Seal verified", str(result.final_verification_ok))
+    table.add_row(
+        "SUT completion",
+        str((summary.get("sut_completion_rate") or {}).get("rate")),
+    )
+    table.add_row(
+        "Reference coverage",
+        str((summary.get("metrics") or {}).get("reference_risk_coverage", {}).get("rate")),
+    )
+    table.add_row(
+        "Schema compliance",
+        str((summary.get("deterministic") or {}).get("schema_compliance", {}).get("rate")),
+    )
+    console.print(table)
+    console.print(f"Artifacts: {result.run_dir}")
+    if not development and result.status != "VALID":
+        raise typer.Exit(code=6)
 
 
 @app.command("seal")

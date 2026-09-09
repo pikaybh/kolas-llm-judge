@@ -9,12 +9,18 @@ from kolas_llm_judge.binary_judge import (
 )
 
 
-def test_binary_match_final_rule_requires_all_three() -> None:
+def test_binary_match_rule_keeps_accident_as_independent_metric() -> None:
     assert MatchChecklistDecision(
         id="x",
         same_hazard_mechanism=True,
         context_compatible=True,
         accident_compatible=True,
+    ).is_match is True
+    assert MatchChecklistDecision(
+        id="x",
+        same_hazard_mechanism=True,
+        context_compatible=True,
+        accident_compatible=False,
     ).is_match is True
     assert MatchChecklistDecision(
         id="x",
