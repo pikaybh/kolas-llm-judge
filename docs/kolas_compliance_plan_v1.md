@@ -28,7 +28,7 @@
 | 12 | 시험방법·Rubric 송부자료 | 완료 | `docs/testing_lab_method_and_rubric_v1.md` |
 | 13 | 시험기관 피드백 수용 가능한 freeze 구조 | 완료 | runtime validator가 dataset/Judge/AJQG/SUT/metric policy를 검증. 피드백 수신 후 version bump 및 새 hash freeze 가능 |
 | 14 | release candidate 검증 경로 | 구현 완료, 최종 425-case accredited run은 외부 합의 후 수행 | clean evaluator commit → official doctor → live dry-run/smoke → seal verification. 공식 425-case는 승인된 threshold/release에서 수행 |
-| 15 | 강성대 연구원 이메일 초안 | **대기** | 1~14 내부 구현·검증을 끝낸 뒤 최종 상태와 정확히 일치하도록 마지막에 작성 |
+| 15 | 강성대 연구원 이메일 초안 | 완료 | 1~14 내부 구현·검증 완료 후 `docs/email_draft_to_kang_sungdae.md` 최종 갱신 |
 
 ## 공식 경로와 전문가 검증 경로의 역할 분리
 
@@ -89,17 +89,18 @@ LLM Judge는 사전 정의 Boolean만 판정한다. 최종 numerator/denominator
 
 위 수치는 개발 검증 증빙이며 공인 성능 성적을 주장하지 않는다.
 
-## 이메일 작성 전 내부 완료 조건
+## 15단계 작성 전 내부 검증 결과
 
-15단계 이메일을 최종 작성하기 전에 아래를 모두 통과시킨다.
+15단계 이메일 최종 작성 전에 아래 조건을 모두 확인했다.
 
-- 전체 unit/integration test PASS
-- dataset raw/scenario identity 검증 PASS
-- official runtime evaluator source SHA 재동결
-- evaluator repository clean commit
-- `doctor --official --live --require-ready` PASS
-- 최종 commit 기준 live smoke PASS
-- live smoke run seal verify PASS
-- 문서의 protocol/Rubric/runtime 설명과 코드 일치
+- 전체 unit/integration test: **85/85 PASS**
+- dataset raw/scenario identity 재생성 검증: **PASS**
+- official runtime evaluator source SHA 재동결 및 직접 validation: **PASS**
+- evaluator repository clean commit: **PASS**
+- `doctor --official --live --require-ready`: **READY / 필수 check PASS**
+- clean commit 기준 AJQG 포함 live smoke: **PASS**
+- live smoke SUT completion 1/1, evaluator/infrastructure failure 0, SUT source stable: **PASS**
+- live smoke `procedure_valid=true`, `seal_verified=true`, explicit seal verify: **PASS**
+- 문서의 protocol/Rubric/runtime 설명과 코드 정합성: **PASS**
 
-그 이후에만 15단계 이메일을 최종 갱신한다.
+따라서 15단계 이메일 초안은 위 검증 이후 최종 갱신했다. 최종 제품 성능 합격선과 공인 425-case 시험 수행 자체는 시험기관 협의 이후의 외부 단계다.
