@@ -16,13 +16,20 @@ def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     assert runtime.judge.model == "gpt-5.6-sol"
     assert runtime.judge.reasoning_effort == "medium"
     assert runtime.qualification.control_count == 104
-    assert runtime.metrics.hazard_identification_rule_version == "hazard-identification-v1"
-    assert runtime.metrics.hazard_identification_rule == (
-        "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
-    )
-    assert runtime.metrics.hazard_identification_denominator == (
+    assert runtime.metrics.primary_metric == "hazard_semantic_identification_recall"
+    assert runtime.metrics.primary_rule_version == "hazard-semantic-identification-v1"
+    assert runtime.metrics.primary_rule == "same_hazard_mechanism AND context_compatible"
+    assert runtime.metrics.primary_denominator == (
         "references_with_completed_binary_match_matrix"
     )
+    assert runtime.metrics.supplementary_kpi_metric == "hazard_identification_accuracy"
+    assert runtime.metrics.supplementary_kpi_rule == (
+        "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+    )
+    assert runtime.acceptance.sut_performance_decision == (
+        "report_only_until_testing_lab_approval"
+    )
+    assert runtime.acceptance.performance_thresholds_frozen is False
     assert runtime.benchmark_evidence["fifty_case_wall_seconds"] == 255.38
 
 
@@ -31,6 +38,13 @@ def test_official_runtime_validates_frozen_dataset_and_ajqg() -> None:
     runtime = validate_official_runtime(
         project_root=root,
         scenarios_path=root / "data/cases/scenarios_v1.jsonl",
+    )
+    assert runtime.dataset.dataset_id == "KOLAS_RA_GT"
+    assert runtime.dataset.dataset_version == "1.0.0"
+    assert runtime.dataset.schema_version == "kolas-ra-dataset-v1"
+    assert runtime.dataset.source_rows == 843
+    assert runtime.dataset.source_sha256 == (
+        "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a"
     )
     assert runtime.dataset.scenario_count == 425
     assert runtime.dataset.reference_count == 843
@@ -79,6 +93,7 @@ def test_official_runtime_rejects_tampered_binary_prompt(tmp_path: Path) -> None
         "prompts/judge_binary_v1.md",
         "data/cases/scenarios_v1.jsonl",
         "data/cases/dataset_manifest.json",
+        "data/raw/kolas_v7_73_test.csv.bz2",
     ]:
         source = root / relative
         target = tmp_path / relative
@@ -94,4 +109,36 @@ def test_official_runtime_rejects_tampered_binary_prompt(tmp_path: Path) -> None
         validate_official_runtime(
             project_root=tmp_path,
             scenarios_path=tmp_path / "data/cases/scenarios_v1.jsonl",
+        )
+
+
+def test_official_runtime_rejects_tampered_raw_source(tmp_path: Path) -> None:
+    import shutil
+    import pytest
+
+    root = Path.cwd()
+    shutil.copytree(root / "src", tmp_path / "src")
+    shutil.copy2(root / "pyproject.toml", tmp_path / "pyproject.toml")
+    shutil.copy2(root / "uv.lock", tmp_path / "uv.lock")
+    for relative in [
+        "configs/official_runtime_v1.yaml",
+        "configs/ajqg_seed_v1.yaml",
+        "configs/ajqg_gate_v1.yaml",
+        "configs/rubric_binary_v1.yaml",
+        "prompts/judge_binary_v1.md",
+        "data/cases/scenarios_v1.jsonl",
+        "data/cases/dataset_manifest.json",
+        "data/raw/kolas_v7_73_test.csv.bz2",
+    ]:
+        source = root / relative
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    raw = tmp_path / "data/raw/kolas_v7_73_test.csv.bz2"
+    raw.write_bytes(raw.read_bytes() + b"TAMPER")
+    with pytest.raises(RuntimeError, match="raw-source content SHA mismatch"):
+        validate_official_runtime(
+            project_root=tmp_path,
+            scenarios_path=tmp_path / "data/cases/scenarios_v1.jsonl",
+            runtime_path=tmp_path / "configs/official_runtime_v1.yaml",
         )

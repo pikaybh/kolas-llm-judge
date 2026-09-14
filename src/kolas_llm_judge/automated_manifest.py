@@ -21,6 +21,8 @@ AUTOMATED_HASHED_PATHS = [
     Path("configs/rubric_binary_v1.yaml"),
     Path("prompts/judge_binary_v1.md"),
     Path("docs/automated_kolas_protocol_v1.md"),
+    Path("docs/testing_lab_method_and_rubric_v1.md"),
+    Path("docs/kolas_compliance_plan_v1.md"),
     Path("data/raw/PROVENANCE.md"),
     Path("data/cases/dataset_manifest.json"),
     Path("pyproject.toml"),

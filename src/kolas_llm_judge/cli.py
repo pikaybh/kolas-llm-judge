@@ -35,6 +35,7 @@ from .qualification import run_qualification, write_qualification_artifacts
 from .official_live import execute_official_live
 from .parallel_runner import ParallelRunnerConfig
 from .report import export_reports
+from .repeatability import compare_sut_repeatability
 from .runner import execute_run
 from .seal import seal_run, verify_run
 
@@ -480,7 +481,15 @@ def official_live_command(
         str((summary.get("sut_completion_rate") or {}).get("rate")),
     )
     table.add_row(
-        "Hazard identification accuracy",
+        "KOLAS primary semantic recall",
+        str(
+            (summary.get("metrics") or {})
+            .get("hazard_semantic_identification_recall", {})
+            .get("rate")
+        ),
+    )
+    table.add_row(
+        "Supplementary KPI identification",
         str(
             (summary.get("metrics") or {})
             .get("hazard_identification_accuracy", {})
@@ -526,7 +535,11 @@ def derive_identification_command(
     table.add_column("Value")
     table.add_row("Source run", str(analysis.get("source_run_id")))
     table.add_row(
-        "Hazard identification accuracy",
+        "KOLAS primary semantic recall",
+        str((metrics.get("hazard_semantic_identification_recall") or {}).get("rate")),
+    )
+    table.add_row(
+        "Supplementary KPI identification",
         str((metrics.get("hazard_identification_accuracy") or {}).get("rate")),
     )
     table.add_row(
@@ -551,6 +564,35 @@ def derive_identification_command(
     )
     console.print(table)
     console.print(f"Derived artifact: {output}")
+
+
+@app.command("compare-repeatability")
+def compare_repeatability_command(
+    runs: list[str] = typer.Argument(..., help="Two or more equivalent sealed run ids/directories"),
+    output: Path | None = typer.Option(None, help="Output JSON path"),
+) -> None:
+    """Compare repeated live SUT runs under the same frozen test identity."""
+    run_dirs = [_resolve_run_dir(run) for run in runs]
+    analysis = compare_sut_repeatability(run_dirs)
+    if output is None:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        output = PROJECT_ROOT / "derived" / f"repeatability-{stamp}.json"
+    atomic_write_json(output, analysis)
+    primary = (analysis.get("aggregate_metric_stability") or {}).get(
+        "hazard_semantic_identification_recall", {}
+    )
+    detection = analysis.get("semantic_reference_detection") or {}
+    table = Table(title="SUT Semantic Repeatability")
+    table.add_column("Item")
+    table.add_column("Value")
+    table.add_row("Runs", str(analysis.get("run_count")))
+    table.add_row("All seals verified", str(analysis.get("all_seals_verified")))
+    table.add_row("Primary metric mean", str(primary.get("mean")))
+    table.add_row("Primary metric std", str(primary.get("std")))
+    table.add_row("Primary metric range", str(primary.get("range")))
+    table.add_row("Stable reference rate", str(detection.get("stable_reference_rate")))
+    console.print(table)
+    console.print(f"Repeatability artifact: {output}")
 
 
 @app.command("seal")

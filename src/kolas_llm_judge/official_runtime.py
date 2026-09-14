@@ -13,6 +13,9 @@ from .identification import (
     HAZARD_IDENTIFICATION_DENOMINATOR,
     HAZARD_IDENTIFICATION_RULE,
     HAZARD_IDENTIFICATION_RULE_VERSION,
+    HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR,
+    HAZARD_SEMANTIC_IDENTIFICATION_RULE,
+    HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION,
 )
 from .io_utils import load_json, load_scenarios
 from .parallel_runner import ParallelRunnerConfig
@@ -44,6 +47,11 @@ def official_evaluator_source_sha256(project_root: Path) -> str:
 
 
 class FrozenDatasetConfig(BaseModel):
+    dataset_id: str
+    dataset_version: str
+    schema_version: str
+    source_rows: int = Field(gt=0)
+    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     scenario_count: int = Field(gt=0)
     reference_count: int = Field(gt=0)
     scenarios_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -74,9 +82,20 @@ class FrozenJudgeConfig(BaseModel):
 
 
 class FrozenMetricPolicy(BaseModel):
-    hazard_identification_rule_version: str
-    hazard_identification_rule: str
-    hazard_identification_denominator: str
+    primary_metric: str
+    primary_rule_version: str
+    primary_rule: str
+    primary_denominator: str
+    supplementary_kpi_metric: str
+    supplementary_kpi_rule_version: str
+    supplementary_kpi_rule: str
+    supplementary_kpi_denominator: str
+
+
+class FrozenAcceptancePolicy(BaseModel):
+    procedure_validity_rule: str
+    sut_performance_decision: str
+    performance_thresholds_frozen: bool
 
 
 class FrozenParallelConfig(BaseModel):
@@ -106,6 +125,7 @@ class OfficialRuntimeConfig(BaseModel):
     qualification: FrozenQualificationConfig
     judge: FrozenJudgeConfig
     metrics: FrozenMetricPolicy
+    acceptance: FrozenAcceptancePolicy
     parallel: FrozenParallelConfig
     sut: FrozenSutConfig
     benchmark_evidence: dict[str, Any] = Field(default_factory=dict)
@@ -120,18 +140,42 @@ class OfficialRuntimeConfig(BaseModel):
             raise ValueError("Official runtime requires binary-checklist-v1")
         if self.qualification.control_suite_version != "ajqg-controls-v1":
             raise ValueError("Official runtime AJQG suite version mismatch")
+        if self.metrics.primary_metric != "hazard_semantic_identification_recall":
+            raise ValueError("Official runtime primary metric mismatch")
         if (
-            self.metrics.hazard_identification_rule_version
+            self.metrics.primary_rule_version
+            != HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION
+        ):
+            raise ValueError("Official runtime semantic-identification version mismatch")
+        if self.metrics.primary_rule != HAZARD_SEMANTIC_IDENTIFICATION_RULE:
+            raise ValueError("Official runtime semantic-identification rule mismatch")
+        if (
+            self.metrics.primary_denominator
+            != HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR
+        ):
+            raise ValueError("Official runtime semantic-identification denominator mismatch")
+        if self.metrics.supplementary_kpi_metric != "hazard_identification_accuracy":
+            raise ValueError("Official runtime supplementary KPI metric mismatch")
+        if (
+            self.metrics.supplementary_kpi_rule_version
             != HAZARD_IDENTIFICATION_RULE_VERSION
         ):
-            raise ValueError("Official runtime hazard-identification version mismatch")
-        if self.metrics.hazard_identification_rule != HAZARD_IDENTIFICATION_RULE:
-            raise ValueError("Official runtime hazard-identification rule mismatch")
+            raise ValueError("Official runtime KPI-identification version mismatch")
+        if self.metrics.supplementary_kpi_rule != HAZARD_IDENTIFICATION_RULE:
+            raise ValueError("Official runtime KPI-identification rule mismatch")
         if (
-            self.metrics.hazard_identification_denominator
+            self.metrics.supplementary_kpi_denominator
             != HAZARD_IDENTIFICATION_DENOMINATOR
         ):
-            raise ValueError("Official runtime hazard-identification denominator mismatch")
+            raise ValueError("Official runtime KPI-identification denominator mismatch")
+        if self.acceptance.sut_performance_decision != (
+            "report_only_until_testing_lab_approval"
+        ):
+            raise ValueError("Official runtime performance-decision policy mismatch")
+        if self.acceptance.performance_thresholds_frozen:
+            raise ValueError(
+                "Performance thresholds must remain unfrozen until testing-lab approval"
+            )
         return self
 
     def judge_config(self) -> BinaryJudgeConfig:
@@ -212,6 +256,38 @@ def validate_official_runtime(
         )
     dataset_manifest_path = project_root / "data/cases/dataset_manifest.json"
     dataset_manifest = load_json(dataset_manifest_path)
+    expected_dataset_identity = {
+        "dataset_id": runtime.dataset.dataset_id,
+        "dataset_version": runtime.dataset.dataset_version,
+        "schema_version": runtime.dataset.schema_version,
+    }
+    actual_dataset_identity = {
+        key: dataset_manifest.get(key) for key in expected_dataset_identity
+    }
+    if actual_dataset_identity != expected_dataset_identity:
+        raise RuntimeError(
+            "Frozen official dataset identity mismatch: "
+            f"expected={expected_dataset_identity}, actual={actual_dataset_identity}"
+        )
+    if int(dataset_manifest.get("source_rows") or 0) != runtime.dataset.source_rows:
+        raise RuntimeError(
+            "Frozen official raw-source row count mismatch: "
+            f"expected={runtime.dataset.source_rows}, "
+            f"actual={dataset_manifest.get('source_rows')}"
+        )
+    if dataset_manifest.get("source_sha256") != runtime.dataset.source_sha256:
+        raise RuntimeError("Frozen official raw-source SHA mismatch in dataset manifest")
+    source_file = Path(str(dataset_manifest.get("source_file") or ""))
+    if not source_file.is_absolute():
+        source_file = project_root / source_file
+    if not source_file.exists():
+        raise RuntimeError(f"Frozen official raw source missing: {source_file}")
+    actual_source_sha = sha256_file(source_file)
+    if actual_source_sha != runtime.dataset.source_sha256:
+        raise RuntimeError(
+            "Frozen official raw-source content SHA mismatch: "
+            f"expected={runtime.dataset.source_sha256}, actual={actual_source_sha}"
+        )
     if int(dataset_manifest.get("reference_count") or 0) != runtime.dataset.reference_count:
         raise RuntimeError(
             "Frozen official reference count mismatch: "

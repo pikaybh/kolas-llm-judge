@@ -8,6 +8,9 @@ from .identification import (
     HAZARD_IDENTIFICATION_DENOMINATOR,
     HAZARD_IDENTIFICATION_RULE,
     HAZARD_IDENTIFICATION_RULE_VERSION,
+    HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR,
+    HAZARD_SEMANTIC_IDENTIFICATION_RULE,
+    HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION,
     identified_reference_ids,
 )
 from .io_utils import load_json, load_scenarios
@@ -141,9 +144,18 @@ def derive_identification_analysis(
         "source_run_dir": str(run_dir),
         "source_artifact_root_sha256": source_seal_root,
         "rule": {
-            "version": HAZARD_IDENTIFICATION_RULE_VERSION,
-            "expression": HAZARD_IDENTIFICATION_RULE,
-            "denominator": HAZARD_IDENTIFICATION_DENOMINATOR,
+            "primary": {
+                "metric": "hazard_semantic_identification_recall",
+                "version": HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION,
+                "expression": HAZARD_SEMANTIC_IDENTIFICATION_RULE,
+                "denominator": HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR,
+            },
+            "supplementary_kpi": {
+                "metric": "hazard_identification_accuracy",
+                "version": HAZARD_IDENTIFICATION_RULE_VERSION,
+                "expression": HAZARD_IDENTIFICATION_RULE,
+                "denominator": HAZARD_IDENTIFICATION_DENOMINATOR,
+            },
             "notes": [
                 "No new LLM calls are made; only persisted binary Judge decisions are reused.",
                 "Strict 1:1 Reference Risk Coverage is preserved as a separate diagnostic.",
@@ -165,6 +177,10 @@ def derive_identification_analysis(
             ),
         },
         "metrics": {
+            "hazard_semantic_identification_recall": _ratio(
+                len(strict_many_to_one_ids & semantic_reference_ids),
+                semantic_denominator,
+            ),
             "hazard_identification_accuracy": _ratio(
                 len(identified_ids & semantic_reference_ids),
                 semantic_denominator,

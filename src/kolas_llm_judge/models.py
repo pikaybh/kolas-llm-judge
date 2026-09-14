@@ -30,6 +30,9 @@ class EvaluationScenario(BaseModel):
 
 
 class DatasetManifest(BaseModel):
+    dataset_id: str = "KOLAS_RA_GT"
+    dataset_version: str = "1.0.0"
+    schema_version: str = "kolas-ra-dataset-v1"
     source_file: str
     source_sha256: str
     source_rows: int

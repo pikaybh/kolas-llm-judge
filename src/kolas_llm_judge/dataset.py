@@ -137,8 +137,15 @@ def import_dataset(source: Path, output: Path, manifest_path: Path, *, expected_
     if expected_scenarios is not None and len(scenarios) != expected_scenarios:
         raise ValueError(f"Expected {expected_scenarios} scenarios, got {len(scenarios)}")
     write_jsonl(scenarios, output)
+    try:
+        manifest_source = str(source.resolve().relative_to(Path.cwd().resolve()))
+    except ValueError:
+        manifest_source = str(source)
     manifest = DatasetManifest(
-        source_file=str(source),
+        dataset_id="KOLAS_RA_GT",
+        dataset_version="1.0.0",
+        schema_version="kolas-ra-dataset-v1",
+        source_file=manifest_source,
         source_sha256=sha256_file(source),
         source_rows=len(df),
         scenario_count=len(scenarios),

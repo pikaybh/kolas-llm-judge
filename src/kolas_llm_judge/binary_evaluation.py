@@ -14,7 +14,10 @@ from .binary_judge import (
     QualityChecklistDecision,
     SafetyChecklistDecision,
 )
-from .identification import hazard_identification_metric
+from .identification import (
+    hazard_identification_metric,
+    hazard_semantic_identification_metric,
+)
 from .models import (
     EvaluationScenario,
     GeneratedRisk,
@@ -47,7 +50,11 @@ class BinarySafetyRecord(BaseModel):
 
 
 class AutomatedCaseMetrics(BaseModel):
-    # KPI-compatible, reference-level identification metric.
+    # KOLAS-primary semantic identification: same hazard mechanism + compatible context.
+    # This is reference-level and many-to-one; accident compatibility alone is insufficient.
+    hazard_semantic_identification_recall: MetricValue
+
+    # Supplementary KPI-compatible, reference-level identification metric.
     # A reference is identified when at least one generated risk either
     # (a) matches the same hazard mechanism in a compatible context, or
     # (b) captures a safety-engineering-compatible accident/damage mechanism.
@@ -328,12 +335,18 @@ def _calculate_metrics(
         for x in legal_matches
     ]
 
+    reference_ids = [reference.reference_id for reference in scenario.references]
+    semantic_identification = hazard_semantic_identification_metric(
+        match_matrix,
+        reference_ids,
+    )
     identification = hazard_identification_metric(
         match_matrix,
-        (reference.reference_id for reference in scenario.references),
+        reference_ids,
     )
 
     return AutomatedCaseMetrics(
+        hazard_semantic_identification_recall=semantic_identification,
         hazard_identification_accuracy=identification,
         reference_risk_coverage=_metric(len(matches), len(scenario.references)),
         accident_classification_agreement=_metric(

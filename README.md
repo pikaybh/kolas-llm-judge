@@ -282,3 +282,19 @@ cannot silently change the metric definition.
 바꾸지 않도록 합니다.
 
 자세한 시험 프로토콜은 `docs/evaluation_spec.md`를 참조하세요.
+
+## KOLAS compliance hardening (2026-09-14)
+
+The lab-facing method is now explicitly separated from legacy project KPI semantics:
+
+- **KOLAS primary:** `hazard_semantic_identification_recall` = `same_hazard_mechanism AND context_compatible` at reference level.
+- **Supplementary legacy KPI:** `hazard_identification_accuracy` retains the broader OR-accident-compatible rule for continuity only.
+- Product pass/fail thresholds remain **unfrozen pending testing-lab approval**; procedure-validity gates are frozen independently.
+- `compare-repeatability` compares two or more equivalent sealed live runs and reports aggregate, per-case, and per-reference semantic stability.
+- Dataset identity is explicit: `KOLAS_RA_GT` v1.0.0 / `kolas-ra-dataset-v1`.
+
+Lab-facing documents:
+
+- `docs/testing_lab_method_and_rubric_v1.md`
+- `docs/kolas_compliance_plan_v1.md`
+- `docs/email_draft_to_kang_sungdae.md` (administrative artifact; intentionally excluded from evaluation method identity)

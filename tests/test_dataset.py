@@ -25,3 +25,22 @@ def test_score_parsing() -> None:
     assert ref.severity == 4
     assert ref.risk_score == 4
     assert ref.accident_types == ["감전", "화상"]
+
+
+def test_dataset_manifest_has_explicit_version_identity(tmp_path) -> None:
+    from kolas_llm_judge.dataset import import_dataset
+
+    df = pd.DataFrame([{
+        "공정": "전기", "세부공정": "배선", "설비": "", "물질": "",
+        "유해위험요인": "누전", "사고분류": "감전", "위험 가능성": "1",
+        "위험 중대성": "4", "위험성": "4", "감소대책": "차단",
+        "관련근거(법규)": "제1조",
+    }])
+    source = tmp_path / "source.csv"
+    output = tmp_path / "scenarios.jsonl"
+    manifest_path = tmp_path / "manifest.json"
+    df.to_csv(source, index=False)
+    manifest = import_dataset(source, output, manifest_path, expected_rows=1, expected_scenarios=1)
+    assert manifest.dataset_id == "KOLAS_RA_GT"
+    assert manifest.dataset_version == "1.0.0"
+    assert manifest.schema_version == "kolas-ra-dataset-v1"

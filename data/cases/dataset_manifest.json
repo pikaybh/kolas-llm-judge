@@ -1,4 +1,7 @@
 {
+  "dataset_id": "KOLAS_RA_GT",
+  "dataset_version": "1.0.0",
+  "schema_version": "kolas-ra-dataset-v1",
   "source_file": "data/raw/kolas_v7_73_test.csv.bz2",
   "source_sha256": "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a",
   "source_rows": 843,

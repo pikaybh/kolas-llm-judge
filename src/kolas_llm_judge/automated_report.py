@@ -9,11 +9,15 @@ from typing import Any
 
 import numpy as np
 
-from .identification import identified_reference_ids
+from .identification import (
+    identified_reference_ids,
+    semantically_identified_reference_ids,
+)
 from .io_utils import atomic_write_json, load_json
 
 
 METRIC_NAMES = (
+    "hazard_semantic_identification_recall",
     "hazard_identification_accuracy",
     "reference_risk_coverage",
     "accident_classification_agreement",
@@ -136,7 +140,10 @@ def _case_metric(
     metric = (result.get("metrics") or {}).get(name)
     if metric is not None:
         return metric
-    if name != "hazard_identification_accuracy":
+    if name not in {
+        "hazard_semantic_identification_recall",
+        "hazard_identification_accuracy",
+    }:
         return {}
 
     judge_path = run_dir / "cases" / str(result.get("case_id")) / "binary_judge.json"
@@ -147,7 +154,11 @@ def _case_metric(
     reference_ids = {str(row.get("reference_id")) for row in matrix if row.get("reference_id")}
     if not reference_ids:
         return {}
-    identified = identified_reference_ids(matrix)
+    identified = (
+        semantically_identified_reference_ids(matrix)
+        if name == "hazard_semantic_identification_recall"
+        else identified_reference_ids(matrix)
+    )
     return _ratio(
         len(reference_ids & identified),
         len(reference_ids),
@@ -242,6 +253,12 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
         "failure_reasons": dict(sorted(failure_reasons.items())),
         "failure_stages": dict(sorted(failure_stages.items())),
         "deterministic": _deterministic_micro(results),
+        "measurement_policy": {
+            "primary_metric": "hazard_semantic_identification_recall",
+            "primary_rule": "same_hazard_mechanism AND context_compatible",
+            "supplementary_kpi_metric": "hazard_identification_accuracy",
+            "performance_decision": "report_only_until_testing_lab_approval",
+        },
         "metrics": _metric_micro(results, run_dir),
         "sut_runtime": {
             "latency_ms": _latency_stats(sut_latencies),

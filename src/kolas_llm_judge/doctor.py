@@ -156,6 +156,8 @@ async def run_doctor(
                 project_root / "configs/rubric_binary_v1.yaml",
                 project_root / "prompts/judge_binary_v1.md",
                 project_root / "docs/automated_kolas_protocol_v1.md",
+                project_root / "docs/testing_lab_method_and_rubric_v1.md",
+                project_root / "docs/kolas_compliance_plan_v1.md",
             ]
         )
     for path in required_files:

@@ -1,7 +1,12 @@
 runtime_version: "official-runtime-v1"
 protocol: "automated-kolas-v1"
-evaluator_source_sha256: "3a3a02606b406f5884d3a1efca14fa3dbe6204b06b9e0a36d3410e3ae51140c5"
+evaluator_source_sha256: "25a59a94a07a795c1d7ec5d1b7710038391bdba4458e5127d75b20736ce880aa"
 dataset:
+  dataset_id: "KOLAS_RA_GT"
+  dataset_version: "1.0.0"
+  schema_version: "kolas-ra-dataset-v1"
+  source_rows: 843
+  source_sha256: "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a"
   scenario_count: 425
   reference_count: 843
   scenarios_sha256: "2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c"
@@ -24,11 +29,20 @@ judge:
   prompt_path: "prompts/judge_binary_v1.md"
   prompt_sha256: "97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf"
   rubric_path: "configs/rubric_binary_v1.yaml"
-  rubric_sha256: "c6bf64d5dc3ec37647a1ec0b3f5b5b61b25f42b6a38c8e268e418c24ff62845e"
+  rubric_sha256: "d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22"
 metrics:
-  hazard_identification_rule_version: "hazard-identification-v1"
-  hazard_identification_rule: "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
-  hazard_identification_denominator: "references_with_completed_binary_match_matrix"
+  primary_metric: "hazard_semantic_identification_recall"
+  primary_rule_version: "hazard-semantic-identification-v1"
+  primary_rule: "same_hazard_mechanism AND context_compatible"
+  primary_denominator: "references_with_completed_binary_match_matrix"
+  supplementary_kpi_metric: "hazard_identification_accuracy"
+  supplementary_kpi_rule_version: "hazard-identification-v1"
+  supplementary_kpi_rule: "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+  supplementary_kpi_denominator: "references_with_completed_binary_match_matrix"
+acceptance:
+  procedure_validity_rule: "AJQG pass AND all cases processed AND SUT source stable AND no evaluator/infrastructure failure AND seal verified"
+  sut_performance_decision: "report_only_until_testing_lab_approval"
+  performance_thresholds_frozen: false
 parallel:
   case_concurrency: 24
   sut_concurrency: 6
@@ -45,6 +59,7 @@ sut:
   max_retries: 3
   retry_backoff_seconds: 0.5
 benchmark_evidence:
+  purpose: "concurrency_and_runtime_engineering_only_not_current_primary_metric_validation"
   frozen_on: "2026-09-09"
   fifty_case_run_id: "20260909T022015Z-official-live-ebbcff7e"
   fifty_case_wall_seconds: 255.38

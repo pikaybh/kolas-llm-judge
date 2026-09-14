@@ -1,6 +1,6 @@
 # Automated KOLAS Live Evaluation Protocol v1
 
-Status: redesign draft for same-day / near-zero-human execution
+Status: implementation candidate; testing-lab approval and SUT performance threshold are pending
 
 ## 1. Design goal
 
@@ -134,32 +134,34 @@ arbitrary Likert-score variation.
 ## 5. Official KOLAS metrics
 
 ### Primary
-1. Hazard Identification Accuracy
-   - KPI-oriented reference-level identification rate.
-   - A reference is identified when at least one generated risk satisfies:
-     `(same_hazard_mechanism AND context_compatible) OR accident_compatible`.
-   - Matching is many-to-one for this KPI; Hungarian 1:1 uniqueness is not imposed.
-   - Denominator: reference risks for which the binary match matrix completed successfully.
-   - This metric is intentionally separated from the stricter diagnostic below.
-
-2. Strict Reference Risk Coverage
-   - Existing maximum-cardinality 1:1 matching over
+1. Hazard Semantic Identification Recall (`hazard_semantic_identification_recall`)
+   - KOLAS-facing reference-level identification measurand.
+   - A reference is identified only when at least one generated risk satisfies:
      `same_hazard_mechanism AND context_compatible`.
-   - Retained as a stricter completeness/faithfulness diagnostic and is never overwritten
-     by Hazard Identification Accuracy.
+   - Accident compatibility alone never establishes a primary semantic identification.
+   - Matching is many-to-one; Hungarian 1:1 uniqueness is not imposed on this Recall.
+   - Denominator: reference risks for which the binary match matrix completed successfully.
 
-3. SUT Completion Rate
+### Secondary / diagnostic
+2. Hazard Identification Accuracy (`hazard_identification_accuracy`)
+   - Existing project/KPI-compatible supplementary metric.
+   - Uses the broader rule `(same_hazard_mechanism AND context_compatible) OR accident_compatible`.
+   - Kept for historical KPI continuity only and must not be presented as the KOLAS primary measurand.
+
+3. Strict Reference Risk Coverage
+   - Maximum-cardinality 1:1 matching over `same_hazard_mechanism AND context_compatible`.
+   - Retained as a stricter uniqueness/completeness diagnostic.
+
+4. SUT Completion Rate
    valid risk_assessment responses / requested cases
 
-4. Schema & Numerical Consistency
+5. Schema & Numerical Consistency
    deterministic parser / range / arithmetic compliance
 
-### Secondary
-5. Accident Classification Agreement among strict matched risks
-6. Mitigation Appropriateness among strict matched risks
-7. Mitigation Specificity among strict matched risks
-8. Legal Basis Presence
-9. Legal Basis Relevance
+6. Accident Classification Agreement among strict matched risks
+7. Mitigation Appropriateness among strict matched risks
+8. Mitigation Actionability / Specificity among strict matched risks
+9. Legal Basis Presence / Relevance
 
 ### Diagnostic only unless the testing laboratory explicitly approves otherwise
 - unmatched/generated-risk rate
@@ -327,13 +329,13 @@ same-day live test, but the accredited testing laboratory must agree that the fr
 Judge qualification and reference-conformance measurand are acceptable within its accredited
 scope and chosen test method before the official accredited report is issued.
 
-## 14. Implementation status (2026-09-09)
+## 14. Implementation status (updated 2026-09-14)
 
 Implemented:
 - 104-control construction-defined AJQG suite and canonical SHA-256 identity
 - GPT-5.6 Sol binary-checklist Judge
 - live `qualify-judge` command and automatic gate artifacts
-- match eligibility based on hazard mechanism + work context; accident compatibility remains an independent metric and secondary matching preference
+- KOLAS primary identification fixed to hazard mechanism + compatible work context; accident-only compatibility is excluded from the primary metric
 - matched-only mitigation/legal quality evaluation and generated-risk critical safety diagnostics
 - concurrency-safe rotating SEEXR authentication
 - bounded case/SUT/Judge concurrency with atomic checkpoints and resume
@@ -341,6 +343,9 @@ Implemented:
 - automated JSON/CSV aggregate report and automated method manifest
 - `official-live` orchestration and Rich live dashboard
 - automatic production source re-check, report, double-seal, and self-verification
+- explicit `KOLAS_RA_GT` v1.0.0 dataset identity in addition to content SHA-256
+- `compare-repeatability` for sealed repeated live-run semantic stability
+- SUT performance threshold intentionally blocked until testing-lab approval
 
 Frozen official runtime after production load testing (2026-09-09):
 - runtime file: `configs/official_runtime_v1.yaml`
@@ -357,4 +362,4 @@ Freeze evidence: `20260909T022015Z-official-live-ebbcff7e` processed 50/50 cases
 
 Official mode reads these operational values only from `configs/official_runtime_v1.yaml`. CLI/environment overrides for Judge model/reasoning/concurrency, SUT method/model mode, chunks, or pipeline concurrency are development-only. `.env` supplies secrets/credentials, not the official test method. The runtime also freezes SHA-256 values for the dataset, AJQG seed/gate/control suite, binary Judge prompt, and binary rubric.
 
-The remaining qualification step before test-day release is a clean-commit 425-case full dry-run using this frozen runtime.
+The remaining external/finalization steps before accredited use are: testing-lab review of the measurand/Rubric/repeatability policy, agreement on the SUT performance acceptance threshold, then a clean release candidate and 425-case full dry-run using the approved frozen runtime. The Sep-09 50-case run remains engineering/concurrency evidence and is not re-labelled as performance evidence for the Sep-14 primary-metric semantics.
