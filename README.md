@@ -22,7 +22,8 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] immutable run manifest
 - [x] production Core/Agents working-tree fingerprint 기록
 - [x] 실행 전/후 SUT source stability 검증
-- [x] human calibration template and calibration gate
+- [x] legacy ordinal human calibration template/gate (research compatibility)
+- [x] official Boolean blinded Human–LLM calibration template/gate under `derived/`
 - [x] Judge repeatability runner
 - [x] smoke / pilot / full batch runner with case/stage/retry/elapsed/ETA progress
 - [x] full run calibration gate 강제
@@ -63,7 +64,17 @@ Judge 적격성 시험만 실행:
 
 실패는 자동 분류합니다. `sut_non_completion`(예: `<ask_user>`, 누락/비정상 risk XML)은 제품의 completion 측정값으로 남기되 시험 절차 자체를 무효화하지 않습니다. `evaluator_failure` 또는 retry 후 지속되는 `infrastructure_failure`는 official candidate를 무효화합니다.
 
-현재 AJQG v1은 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록합니다. Human calibration 명령은 FACE/연구용 meta-evaluation 경로로 유지합니다.
+현재 AJQG v1은 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록합니다.
+
+시험 전 독립 Human–LLM 검증이 필요한 경우에는 official Boolean Rubric 그대로 blinded 표본을 생성합니다. 이 경로는 **official-live의 필수 gate가 아니며**, sealed source run을 수정하지 않고 `derived/binary_calibration/<run_id>/`에만 산출물을 둡니다.
+
+```bash
+uv run kolas-llm-judge make-binary-calibration <SEALED_RUN_ID>
+# 전문가 2인 독립 라벨링 및 adjudication 후
+uv run kolas-llm-judge score-binary-calibration <SEALED_RUN_ID>
+```
+
+생성 manifest는 source run manifest SHA-256, source run seal root SHA-256, 각 CSV의 비라벨 sample identity SHA-256을 고정합니다. Judge 값은 인간 라벨링 CSV에 노출되지 않습니다.
 
 ## Setup
 
@@ -125,7 +136,7 @@ SUT에는 공정, 세부공정, 원본에 명시된 설비, 물질/자재만 입
 
 ## Legacy / FACE research execution sequence
 
-아래 human calibration 기반 흐름은 학술/FACE/meta-evaluation 용으로 보존합니다. KOLAS official 시험 당일에는 위 `official-live` 자동 경로를 사용합니다.
+아래 0–4/0–2 ordinal human calibration 기반 흐름은 학술/FACE/기존 연구 호환용으로만 보존합니다. KOLAS official v1의 Boolean Human–LLM 검증은 위 `make-binary-calibration` / `score-binary-calibration`을 사용하고, 시험 당일 필수 경로는 `official-live` + AJQG입니다.
 
 ### 1. 10-case smoke
 
@@ -297,4 +308,4 @@ Lab-facing documents:
 
 - `docs/testing_lab_method_and_rubric_v1.md`
 - `docs/kolas_compliance_plan_v1.md`
-- `docs/email_draft_to_kang_sungdae.md` (administrative artifact; intentionally excluded from evaluation method identity)
+- `docs/email_draft_to_kang_sungdae.md` (15단계 최종 행정 산출물; 내부 검증 완료 후 마지막으로 갱신)

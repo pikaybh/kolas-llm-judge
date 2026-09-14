@@ -39,9 +39,10 @@ This framing avoids treating inter-LLM consensus as proof of human truth.
 
 ## 3. Replace human calibration with Automatic Judge Qualification Gate (AJQG)
 
-Human calibration / two-expert adjudication is removed from the official live workflow.
+Human calibration / two-expert adjudication is removed from the **mandatory official live workflow**.
+It remains available as a separate pre-test meta-validation path using the same Boolean dimensions as the official Judge.
 
-Before any SUT cases are scored, the system runs an automatic control suite whose expected
+Before any SUT cases are scored, the official live workflow runs an automatic control suite whose expected
 decisions are known by construction.
 
 ### 3.1 Control families
@@ -278,6 +279,7 @@ separate manual calculation.
 - testing laboratory approves the measurand, control suite, and decision rules
 - control suite is frozen once
 - concurrency limits are load-tested and frozen
+- optionally, two blinded safety experts evaluate a derived Boolean-calibration sample; source run seal and sample identity hashes are preserved
 
 ### On test day
 - operator starts one command
@@ -304,13 +306,15 @@ Keep:
 - canonical JSON/CSV reports
 - run sealing
 
-Replace:
-- human_pairs.csv gate
-- human_quality_pairs.csv gate
-- human_generated.csv gate
-- two-expert adjudication requirement
+Replace in the mandatory official workflow:
+- legacy ordinal `human_pairs.csv` / `human_quality_pairs.csv` / `human_generated.csv` gate
+- mandatory two-expert adjudication dependency
 - 20-case x 3 human-alignment-style repeatability workflow
 - ordinal Judge scoring where a binary checklist can be used
+
+Retain separately:
+- optional blinded Boolean Human–LLM meta-validation generated under `derived/binary_calibration/<run_id>/`
+- Judge–Human agreement / Cohen's kappa reporting without modifying the sealed source run
 
 Add:
 - AJQG control suite
@@ -346,6 +350,7 @@ Implemented:
 - explicit `KOLAS_RA_GT` v1.0.0 dataset identity in addition to content SHA-256
 - `compare-repeatability` for sealed repeated live-run semantic stability
 - SUT performance threshold intentionally blocked until testing-lab approval
+- optional blinded Boolean Human–LLM calibration with source-run seal and sample-identity binding
 
 Frozen official runtime after production load testing (2026-09-09):
 - runtime file: `configs/official_runtime_v1.yaml`

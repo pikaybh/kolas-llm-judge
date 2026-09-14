@@ -83,6 +83,23 @@ strict semantic match로 선택된 쌍에는 다음을 판정한다.
 5. AJQG는 104개 고정 control case에 대한 structured completion, positive/negative semantic control, 사고분류, 감소대책, 법적 근거, 중대안전오류, 반복 안정성 기준을 검사한다.
 6. Qualification 실패 시 공식 시험결과로 인정하지 않는다.
 
+### 7.1 선택적 Human–LLM 독립 검증
+
+시험 당일 공식 run의 필수 절차와 별개로, 시험 전 meta-validation을 위해 동일 Boolean Rubric을 두 안전전문가가 blinded 방식으로 독립 평가할 수 있다. 이 경로는 Judge를 사람과 동일하다고 가정하기 위한 것이 아니라, 주요 Boolean 판정의 사람–Judge 일치도를 별도 증빙하기 위한 것이다.
+
+- Match: `same_hazard_mechanism`, `context_compatible`, `accident_compatible`
+- Quality: `mitigation_addresses_hazard`, `mitigation_actionable`, `mitigation_specific`, `legal_basis_relevant`, `unsafe_advice`
+- Safety: `critical_safety_error`
+- Primary composite: `same_hazard_mechanism AND context_compatible`
+- 두 전문가 독립평가 후 disagreement adjudication
+- Judge 판정은 인간 라벨링 CSV에 노출하지 않음
+- Judge–Human agreement와 Cohen's kappa 산출
+- rare safety event는 prevalence 문제 때문에 kappa를 기술통계로 보고하고 agreement를 우선 gate로 사용
+- source run manifest SHA-256, source run seal root SHA-256, sample identity SHA-256을 보존
+- calibration 산출물은 sealed source run을 변경하지 않고 별도 `derived/` 경로에 저장
+
+이 human validation은 현재 official live의 필수 gate가 아니다. 시험 당일 필수 Judge 적격성 gate는 AJQG이며, 시험기관이 human validation을 추가 요구할 경우 사전 합의한 sample size/threshold로 활성화한다.
+
 ## 8. 재현성 평가
 
 동일한 dataset·SUT 설정·Judge 설정·Rubric·소스 fingerprint로 live run을 2회 이상 수행하고 각 run을 SHA-256으로 봉인한다. `compare-repeatability` 분석으로 다음을 산출한다.

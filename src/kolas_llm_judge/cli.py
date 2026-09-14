@@ -22,6 +22,10 @@ from rich.progress import (
 )
 from rich.table import Table
 
+from .binary_human_calibration import (
+    make_binary_human_calibration_template,
+    score_binary_human_calibration,
+)
 from .calibration import (
     make_human_calibration_template,
     run_judge_repeatability,
@@ -263,6 +267,59 @@ def report_command(
     for name, path in paths.items():
         table.add_row(name, str(path))
     console.print(table)
+
+
+@app.command("make-binary-calibration")
+def make_binary_calibration_command(
+    run: str = typer.Argument(..., help="Completed official-live pilot/full run id"),
+    match_sample_size: int = typer.Option(150, min=1),
+    quality_sample_size: int = typer.Option(100, min=1),
+    safety_sample_size: int = typer.Option(100, min=1),
+    seed: int = typer.Option(20260914),
+    output_dir: Path | None = typer.Option(
+        None,
+        help="Derived output directory. Defaults outside the sealed run tree.",
+    ),
+) -> None:
+    """Create blinded expert-label templates for the official Boolean Rubric."""
+    run_dir = _resolve_run_dir(run)
+    output_dir = output_dir or (PROJECT_ROOT / "derived/binary_calibration" / run_dir.name)
+    paths = make_binary_human_calibration_template(
+        run_dir=run_dir,
+        scenarios_path=DEFAULT_SCENARIOS,
+        output_dir=output_dir,
+        match_sample_size=match_sample_size,
+        quality_sample_size=quality_sample_size,
+        safety_sample_size=safety_sample_size,
+        seed=seed,
+    )
+    for name, path in paths.items():
+        console.print(f"{name}: {path}")
+
+
+@app.command("score-binary-calibration")
+def score_binary_calibration_command(
+    run: str = typer.Argument(..., help="Official-live run id containing filled binary calibration CSVs"),
+    directory: Path | None = typer.Option(
+        None,
+        help="Derived calibration directory. Defaults outside the sealed run tree.",
+    ),
+) -> None:
+    """Compare blinded expert consensus against persisted official Boolean Judge decisions."""
+    run_dir = _resolve_run_dir(run)
+    directory = directory or (PROJECT_ROOT / "derived/binary_calibration" / run_dir.name)
+    result = score_binary_human_calibration(
+        run_dir=run_dir,
+        match_csv=directory / "human_binary_match.csv",
+        quality_csv=directory / "human_binary_quality.csv",
+        safety_csv=directory / "human_binary_safety.csv",
+    )
+    output = directory / "gate_result.json"
+    atomic_write_json(output, result)
+    console.print_json(json=json.dumps(result, ensure_ascii=False))
+    console.print("[green]BINARY HUMAN CALIBRATION PASS[/green]" if result["gate_pass"] else "[red]BINARY HUMAN CALIBRATION FAIL[/red]")
+    if not result["gate_pass"]:
+        raise typer.Exit(code=3)
 
 
 @app.command("make-calibration")

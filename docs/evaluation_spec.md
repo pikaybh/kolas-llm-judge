@@ -176,9 +176,21 @@ Smoke와 pilot의 목적을 분리한다.
 
 현재 baseline에서는 pilot 50-case가 **50개 서로 다른 공정**을 포함한다. 이 pilot은 전체 성능의 최종 모집단 추정치가 아니라 Judge calibration과 실패 유형 탐색에 사용하며, 최종 성능치는 425-case full에서 산출한다.
 
-## 7. Judge calibration gate
+## 7. Judge validation paths
 
-공식 full run 전에 Judge model, reasoning effort, two-stage pipeline, chunk/concurrency 설정,
+### 7.1 Official v1 mandatory gate: AJQG
+
+공식 `official-live`는 human labeling에 의존하지 않고 104-control Automatic Judge Qualification Gate(AJQG)를 시험 직전에 수행한다. structured completion, semantic positive/negative, accident, mitigation, legal, critical-safety, robustness, repeated-decision stability가 frozen gate를 통과해야 본시험으로 진행한다.
+
+### 7.2 Optional pre-test Human–LLM Boolean validation
+
+필요하면 sealed pilot/live run을 읽기 전용 source로 사용해 `derived/binary_calibration/<run_id>/`에 blinded 표본을 생성한다. 두 안전전문가는 `same_hazard_mechanism`, `context_compatible`, `accident_compatible`, mitigation/legal/safety Boolean을 Judge 결과를 보지 않고 독립 판정하고 불일치를 adjudication한다. source run manifest SHA-256, run seal root SHA-256, 비라벨 sample identity SHA-256을 검증하며 Judge–Human agreement와 Cohen's kappa를 보고한다. 이 경로는 official-live의 mandatory gate가 아니라 별도 meta-validation이다.
+
+### 7.3 Legacy ordinal calibration (research compatibility)
+
+아래 내용은 기존 0–4/0–2 연구용 calibration 경로의 호환 사양이다. official v1 Boolean 시험방법과 혼용하지 않는다.
+
+기존 full run 전에 Judge model, reasoning effort, two-stage pipeline, chunk/concurrency 설정,
 prompt, rubric, 평가 코드와 dataset identity를 pilot manifest에 동결하고 human validation으로 검증한다.
 
 기본 계획:
