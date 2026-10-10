@@ -56,21 +56,24 @@
 
 ## Phase 2. SUT 및 추론 설정 Freeze
 
-- [ ] 시험대상 제품 버전 부여
-- [ ] 관련 repository별 commit SHA 기록
-- [ ] API endpoint와 request/response schema version 기록
-- [ ] agent별 모델 identifier 기록
-- [ ] reasoning/fast/instant 등 provider mode를 실제 요청 기준 기록
-- [ ] temperature/top_p/max tokens/seed 등 설정값 기록
-- [ ] 설정 불가 값은 `미지원` 또는 `provider-controlled`로 명시
-- [ ] prompt 파일 또는 prompt content hash 기록
-- [ ] tool/function/schema 설정 기록
-- [ ] dependency/runtime 버전 기록
-- [ ] DB/schema/migration 상태 기록
-- [ ] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화
-- [ ] `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md` 작성
+- [x] 시험대상 freeze candidate ID 부여 — `SEEXR-RA-SUT-RC-2026.10.11.1`; final release tag는 freeze gate 이후 부여
+- [x] 관련 repository별 commit SHA 기록 — Core/Agents/RA/Law audit snapshot 및 Git tree 기록
+- [x] API endpoint와 request/response schema version 기록 — protocol v2 / quick-fast-v1.0.0 / SSE/XML contract 기록
+- [x] agent별 모델 identifier 기록 — normal/conditional KOLAS path 분리 기록
+- [x] reasoning/fast/instant 등 provider mode를 실제 요청 기준 기록 — SEEXR `fast`와 OpenAI service tier를 분리하고 SUT service tier 직접 설정 없음 확인
+- [x] temperature/top_p/max tokens/seed 등 설정값 기록 — relevant quick-fast source에서 explicit 설정 없음 확인
+- [x] 설정 불가 값은 `미지원` 또는 `provider-controlled`로 명시
+- [x] prompt 파일 또는 prompt content hash 기록 — 단일 prompt 파일 대신 agent/workflow/prompt-builder source SHA-256 집합으로 기록
+- [x] tool/function/schema 설정 기록 — RA hybrid retrieval, structured-output schemas, conditional branches 정리
+- [x] dependency/runtime 버전 기록 — Node/npm/package-lock 및 주요 resolved package 기록
+- [ ] DB/schema/migration 최종 상태 기록 — RA API-visible 6,443행 hash 확보; embedding 포함 RA snapshot 및 Law DB snapshot은 PENDING
+- [x] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화 — secret 제외 whitelist와 source default/override 경로 기록
+- [x] `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md` REVIEW 초안 작성
 
 **완료 조건:** 시험기관이 어떤 버전/모델/설정으로 호출해야 하는지 모호성이 없다.
+
+**Phase 2 Drafts:** `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md`
+**현재 상태:** 소스/API/모델/prompt/runtime 감사 완료. final immutable deployment, evaluation-account instruction, RA embedding snapshot, Law DB snapshot, model snapshot policy가 남아 있어 Phase 2는 아직 `REVIEW`다.
 
 ## Phase 3. GT 정당성·출처·무결성 확립
 

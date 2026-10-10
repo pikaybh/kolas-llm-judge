@@ -8,8 +8,8 @@
 | ID | Markdown | 내용 | HWP 반영 위치 | 상태 | 선행조건 |
 |---|---|---|---|---|---|
 | KOLAS-DOC-001 | `01_TEST_METHOD.md` | 시험 범위·지표·판정·계산식 | 붙임 1 | REVIEW | Phase 0 완료; 시험기관 method 승인 대기 |
-| KOLAS-DOC-002 | `02_SYSTEM_UNDER_TEST.md` | SUT 구성·서비스·버전 | 붙임 1 | NOT_STARTED | 시스템 감사 |
-| KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | NOT_STARTED | 실제 API 설정 확인 |
+| KOLAS-DOC-002 | `02_SYSTEM_UNDER_TEST.md` | SUT 구성·서비스·버전 | 붙임 1 | REVIEW | Phase 2 audit 완료; final deployment freeze 대기 |
+| KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | REVIEW | Phase 2 audit 완료; model snapshot policy 대기 |
 | KOLAS-DOC-004 | `04_GT_SPECIFICATION.md` | GT 스키마·ID·freeze | 붙임 3 | NOT_STARTED | canonical GT 확인 |
 | KOLAS-DOC-005 | `05_GT_SOURCE_PROVENANCE.md` | GT 근거자료와 traceability | 붙임 3 | NOT_STARTED | source audit |
 | KOLAS-DOC-006 | `06_EXPERT_VALIDATION_PROTOCOL.md` | 3인 이상 전문가 검증 절차 | 붙임 3 | NOT_STARTED | 전문가 기준 확정 |
@@ -18,7 +18,7 @@
 | KOLAS-DOC-009 | `09_EVALUATOR_QUALIFICATION.md` | Judge 적격성/반복성 검증 | 붙임 4 | NOT_STARTED | control set 확정 |
 | KOLAS-DOC-010 | `10_REPRODUCIBILITY_GUIDE.md` | 설치부터 full run까지 재현 절차 | 붙임 5 | NOT_STARTED | runner package 준비 |
 | KOLAS-DOC-011 | `11_API_ACCESS_GUIDE.md` | endpoint·auth·권한·오류 대응 | 붙임 5 | NOT_STARTED | 시험기관 계정 전략 |
-| KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | NOT_STARTED | freeze candidate |
+| KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
 | KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | NOT_STARTED | final package candidate |
 | KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | NOT_STARTED | version policy |
 
