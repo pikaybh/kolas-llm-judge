@@ -7,7 +7,7 @@
 
 | ID | Markdown | 내용 | HWP 반영 위치 | 상태 | 선행조건 |
 |---|---|---|---|---|---|
-| KOLAS-DOC-001 | `01_TEST_METHOD.md` | 시험 범위·지표·판정·계산식 | 붙임 1 | NOT_STARTED | Phase 0 감사 |
+| KOLAS-DOC-001 | `01_TEST_METHOD.md` | 시험 범위·지표·판정·계산식 | 붙임 1 | REVIEW | Phase 0 완료; 시험기관 method 승인 대기 |
 | KOLAS-DOC-002 | `02_SYSTEM_UNDER_TEST.md` | SUT 구성·서비스·버전 | 붙임 1 | NOT_STARTED | 시스템 감사 |
 | KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | NOT_STARTED | 실제 API 설정 확인 |
 | KOLAS-DOC-004 | `04_GT_SPECIFICATION.md` | GT 스키마·ID·freeze | 붙임 3 | NOT_STARTED | canonical GT 확인 |

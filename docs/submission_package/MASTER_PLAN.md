@@ -35,21 +35,24 @@
 
 ## Phase 1. 시험 범위와 측정방법 Freeze
 
-- [ ] 시험 목적과 대상 기능을 한 문장으로 확정
-- [ ] 공식 측정 지표명 확정
-- [ ] denominator/numerator 정의 확정
-- [ ] scenario 단위와 reference hazard 단위 관계 정의
-- [ ] semantic MATCH 조건 확정
-- [ ] generated hazard atomic decomposition 규칙 확정
-- [ ] 다수 generated hazard가 하나의 GT에 대응할 때 규칙 정의
-- [ ] 하나의 generated hazard가 여러 GT에 대응할 때 규칙 정의
-- [ ] SUT 실패/timeout/invalid schema 처리 규칙 정의
-- [ ] 재시도 횟수와 실패가 metric에 반영되는 방식 정의
-- [ ] 동일 입력 반복 시험 횟수 및 재현성 통계 정의
-- [ ] 시험기관과 합의가 필요한 항목을 별도 표로 분리
-- [ ] `01_TEST_METHOD.md` 승인본 작성
+- [x] 시험 목적과 대상 기능을 한 문장으로 확정
+- [x] 공식 측정 지표명 확정
+- [ ] denominator/numerator 최종 확정 — numerator는 정의 완료, denominator는 `DEC-METHOD-003` 시험기관 승인 대기
+- [x] scenario 단위와 reference hazard 단위 관계 정의
+- [x] semantic MATCH 조건 확정
+- [x] generated hazard atomic decomposition 규칙 확정
+- [x] 다수 generated hazard가 하나의 GT에 대응할 때 규칙 정의
+- [x] 하나의 generated hazard가 여러 GT에 대응할 때 규칙 정의
+- [x] SUT 실패/timeout/invalid schema 처리 규칙 정의
+- [x] 재시도 횟수와 실패가 metric에 반영되는 방식 정의
+- [ ] 동일 입력 반복 시험 횟수 및 허용 변동 최종 확정 — 통계 항목/최소 2회 후보 정의, `DEC-METHOD-005/006` 승인 대기
+- [x] 시험기관과 합의가 필요한 항목을 별도 표로 분리
+- [ ] `01_TEST_METHOD.md` 승인본 작성 — 현재 `0.2-draft / REVIEW`, 외부 method decision 이후 승인
 
 **완료 조건:** 동일 raw data를 주면 별도 해석 없이 같은 metric을 계산할 수 있다.
+
+**Phase 1 Draft:** `01_TEST_METHOD.md`
+**현재 상태:** 내부 구현 설명은 정리 완료. denominator·반복/허용변동·성능 합격선은 시험기관 승인 전 freeze 금지.
 
 ## Phase 2. SUT 및 추론 설정 Freeze
 
