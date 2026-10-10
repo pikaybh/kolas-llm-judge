@@ -72,6 +72,8 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 ## 5. 작업 상태
 
 - 전체 진행 계획: [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- Phase 0 증적 등록부: [`00_PHASE0_EVIDENCE_INVENTORY.md`](./00_PHASE0_EVIDENCE_INVENTORY.md)
+- Phase 0 감사 로그: [`00_PHASE0_AUDIT_LOG.md`](./00_PHASE0_AUDIT_LOG.md)
 - HWP 편집/인수인계 명세: [`HWP_HANDOFF_SPEC.md`](./HWP_HANDOFF_SPEC.md)
 - 문서 등록부: [`DOCUMENT_REGISTER.md`](./DOCUMENT_REGISTER.md)
 - 섹션 작성 템플릿: [`templates/SECTION_TEMPLATE.md`](./templates/SECTION_TEMPLATE.md)

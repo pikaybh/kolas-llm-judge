@@ -13,21 +13,25 @@
 
 ## Phase 0. 기존 자료 및 구현 재감사 / Evidence Inventory
 
-- [ ] 현재 repository의 KOLAS 코드·스크립트·GT·sealed run·derived 결과·문서 위치를 evidence inventory로 등록
-- [ ] `KOLAS_RA_GT v1.0.0`의 425 scenarios / 843 reference hazards canonical 원본·manifest·hash 재확인
-- [ ] 과거 실행 결과(예: broad/strict semantic 평가)가 생성된 실제 스크립트와 raw 결과 확인
-- [ ] 현재 SUT 호출 경로(`seexr-api-core` → agents/RA 등) 실제 코드 기준 정리
-- [ ] 현재 사용 모델을 agent별로 코드/환경설정/API 요청 기준 확인
-- [ ] 모델 provider가 실제로 허용하는 추론 파라미터 목록 확인
-- [ ] temperature/top_p/seed/reasoning effort 등 각 파라미터의 `고정/미사용/미지원/provider-controlled` 상태 확인
-- [ ] system/user prompt 및 structured-output schema의 실제 소스 위치 확인
-- [ ] retry/timeout/concurrency/rate-limit 정책 확인
-- [ ] 기존 evaluator/Judge 구현, `judge_binary_v1.md`, `rubric_binary_v1.yaml`, official runtime freeze의 정합성 재확인
-- [ ] Git에 포함되지 않은 sealed run/raw artifact/전문가 자료 등 외부 증적과 보관 위치 조사
-- [ ] 민감정보/개인정보가 제출 패키지에 섞일 가능성 점검
-- [ ] 감사 결과를 `evidence inventory`로 작성
+- [x] 현재 repository의 KOLAS 코드·스크립트·GT·sealed run·derived 결과·문서 위치를 evidence inventory로 등록
+- [x] `KOLAS_RA_GT v1.0.0`의 425 scenarios / 843 reference hazards canonical 원본·manifest·hash 재확인
+- [x] 과거 실행 결과(예: broad/strict semantic 평가)가 생성된 실제 스크립트와 raw 결과 확인
+- [x] 현재 SUT 호출 경로(`seexr-api-core` → agents/RA 등) 실제 코드 기준 정리
+- [x] 현재 사용 모델을 agent별로 코드/환경설정/API 요청 기준 확인
+- [x] 모델 provider가 실제로 허용하는 추론 파라미터 목록 확인
+- [x] temperature/top_p/seed/reasoning effort 등 각 파라미터의 `고정/미사용/미지원/provider-controlled` 상태 확인
+- [x] system/user prompt 및 structured-output schema의 실제 소스 위치 확인
+- [x] retry/timeout/concurrency/rate-limit 정책 확인
+- [x] 기존 evaluator/Judge 구현, `judge_binary_v1.md`, `rubric_binary_v1.yaml`, official runtime freeze의 정합성 재확인
+- [x] Git에 포함되지 않은 sealed run/raw artifact/전문가 자료 등 외부 증적과 보관 위치 조사
+- [x] 민감정보/개인정보가 제출 패키지에 섞일 가능성 점검
+- [x] 감사 결과를 `evidence inventory`로 작성
 
 **완료 조건:** 모든 이후 문서에서 참조할 수 있는 파일 경로/commit SHA/evidence ID 목록이 존재한다.
+
+**Phase 0 Evidence:** `00_PHASE0_EVIDENCE_INVENTORY.md`, `00_PHASE0_AUDIT_LOG.md`
+**결론:** 완료. 발견된 미충족 사항은 `GAP-*`로 후속 Phase에 이관.
+
 
 ## Phase 1. 시험 범위와 측정방법 Freeze
 
