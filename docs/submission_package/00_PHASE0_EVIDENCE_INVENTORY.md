@@ -157,6 +157,18 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 
 현재 `.env`에서 사용하는 credential 계열 변수에는 `OPENAI_API_KEY`, `SEEXR_API_TOKEN`, `SEEXR_EMAIL`, `SEEXR_PASSWORD`가 있다. 실제 값은 문서/버전관리/최종 HWP에 기록하지 않고 별도 보안채널로 전달해야 한다.
 
+## 2.8 Reproducibility Runner / Package
+
+| Evidence ID | 항목 | 근거 | 상태 |
+|---|---|---|---|
+| `EV-REPRO-001` | Official entrypoint | `src/kolas_llm_judge/official_live.py`, CLI `official-live` | preflight→AJQG→425 evaluation→report→seal→verify 자동화 |
+| `EV-REPRO-002` | Dependency lock | `pyproject.toml`, `uv.lock` | Python >=3.12; `uv sync --frozen` 절차 정의 |
+| `EV-REPRO-003` | Official preflight | `src/kolas_llm_judge/doctor.py` | dataset/hash/git/SUT source/auth/runtime 검사 |
+| `EV-REPRO-004` | Per-case checkpoint | `src/kolas_llm_judge/parallel_runner.py` | SUT/parsed/Judge/result/error 자동 보존 |
+| `EV-REPRO-005` | Run manifest | `src/kolas_llm_judge/automated_manifest.py` | dataset/code/config/Judge/SUT/source fingerprint 기록 |
+| `EV-REPRO-006` | Run seal | `src/kolas_llm_judge/seal.py` | artifact path/size/SHA-256 root + verify |
+| `EV-REPRO-007` | Example development run | `runs/20260914T035752Z-official-live-f573f39b` | 10/10 complete, source stable, procedure valid, seal verified; official result 아님 |
+
 ## 3. Phase 0 Gap Register
 
 | Gap ID | 중요도 | 발견사항 | 후속 단계 |
@@ -167,7 +179,7 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 | `GAP-RUN-001` | Critical | 2026-09-09 425-case run은 `procedure_valid=false` | 승인된 freeze 후 새 full run 필요 |
 | `GAP-EVAL-001` | High | Judge가 `temperature`, `top_p`, `max_output_tokens`, `service_tier`를 명시하지 않음 | Phase 2/5에서 명시 또는 provider-default/effective 값 기록 정책 확정 |
 | `GAP-EVAL-002` | High | 기존 persisted Judge call metadata가 response ID/model/usage 중심이며 effective service tier·temperature/top_p 전체를 보존하지 않음 | Phase 5/6 |
-| `GAP-PKG-001` | High | GT/scenarios/runs/derived가 Git ignored이며 별도 제출 bundle 생성 절차가 아직 없음 | Phase 6/8 |
+| `GAP-PKG-001` | Partially resolved | code + secure GT + credential의 3-part 전달 절차는 Phase 6에서 정의됨; 실제 기관 전달 bundle 조립은 미완료 | Phase 8/11 |
 | `GAP-API-001` | Medium | 시험기관용 최소권한 credential lifecycle이 아직 공식 문서화되지 않음 | Phase 7 |
 | `GAP-HWP-001` | Medium | 기관 제공 공식 HWP 양식/문서번호/수신처/결재정보 미확정 | Phase 10 |
 

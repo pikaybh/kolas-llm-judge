@@ -126,23 +126,28 @@
 
 ## Phase 6. 재현 프로그램 패키지화
 
-- [ ] clean-room 실행 가능한 evaluator/runner entrypoint 정의
-- [ ] 설정 파일과 secret 파일 분리
-- [ ] dependency lock 확인
-- [ ] 설치 명령 정의
-- [ ] GT 로드 시 hash validation 구현 또는 확인
-- [ ] SUT version preflight 확인 구현 또는 확인
-- [ ] API health/auth preflight 구현
-- [ ] deterministic ordering 및 run ID 생성 규칙 정의
-- [ ] raw input/output 자동 보존
-- [ ] 중간 판정 결과 보존
-- [ ] 최종 metric 자동 계산
-- [ ] 실행 종료 시 manifest 생성
-- [ ] 실패/재시도 로그 보존
-- [ ] example run 제공
-- [ ] `10_REPRODUCIBILITY_GUIDE.md` 작성
+- [x] clean-room 실행 가능한 evaluator/runner entrypoint 정의 — `kolas-llm-judge official-live`
+- [x] 설정 파일과 secret 파일 분리 — official runtime/config tracked, `.env` ignored
+- [x] dependency lock 확인 — Python >=3.12 + `uv.lock`
+- [x] 설치 명령 정의 — `uv sync --frozen`
+- [x] GT 로드 시 hash validation 구현 확인 — official runtime + dataset manifest/content SHA 검증
+- [x] SUT version preflight 확인 — Core/Agents relevant source fingerprint start/end 기록
+- [x] API health/auth preflight 구현 확인 — `doctor --live --official --require-ready`
+- [x] input ordering 및 run ID 생성 규칙 정의 — frozen scenario order + UTC timestamp/random run ID + deterministic per-case UUIDv5 request ID
+- [x] raw input/output 자동 보존 — `cases/<case_id>/sut.json`
+- [x] 중간 판정 결과 보존 — parsed / binary_judge checkpoints
+- [x] 최종 metric 자동 계산 — deterministic report pipeline
+- [x] 실행 종료 시 manifest 생성 — method/SUT/Judge/dataset/source identity 포함
+- [x] 실패/재시도 로그 보존 — `error.json`, SUT retry/reconnect logs
+- [x] example run 제시 — 2026-09-14 10-case DEVELOPMENT example + artifact hashes
+- [x] SHA-256 seal/self-verification 확인
+- [x] `10_REPRODUCIBILITY_GUIDE.md` 작성
+- [ ] 실제 외부 clean-room end-to-end drill — Phase 9에서 수행
 
-**완료 조건:** 새 환경에서 README/가이드만 보고 end-to-end 시험이 실행된다.
+**완료 조건:** 재현 담당자가 code + secure GT + credential package로 공식 entrypoint를 실행할 수 있고, 별도 clean-room drill에서 동일 절차를 성공시킨다.
+
+**Phase 6 Draft:** `10_REPRODUCIBILITY_GUIDE.md`
+**현재 상태:** 프로그램·artifact·manifest·seal·설치/실행 절차는 문서화 완료. 실제 외부 clean-room 재현 성공 확인은 Phase 9 미완료이며, 현재 서버 작업복사본은 보존 중인 untracked `docs/lab_handoff/` 때문에 official clean-worktree preflight를 통과하지 않으므로 새 clone을 사용해야 한다.
 
 ## Phase 7. API 접근 및 권한 인계
 
