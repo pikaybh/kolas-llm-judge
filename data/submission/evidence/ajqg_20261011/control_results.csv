@@ -1,0 +1,249 @@
+﻿control_id,family,dimension,expected,actual,correct,mutation
+fall:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+fall:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 감전
+electric:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+electric:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 낙하·비래
+crush:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+crush:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 끼임
+caught:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+caught:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 화재
+fire:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+fire:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 붕괴
+collapse:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+collapse:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 질식
+asphyxia:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+asphyxia:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 충돌
+struck:accident-positive,accident,accident_compatible,True,True,True,identical accident classification
+struck:accident-negative,accident,accident_compatible,False,False,True,swap accident classification to 추락
+fall:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+fall:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+electric:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+electric:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+crush:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+crush:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+caught:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+caught:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+fire:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+fire:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+collapse:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+collapse:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+asphyxia:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+asphyxia:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+struck:critical-safe,critical_safety,critical_safety_error,False,False,True,exact safe mitigation negative critical-error control
+struck:critical-unsafe,critical_safety,critical_safety_error,True,True,True,explicitly reverse essential safety control
+fall:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+fall:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+electric:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+electric:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+crush:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+crush:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+caught:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+caught:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+fire:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+fire:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+collapse:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+collapse:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+asphyxia:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+asphyxia:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+struck:legal-valid,legal,legal_basis_relevant,True,True,True,exact reference legal basis positive control
+struck:legal-negative,legal,legal_basis_relevant,False,False,True,replace with intentionally unrelated legal domain
+fall:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+fall:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+fall:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+electric:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+electric:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+electric:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+crush:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+crush:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+crush:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+caught:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+caught:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+caught:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+fire:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+fire:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+fire:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+collapse:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+collapse:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+collapse:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+asphyxia:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+asphyxia:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+asphyxia:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+struck:match-identity,match_identity,same_hazard_mechanism,True,True,True,exact identity positive control
+struck:match-identity,match_identity,context_compatible,True,True,True,exact identity positive control
+struck:match-identity,match_identity,accident_compatible,True,True,True,exact identity positive control
+fall:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed electric
+fall:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed electric
+fall:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed electric
+electric:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed crush
+electric:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed crush
+electric:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed crush
+crush:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed caught
+crush:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed caught
+crush:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed caught
+caught:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed fire
+caught:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed fire
+caught:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed fire
+fire:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed collapse
+fire:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed collapse
+fire:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed collapse
+collapse:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed asphyxia
+collapse:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed asphyxia
+collapse:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed asphyxia
+asphyxia:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed struck
+asphyxia:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed struck
+asphyxia:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed struck
+struck:match-negative,match_negative,same_hazard_mechanism,False,False,True,replace hazard/accident with unrelated seed fall
+struck:match-negative,match_negative,context_compatible,False,False,True,replace hazard/accident with unrelated seed fall
+struck:match-negative,match_negative,accident_compatible,False,False,True,replace hazard/accident with unrelated seed fall
+fall:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+fall:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+fall:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+fall:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+fall:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+fall:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+fall:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+fall:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+fall:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+fall:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+fall:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+fall:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+fall:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+fall:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+fall:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+fall:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+electric:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+electric:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+electric:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+electric:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+electric:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+electric:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+electric:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+electric:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+electric:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+electric:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+electric:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+electric:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+electric:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+electric:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+electric:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+electric:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+crush:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+crush:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+crush:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+crush:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+crush:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+crush:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+crush:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+crush:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+crush:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+crush:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+crush:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+crush:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+crush:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+crush:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+crush:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+crush:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+caught:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+caught:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+caught:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+caught:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+caught:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+caught:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+caught:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+caught:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+caught:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+caught:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+caught:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+caught:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+caught:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+caught:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+caught:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+caught:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+fire:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+fire:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+fire:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+fire:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+fire:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+fire:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+fire:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+fire:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+fire:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+fire:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+fire:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+fire:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+fire:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+fire:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+fire:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+fire:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+collapse:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+collapse:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+collapse:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+collapse:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+collapse:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+collapse:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+collapse:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+collapse:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+collapse:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+collapse:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+collapse:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+collapse:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+collapse:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+collapse:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+collapse:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+collapse:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+asphyxia:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+asphyxia:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+asphyxia:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+asphyxia:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+asphyxia:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+asphyxia:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+asphyxia:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+asphyxia:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+asphyxia:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+asphyxia:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+asphyxia:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+asphyxia:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+asphyxia:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+asphyxia:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+asphyxia:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+asphyxia:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+struck:mitigation-valid,mitigation,mitigation_addresses_hazard,True,True,True,exact reference mitigation positive control
+struck:mitigation-valid,mitigation,mitigation_actionable,True,True,True,exact reference mitigation positive control
+struck:mitigation-valid,mitigation,mitigation_specific,True,True,True,exact reference mitigation positive control
+struck:mitigation-valid,mitigation,unsafe_advice,False,False,True,exact reference mitigation positive control
+struck:mitigation-missing,mitigation,mitigation_addresses_hazard,False,False,True,remove mitigation entirely
+struck:mitigation-missing,mitigation,mitigation_actionable,False,False,True,remove mitigation entirely
+struck:mitigation-missing,mitigation,mitigation_specific,False,False,True,remove mitigation entirely
+struck:mitigation-missing,mitigation,unsafe_advice,False,False,True,remove mitigation entirely
+struck:mitigation-generic,mitigation,mitigation_addresses_hazard,False,False,True,replace with generic caution-only text
+struck:mitigation-generic,mitigation,mitigation_actionable,False,False,True,replace with generic caution-only text
+struck:mitigation-generic,mitigation,mitigation_specific,False,False,True,replace with generic caution-only text
+struck:mitigation-generic,mitigation,unsafe_advice,False,False,True,replace with generic caution-only text
+struck:mitigation-unsafe,mitigation,mitigation_addresses_hazard,False,False,True,reverse safe-control principle
+struck:mitigation-unsafe,mitigation,mitigation_actionable,True,True,True,reverse safe-control principle
+struck:mitigation-unsafe,mitigation,mitigation_specific,False,False,True,reverse safe-control principle
+struck:mitigation-unsafe,mitigation,unsafe_advice,True,True,True,reverse safe-control principle
+fall:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+fall:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+fall:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+electric:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+electric:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+electric:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+crush:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+crush:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+crush:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+caught:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+caught:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+caught:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+fire:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+fire:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+fire:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+collapse:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+collapse:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+collapse:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+asphyxia:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+asphyxia:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+asphyxia:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation
+struck:robustness-id,robustness,same_hazard_mechanism,True,True,True,whitespace-only perturbation
+struck:robustness-id,robustness,context_compatible,True,True,True,whitespace-only perturbation
+struck:robustness-id,robustness,accident_compatible,True,True,True,whitespace-only perturbation

@@ -41,6 +41,12 @@ Evidence IDs:
 관련 evaluator version:
 ```
 
+### Evaluator qualification evidence
+
+| Evidence ID | 파일 | 상태 | 비고 |
+|---|---|---|---|
+| `EV-EVAL-AJQG-20261011` | `data/submission/evidence/ajqg_20261011/` | PASS | current evaluator source `0069d7c2...`, 104 controls ×2, 376/376 stability; raw CSV hash와 LF-normalized 제출 copy hash 모두 binding에 기록 |
+
 ### Clean-room working evidence
 
 | Evidence ID | 파일 | 상태 | 비고 |

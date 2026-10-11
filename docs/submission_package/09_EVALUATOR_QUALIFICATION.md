@@ -184,11 +184,26 @@ mutation: reverse safe-control principle
 
 현재 evaluator source aggregate는 account-readiness preflight 강화로 `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`로 갱신되었다. 변경 내용은 Saved Instruction empty 및 AI token allowance의 official preflight 검사이며 Judge prompt/rubric/Boolean 판정·aggregation 의미론은 변경하지 않았다.
 
-따라서 과거 9개 AJQG PASS는 Judge 측정특성의 historical evidence로 유지하지만, **현재 source aggregate의 final qualification으로 승계하지 않는다.** 본 문서의 requalification rule에 따라 최종 시험 전 fresh AJQG가 필수다.
+2026-10-11 현재 source revision에 대해 fresh AJQG를 다시 실행했고 **PASS**했다. qualification은 evaluation repository commit `1d720d1`, official runtime SHA-256 `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3`, evaluator source aggregate `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`에 binding했다.
 
-2026-10-11 현 상태에서 동일 `qualify-judge --repeats 2 --require-pass` 실행을 시도했으나 `.env`의 OpenAI credential이 현재 인증되지 않아 API 401에서 중단됐다.
+결과:
 
-이 실행은 Judge가 control을 판정하기 전에 API 인증 단계에서 실패했으므로 AJQG FAIL로 계산하지 않는다. 시험기관용 credential provisioning 단계에서 유효 key를 설정한 뒤 AJQG를 다시 실행해야 한다.
+- controls: `104`
+- repeats: `2`
+- structured completion: `1.0000`
+- 모든 family accuracy: `1.0000`
+- repeated decision stability: `376/376 = 1.0000`
+- gate: **PASS**
+- summary SHA-256: `5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623`
+- submission control results SHA-256: `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6`
+- raw run control results SHA-256: `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58` — 원본 `runs/`는 변경하지 않음
+- binding SHA-256: `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb`
+
+제출용 사본은 `data/submission/evidence/ajqg_20261011/`에 보존하며 provider credential은 artifact에 저장하지 않았다. `control_results.csv` 제출 사본은 Git/HWP 도구 호환성을 위해 **CRLF→LF만 정규화**했고 UTF-8 BOM과 CSV field content는 유지했다. 원본 run artifact SHA는 binding에 별도로 기록한다. 과거 9개 AJQG PASS는 historical evidence로 계속 유지한다.
+
+같은 날 앞선 시도에서는 repository `.env`의 OpenAI credential이 provider API 401로 거부되어 Judge 판정 전 중단된 이력이 있다. 이 실행은 AJQG FAIL로 계산하지 않는다. 이후 서버에 이미 provision된 유효 provider credential을 **현재 qualification subprocess 환경에만 runtime-only로 주입**하여 위 current-source AJQG를 정상 완료했다. credential 값은 복사·출력·Git/artifact 저장하지 않았다.
+
+따라서 401은 현재 evaluator qualification의 blocker가 아니다. 다만 **공식 시험 당일에는 기관이 승인한 credential context에서 동일 frozen AJQG를 다시 PASS**해야 한다.
 
 ## 10. 제출 시 권장 증적
 

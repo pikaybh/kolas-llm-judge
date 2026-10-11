@@ -1,11 +1,11 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-11T04:44:08.052879+00:00",
-  "repository_base_head_at_generation": "3fbb1eedf6d3af302ebbb305d2278cbe138fad18",
+  "generated_at_utc": "2026-10-11T04:51:43.725816+00:00",
+  "repository_base_head_at_generation": "1d720d1d3dbe3526377257d6fc2287a0353905cb",
   "generator": {
     "path": "tools/build_submission_manifest.py",
-    "sha256": "0abce3b635e2b99fc7dba157b197181de9dc01a0a0dd3633f26b9416b8b594b6"
+    "sha256": "a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175"
   },
   "scope": {
     "includes_secret_values": false,
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 77,
-  "artifact_root_sha256": "993f2537abcf286089c84fd197ca9f3889ec0850fd13329212e07248b23ceffe",
+  "artifact_count": 80,
+  "artifact_root_sha256": "08569120520fc4033325fb45b1ca0b9d8d9773637aa87f433a22e3aa9430a3dc",
   "artifacts": [
     {
       "path": ".env.example",
@@ -102,6 +102,21 @@
       "sha256": "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a"
     },
     {
+      "path": "data/submission/evidence/ajqg_20261011/binding.json",
+      "size": 1463,
+      "sha256": "abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb"
+    },
+    {
+      "path": "data/submission/evidence/ajqg_20261011/control_results.csv",
+      "size": 27346,
+      "sha256": "d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6"
+    },
+    {
+      "path": "data/submission/evidence/ajqg_20261011/summary.json",
+      "size": 6374,
+      "sha256": "5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623"
+    },
+    {
       "path": "docs/automated_kolas_protocol_v1.md",
       "size": 14146,
       "sha256": "848d621444721b7d8fc3f650f9dcbb53498c92702e5778bdce29f8153cf5a93b"
@@ -123,8 +138,8 @@
     },
     {
       "path": "docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md",
-      "size": 19911,
-      "sha256": "91f8f221d7af10638c70794289e02a0bd260421811d098928fbfbbac8a26efd0"
+      "size": 20276,
+      "sha256": "7d40a1e281733457070af977ade2defbf74bfd8f9518197f41bebbcc8cd63710"
     },
     {
       "path": "docs/submission_package/01_TEST_METHOD.md",
@@ -153,13 +168,13 @@
     },
     {
       "path": "docs/submission_package/08_EVALUATOR_SPECIFICATION.md",
-      "size": 8166,
-      "sha256": "02c9b022b31dab4098de51dcc44db12c05fe087a1a325370df54e57060b73123"
+      "size": 8279,
+      "sha256": "abab06f03b45b132eb135a689727f25f986c2f971e14ce60925d90d5ccd040e1"
     },
     {
       "path": "docs/submission_package/09_EVALUATOR_QUALIFICATION.md",
-      "size": 8010,
-      "sha256": "31140ea35a2a6cfbebf5584917af148b3c377d7ae07d1de9c7847ddd4790bfa3"
+      "size": 9356,
+      "sha256": "e2e9ff4ec84957db97cfe8955da6f51893b7f7ac19d1145deb645328b7a4e778"
     },
     {
       "path": "docs/submission_package/10_REPRODUCIBILITY_GUIDE.md",
@@ -173,8 +188,8 @@
     },
     {
       "path": "docs/submission_package/12_VERSION_MANIFEST.md",
-      "size": 14309,
-      "sha256": "055f52a0213dd4a72ffc099a8c902ad99ccad0206dcc2a8fa98633fa686f6630"
+      "size": 14903,
+      "sha256": "99e7ab33d498ff2cb47bd930ce329e962132a0e612c9a89f5fb7f1ddc7009cd1"
     },
     {
       "path": "docs/submission_package/14_CHANGE_CONTROL.md",
@@ -183,13 +198,13 @@
     },
     {
       "path": "docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md",
-      "size": 7690,
-      "sha256": "006a4f67f843fd11b1886443ce3b33e68c8c8850c32acafeb6c92214d55b9e56"
+      "size": 9297,
+      "sha256": "42a41103dd9b51a20ac389d51aebd45084f2c69d857e9fa31e977dbd614396f4"
     },
     {
       "path": "docs/submission_package/DOCUMENT_REGISTER.md",
-      "size": 3908,
-      "sha256": "80741ebff15146b1bde806fcb6cda21e5720a0d1fc688203768d1a04b9b283e6"
+      "size": 4238,
+      "sha256": "c2378558083b6c90479d5fbe40b1da538b7815a8145c349e0a257848e1fedb0b"
     },
     {
       "path": "docs/submission_package/HWP_HANDOFF_SPEC.md",
@@ -198,8 +213,8 @@
     },
     {
       "path": "docs/submission_package/MASTER_PLAN.md",
-      "size": 21145,
-      "sha256": "a56ff3bd102d39f07dbb08b4d8f8bc2c9ea8ecdd8b946c1d00ca8515692aa5fb"
+      "size": 21445,
+      "sha256": "9242062a85a413be5dec6e563ae4296e10f970d52c9db35e368effaee7f3e393"
     },
     {
       "path": "docs/submission_package/README.md",
@@ -388,8 +403,8 @@
     },
     {
       "path": "tools/build_submission_manifest.py",
-      "size": 9609,
-      "sha256": "0abce3b635e2b99fc7dba157b197181de9dc01a0a0dd3633f26b9416b8b594b6"
+      "size": 9842,
+      "sha256": "a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175"
     },
     {
       "path": "tools/gt_provenance.py",

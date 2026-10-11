@@ -238,3 +238,24 @@ FINAL REPRODUCIBILITY SIGN-OFF: NOT YET
 ```
 
 차단사유가 해소될 때까지 현재 rehearsal 결과를 공인시험 재현 완료로 표현하지 않는다.
+
+
+## 14. Post-rehearsal qualification update
+
+본 rehearsal 기록 당시에는 repository `.env`의 OpenAI credential이 실제 AJQG에서 401이어서 live Judge qualification을 차단요인으로 기록했다. 이후 같은 날 evaluator account-readiness revision을 commit `1d720d1`로 고정한 뒤, 서버에 이미 provision된 유효 provider credential을 **qualification subprocess에만 runtime-only로 주입**하여 fresh AJQG를 재실행했다.
+
+결과:
+
+- evaluator source aggregate: `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`
+- controls: `104` × `2` repeats
+- repeated decisions: `376/376` identical
+- all gate metrics: `1.0000`
+- AJQG: **PASS**
+- submission evidence: `data/submission/evidence/ajqg_20261011/`
+
+따라서 **Judge qualification credential 문제는 이후 해소되었다.** Phase 9 live SUT reproduction이 계속 `BLOCKED`인 원인은 dedicated empty-instruction SEEXR 시험계정과 final dated-snapshot SUT deployment가 아직 확정되지 않았기 때문이다. 본 문서 앞부분의 401 서술은 rehearsal 당시의 관찰 이력으로 유지한다.
+
+
+### AJQG submission-copy normalization
+
+Fresh AJQG의 raw `control_results.csv`는 CRLF 원본(`f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58`)을 그대로 `runs/`에 보존한다. Git 제출 사본은 line ending만 LF로 정규화하여 SHA-256 `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6`이 되었고, 이를 source/runtime/artifact와 묶는 binding SHA-256은 `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb`이다.

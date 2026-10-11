@@ -28,6 +28,9 @@ def test_candidate_scope_has_no_self_reference_or_secrets() -> None:
     assert "data/raw/kolas_v7_73_test.csv.bz2" in values
     assert "data/cases/scenarios_v1.jsonl" in values
     assert "tools/build_submission_manifest.py" in values
+    assert "data/submission/evidence/ajqg_20261011/binding.json" in values
+    assert "data/submission/evidence/ajqg_20261011/summary.json" in values
+    assert "data/submission/evidence/ajqg_20261011/control_results.csv" in values
 
 
 def test_candidate_paths_all_exist() -> None:

@@ -1,0 +1,272 @@
+{
+  "calls": [
+    {
+      "elapsed_ms": 11524,
+      "repeat": 1,
+      "response_id": "resp_0ee491523786edbd016acb14b90d2087d1a74dd80f986c1157",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 40,
+      "stage": "match",
+      "usage": {
+        "input_tokens": 4177,
+        "input_tokens_details": {
+          "cache_write_tokens": 4174,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1433,
+        "output_tokens_details": {
+          "reasoning_tokens": 197
+        },
+        "total_tokens": 5610
+      }
+    },
+    {
+      "elapsed_ms": 15666,
+      "repeat": 1,
+      "response_id": "resp_0f3caacf7fbef669016acb14b9135c87d18468ee7e5261b2f5",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 48,
+      "stage": "quality",
+      "usage": {
+        "input_tokens": 8759,
+        "input_tokens_details": {
+          "cache_write_tokens": 8756,
+          "cached_tokens": 0
+        },
+        "output_tokens": 2292,
+        "output_tokens_details": {
+          "reasoning_tokens": 228
+        },
+        "total_tokens": 11051
+      }
+    },
+    {
+      "elapsed_ms": 3355,
+      "repeat": 1,
+      "response_id": "resp_07fdd7604600c57d016acb14b90c4087d1a1a42ba4dced55e4",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 16,
+      "stage": "safety",
+      "usage": {
+        "input_tokens": 2026,
+        "input_tokens_details": {
+          "cache_write_tokens": 2023,
+          "cached_tokens": 0
+        },
+        "output_tokens": 254,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2280
+      }
+    },
+    {
+      "elapsed_ms": 9120,
+      "repeat": 2,
+      "response_id": "resp_0bc67abcb024be8b016acb14c84e4087d1b78985da3ea71490",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 40,
+      "stage": "match",
+      "usage": {
+        "input_tokens": 4177,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 4174
+        },
+        "output_tokens": 1369,
+        "output_tokens_details": {
+          "reasoning_tokens": 133
+        },
+        "total_tokens": 5546
+      }
+    },
+    {
+      "elapsed_ms": 13679,
+      "repeat": 2,
+      "response_id": "resp_0e0be525e93d7fee016acb14c84db487d18a87706893e22313",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 48,
+      "stage": "quality",
+      "usage": {
+        "input_tokens": 8759,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 8756
+        },
+        "output_tokens": 2285,
+        "output_tokens_details": {
+          "reasoning_tokens": 221
+        },
+        "total_tokens": 11044
+      }
+    },
+    {
+      "elapsed_ms": 2525,
+      "repeat": 2,
+      "response_id": "resp_0a778ffe1260f595016acb14c8637087d1941efc9769b2e86a",
+      "response_model": "gpt-5.6-sol",
+      "row_count": 16,
+      "stage": "safety",
+      "usage": {
+        "input_tokens": 2026,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2023
+        },
+        "output_tokens": 275,
+        "output_tokens_details": {
+          "reasoning_tokens": 19
+        },
+        "total_tokens": 2301
+      }
+    }
+  ],
+  "checks": {
+    "accident_accuracy": {
+      "minimum": 0.98,
+      "pass": true,
+      "value": 1.0
+    },
+    "critical_safety_accuracy": {
+      "minimum": 0.98,
+      "pass": true,
+      "value": 1.0
+    },
+    "legal_accuracy": {
+      "minimum": 0.95,
+      "pass": true,
+      "value": 1.0
+    },
+    "match_identity_accuracy": {
+      "minimum": 1.0,
+      "pass": true,
+      "value": 1.0
+    },
+    "match_negative_accuracy": {
+      "minimum": 0.98,
+      "pass": true,
+      "value": 1.0
+    },
+    "mitigation_accuracy": {
+      "minimum": 0.95,
+      "pass": true,
+      "value": 1.0
+    },
+    "repeated_decision_stability": {
+      "minimum": 0.98,
+      "pass": true,
+      "value": 1.0
+    },
+    "required_families": {
+      "missing": [],
+      "pass": true,
+      "required": [
+        "match_identity",
+        "match_negative",
+        "accident",
+        "mitigation",
+        "legal",
+        "critical_safety",
+        "robustness"
+      ],
+      "value": [
+        "accident",
+        "critical_safety",
+        "legal",
+        "match_identity",
+        "match_negative",
+        "mitigation",
+        "robustness"
+      ]
+    },
+    "robustness_accuracy": {
+      "minimum": 0.98,
+      "pass": true,
+      "value": 1.0
+    },
+    "structured_completion": {
+      "minimum": 0.995,
+      "pass": true,
+      "value": 1.0
+    }
+  },
+  "completed_at_utc": "2026-10-11T04:47:17.826301+00:00",
+  "control_count": 104,
+  "control_suite_sha256": "e0a34a8179d407979fc14f6ae1987a3fbf95f76ae8b0e29181fdc1efa8e3e437",
+  "control_suite_version": "ajqg-controls-v1",
+  "counts_by_family": {
+    "accident": 16,
+    "critical_safety": 16,
+    "legal": 16,
+    "match_identity": 8,
+    "match_negative": 8,
+    "mitigation": 32,
+    "robustness": 8
+  },
+  "gate_pass": true,
+  "gate_version": "ajqg-gate-v1",
+  "judge": {
+    "max_concurrency": 12,
+    "model": "gpt-5.6-sol",
+    "pipeline_version": "binary-checklist-v1",
+    "prompt_path": "prompts/judge_binary_v1.md",
+    "reasoning_effort": "medium",
+    "rubric_path": "configs/rubric_binary_v1.yaml"
+  },
+  "metrics": {
+    "accident_accuracy": {
+      "correct": 16,
+      "rate": 1.0,
+      "total": 16
+    },
+    "critical_safety_accuracy": {
+      "correct": 16,
+      "rate": 1.0,
+      "total": 16
+    },
+    "legal_accuracy": {
+      "correct": 16,
+      "rate": 1.0,
+      "total": 16
+    },
+    "match_identity_accuracy": {
+      "correct": 24,
+      "rate": 1.0,
+      "total": 24
+    },
+    "match_negative_accuracy": {
+      "correct": 24,
+      "rate": 1.0,
+      "total": 24
+    },
+    "mitigation_accuracy": {
+      "correct": 128,
+      "rate": 1.0,
+      "total": 128
+    },
+    "repeated_decision_stability": {
+      "comparisons": [
+        {
+          "baseline_repeat": 1,
+          "comparison_repeat": 2,
+          "rate": 1.0,
+          "same": 376,
+          "total": 376
+        }
+      ],
+      "rate": 1.0
+    },
+    "robustness_accuracy": {
+      "correct": 24,
+      "rate": 1.0,
+      "total": 24
+    },
+    "structured_completion": {
+      "correct": 6,
+      "rate": 1.0,
+      "total": 6
+    }
+  },
+  "qualification_version": "ajqg-v1",
+  "repeats": 2
+}

@@ -147,7 +147,7 @@ Official runtime은 evaluator source aggregate SHA-256을 다음 값으로 고�
 
 현재 source aggregate revision에는 Judge 판정 의미를 바꾸지 않는 **official evaluation-account readiness preflight**가 추가되어 있다. live official preflight는 `/instructions/me`와 `/users/me/plan`을 읽어 Saved Instruction empty 여부와 AI token allowance를 검사하며, instruction 원문은 보존하지 않고 SHA-256만 기록한다.
 
-이 변경은 prompt/rubric/Boolean match/aggregation을 바꾸지 않았지만 evaluator aggregate가 변경되었으므로 최종 candidate에서는 fresh AJQG를 다시 통과해야 한다.
+이 변경은 prompt/rubric/Boolean match/aggregation을 바꾸지 않았다. evaluator aggregate 변경 후 2026-10-11 fresh AJQG를 재실행해 104 controls ×2, 모든 gate metric 1.0000, 376/376 stability로 PASS했다. 최종 공식시험 직전에는 동일 frozen gate를 한 번 더 실행한다.
 
 현재 핵심 source 개별 hash:
 

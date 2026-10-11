@@ -119,12 +119,13 @@
 - [x] evaluator 변경 시 재qualification 조건 정의
 - [x] `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md` 작성
 - [x] official account readiness preflight 강화 — Saved Instruction empty + AI token allowance 자동검사; evaluator source `0069d7c2...`; Judge semantics 불변
-- [ ] 시험 직전 live AJQG 재실행 — 2026-10-11 현재 `.env` OpenAI credential 인증 실패(401), credential 갱신 후 실행
+- [x] fresh AJQG current-source requalification — 104 controls ×2, all metrics 1.0000, 376/376 stability, PASS; evidence `data/submission/evidence/ajqg_20261011/`
+- [ ] 시험 직전 live AJQG 재실행 — final SUT/account freeze 직후 동일 current gate를 다시 실행; runtime-only credential path 검증 완료
 
 **완료 조건:** Judge가 왜 측정도구로 사용할 수 있는지 별도 근거가 존재하고, 시험 직전 동일 frozen gate를 다시 통과한다.
 
 **Phase 5 Drafts:** `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md`
-**현재 상태:** evaluator 구조·과거 적격성·반복안정성 증적 정리 완료. account-readiness preflight 추가로 source aggregate가 갱신되어 fresh AJQG가 다시 필요하며, 현재 OpenAI credential 401 때문에 최종 requalification은 PENDING이다.
+**현재 상태:** evaluator 구조·과거 적격성·반복안정성 증적 정리 완료. account-readiness preflight가 포함된 current source `0069d7c2...`에 대해 fresh AJQG를 재실행해 104 controls ×2, 모든 metric 1.0000, 376/376 stability로 **PASS**했다. Phase 5 evaluator requalification은 현재 candidate 기준 완료다.
 
 ## Phase 6. 재현 프로그램 패키지화
 
@@ -205,7 +206,7 @@
 - [x] fresh-clone offline regression — 18/18 PASS
 - [x] 기존 환경 live SUT auth 교차확인 — email/password renewal + authenticated API + risk agent PASS
 - [ ] clean-room live preflight PASS — dedicated empty-instruction institution credential provisioning 필요
-- [ ] 유효 OpenAI credential로 AJQG PASS — 현재 내부 key는 live AJQG에서 401
+- [x] 유효 provider credential로 current-source AJQG PASS — runtime-only credential injection, artifact에 secret 미저장
 - [ ] sample subset 실행
 - [ ] full 425-case run 실행
 - [ ] 원 측정 결과와 비교
@@ -218,7 +219,7 @@
 **완료 조건:** 작성자가 직접 개입하지 않아도 secure credential을 받아 end-to-end sample/full run과 seal 검증까지 재현 가능하다.
 
 **Evidence:** `CLEAN_ROOM_REHEARSAL_20261011.md`
-**현재 상태:** offline clean-room reconstruction은 PASS. live reproduction은 유효 OpenAI credential, dedicated empty-instruction SEEXR 계정, dated-snapshot final SUT deployment가 없어 `BLOCKED`; 최종 sign-off는 아직 아니다.
+**현재 상태:** offline clean-room reconstruction과 current-source AJQG는 PASS. live SUT reproduction은 dedicated empty-instruction SEEXR 계정과 dated-snapshot final SUT deployment가 없어 `BLOCKED`; 최종 sign-off는 아직 아니다.
 
 ## Phase 10. 공문형 HWP/HWPX 작성
 

@@ -1,0 +1,32 @@
+{
+  "evidence_version": "ajqg-submission-binding-v1",
+  "qualification_version": "ajqg-v1",
+  "gate_version": "ajqg-gate-v1",
+  "gate_pass": true,
+  "completed_at_utc": "2026-10-11T04:47:17.826301+00:00",
+  "evaluation_repository_commit": "1d720d1",
+  "evaluator_source_aggregate_sha256": "0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701",
+  "official_runtime_sha256": "1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3",
+  "judge": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "pipeline_version": "binary-checklist-v1"
+  },
+  "control_suite": {
+    "count": 104,
+    "sha256": "e0a34a8179d407979fc14f6ae1987a3fbf95f76ae8b0e29181fdc1efa8e3e437",
+    "repeats": 2,
+    "repeated_decisions_same": 376,
+    "repeated_decisions_total": 376
+  },
+  "artifacts": {
+    "summary.json": "5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623",
+    "control_results.csv": "d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6"
+  },
+  "credential_persisted": false,
+  "note": "Provider credential was supplied only to the qualification process environment and is not stored in this evidence package.",
+  "source_run_artifacts": {
+    "control_results.csv": "f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58",
+    "normalization": "Submission copy only: CRLF converted to LF; UTF-8 BOM preserved; CSV field content unchanged. Raw run artifact remains unchanged under runs/."
+  }
+}

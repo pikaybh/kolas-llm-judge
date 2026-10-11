@@ -58,7 +58,11 @@
 | AJQG gate SHA-256 | `2ee9934e921fa82b10697d6cf9ffca6e72f151a49159ac3aff7a8b7d17421a6b` | frozen |
 | AJQG control suite | `ajqg-controls-v1`, 104 controls, `e0a34a81...e437` | frozen |
 | canonical hardening AJQG | 376/376 repeated decisions, gate PASS | 확인 |
-| current pre-test AJQG | credential 갱신 후 재실행 필요 | PENDING |
+| current-source fresh AJQG | 104 controls ×2, all metrics 1.0000, 376/376 stable, PASS | evidence binding `abac8aee...54cb` |
+| AJQG summary SHA-256 | `5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623` | 제출 evidence |
+| AJQG submission control results SHA-256 | `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6` | CRLF→LF normalized submission copy |
+| AJQG raw-run control results SHA-256 | `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58` | 원본 `runs/` artifact, 변경 없음 |
+| AJQG binding SHA-256 | `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb` | source/runtime/artifact binding |
 
 ## 2.2 API access contract (current Green audit)
 

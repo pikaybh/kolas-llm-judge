@@ -56,6 +56,7 @@
 | `EV-EVAL-008` | AJQG hardening control rows | `runs/_qualification/20260914-kolas-v1-hardening/control_results.csv` | SHA-256 `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58`; 248 expected Boolean rows |
 | `EV-EVAL-009` | AJQG boundary run | `runs/20260909T025259Z-official-live-ca5f3e25/qualification/summary.json` | SHA-256 `958fd53cba792d5e147697cb4b997fa71dbb2219caf49d318b52bb2951fb1a8b`; 375/376 stability; PASS |
 | `EV-EVAL-010` | AJQG boundary control rows | `runs/20260909T025259Z-official-live-ca5f3e25/qualification/control_results.csv` | SHA-256 `2e60e30232b088628fc954d4bf23421bc68527b83186223e19ccea398f24c304`; mitigation_specific 1 decision mismatch |
+| `EV-EVAL-011` | Current-source fresh AJQG submission evidence | `data/submission/evidence/ajqg_20261011/` | 104 controls ×2, all metrics 1.0000, 376/376 stable, PASS; summary `5ad49cbd...b623`; LF-normalized controls `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6`; binding `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb` |
 
 Judge 호출에서 코드로 명시되는 값:
 

@@ -47,6 +47,12 @@ CANONICAL_DATA = [
     "data/cases/gt_provenance_audit_manifest_v1.json",
 ]
 
+SUBMISSION_EVIDENCE = [
+    "data/submission/evidence/ajqg_20261011/binding.json",
+    "data/submission/evidence/ajqg_20261011/summary.json",
+    "data/submission/evidence/ajqg_20261011/control_results.csv",
+]
+
 PACKAGE_METADATA = [
     "README.md",
     ".env.example",
@@ -76,7 +82,7 @@ def sha256_file(path: Path) -> str:
 
 
 def candidate_paths(project_root: Path) -> list[Path]:
-    relative_paths = {Path(value) for value in SUBMISSION_DOCS + CANONICAL_DATA + PACKAGE_METADATA}
+    relative_paths = {Path(value) for value in SUBMISSION_DOCS + CANONICAL_DATA + SUBMISSION_EVIDENCE + PACKAGE_METADATA}
     for pattern in GLOBS:
         for path in project_root.glob(pattern):
             if path.is_file():
