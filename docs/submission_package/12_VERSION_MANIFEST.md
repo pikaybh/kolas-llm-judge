@@ -60,6 +60,20 @@
 | canonical hardening AJQG | 376/376 repeated decisions, gate PASS | 확인 |
 | current pre-test AJQG | credential 갱신 후 재실행 필요 | PENDING |
 
+## 2.2 API access contract (current Green audit)
+
+| 항목 | 값 | 상태 |
+|---|---|---|
+| current official runtime base URL | `https://api.seexr.dev/api` | final accredited endpoint PENDING |
+| test role | `user` | minimum practical role |
+| access token lifetime | `15m` | Green effective, final recheck |
+| refresh token lifetime | `7d` | Green effective, final recheck |
+| refresh policy | rotating/revocable | 확인 |
+| run entitlement | AI token allowance required | 확인 |
+| session/run isolation | authenticated owner user ID enforced | 확인 |
+| endpoint-specific OAuth scopes | not implemented | role/ownership/entitlement model 사용 |
+| final institution account | `{{KOLAS_TEST_ACCOUNT_ID}}` | PENDING; secret는 manifest에 기록하지 않음 |
+
 ## 3. SUT Source Snapshot
 
 ### 3.1 Core

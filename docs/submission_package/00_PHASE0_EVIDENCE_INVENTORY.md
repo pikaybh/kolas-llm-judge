@@ -104,8 +104,14 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 
 | Evidence ID | 대상 | 위치 | 확인 내용 |
 |---|---|---|---|
-| `EV-API-001` | SUT client | `src/kolas_llm_judge/sut_client.py` | `/auth/login`, `/auth/refresh`, `/agents`, `/chat/sessions`, `/agents/{agent_id}/runs`, `/agents/runs/{run_id}/events` 사용 |
-| `EV-API-002` | SUT base URL | official runtime | `https://api.seexr.dev/api` |
+| `EV-API-001` | SUT client/auth flow | `src/kolas_llm_judge/sut_client.py` | login + rotating refresh + relogin recovery; session/run/event endpoint 사용 |
+| `EV-API-002` | SUT base URL | official runtime | 현재 `https://api.seexr.dev/api`; final accredited endpoint는 release freeze에서 확정 |
+| `EV-API-003` | Minimum role | Core global guards + `agents.controller.ts` | dedicated active `Role.USER`; admin role/RBAC 불필요 |
+| `EV-API-004` | Session/run ownership | Core `chat.service.ts`, `agent-runs.service.ts` | authenticated user ID로 session/run/event 소유권 강제 |
+| `EV-API-005` | AI allowance | Core `SubscriptionAccessGuard` | POST durable agent run은 `assertAiTokenAllowance(userId)` 통과 필요 |
+| `EV-API-006` | Token lifetime | Green `.env.local` + auth code | access `15m`, refresh `7d` current effective; final release에서 재확인 |
+| `EV-API-007` | Credential revocation | `/auth/logout`, `/auth/devices/{id}`, inactive account | refresh/device session revoke 경로 확인 |
+| `EV-API-008` | Current throttle | Core Throttler v6.5.0 + Green env | global 100/60ms current config; login 10/60s; refresh 20/60s |
 | `EV-SUT-001` | SUT agent | official runtime | `risk-assessment` |
 | `EV-SUT-002` | SEEXR product model mode | official runtime | `fast` → Core에서 `quick-fast-v1.0.0`으로 routing |
 | `EV-SUT-003` | reasoning style | official runtime | `balanced` |

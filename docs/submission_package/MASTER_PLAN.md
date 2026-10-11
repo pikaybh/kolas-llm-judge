@@ -151,18 +151,26 @@
 
 ## Phase 7. API 접근 및 권한 인계
 
-- [ ] 시험기관 전용 계정/credential 전략 결정
-- [ ] 최소권한 scope 정의
-- [ ] credential 유효기간/회수 절차 정의
-- [ ] 실제 secret은 Git/HWP에서 분리
-- [ ] base URL 및 endpoint 기록
-- [ ] authentication sequence 기록
-- [ ] sample request/response 작성
-- [ ] timeout/rate limit/retry/error code 설명
-- [ ] 시험 중 운영환경 변경 금지 또는 변경 통지 절차 정의
-- [ ] `11_API_ACCESS_GUIDE.md` 작성
+- [x] 시험기관 전용 계정/credential 전략 결정 — dedicated active `Role.USER`, email/password renewable auth
+- [x] 최소권한 정의 — admin/RBAC 없음; endpoint-specific OAuth scope는 현재 Core에 없음을 명시
+- [x] AI entitlement 조건 확인 — durable run은 `assertAiTokenAllowance` 적용
+- [x] credential 유효기간/회수 절차 정의 — Green effective access 15m / refresh 7d, rotating refresh, logout/device revoke/inactive 처리
+- [x] 실제 secret은 Git/HWP에서 분리 — environment variable name만 기록
+- [x] base URL 및 endpoint 기록
+- [x] authentication sequence 기록 — login→Bearer→401 refresh→relogin fallback
+- [x] sample request/response 구조 작성 — 실제 secret/token 미포함
+- [x] timeout/rate limit/retry/error code 설명
+- [x] session/run user ownership 격리 확인
+- [x] 시험 중 운영환경 변경 금지/통지 절차 정의
+- [x] `11_API_ACCESS_GUIDE.md` 작성
+- [ ] 시험기관 담당자/전용 계정 실제 생성 및 entitlement 부여
+- [ ] final immutable SUT endpoint/base URL 확정
+- [ ] credential 보안 전달·수신확인 및 시험 후 revoke 기록
 
-**완료 조건:** 시험기관이 별도 개발자 지원 없이 인증 후 API를 호출할 수 있다.
+**완료 조건:** 접근모델은 고정되어 있고, 실제 기관 계정/최종 endpoint provisioning 후 별도 개발자 지원 없이 인증·시험을 수행할 수 있다.
+
+**Phase 7 Draft:** `11_API_ACCESS_GUIDE.md`
+**현재 상태:** API/auth/ownership/minimum privilege/entitlement/retry/revoke 절차는 코드 기준으로 감사·문서화 완료. 실제 기관 계정 provisioning과 final base URL은 외부 정보/Phase 2 release freeze에 의존하므로 `REVIEW`다.
 
 ## Phase 8. 무결성·버전·변경통제
 

@@ -17,7 +17,7 @@
 | KOLAS-DOC-008 | `08_EVALUATOR_SPECIFICATION.md` | Judge/판정 시스템 명세 | 붙임 4 | REVIEW | evaluator 코드·runtime·hash 감사 완료 |
 | KOLAS-DOC-009 | `09_EVALUATOR_QUALIFICATION.md` | Judge 적격성/반복성 검증 | 붙임 4 | REVIEW | historical AJQG 9/9 PASS; 시험 직전 live AJQG 재실행 필요 |
 | KOLAS-DOC-010 | `10_REPRODUCIBILITY_GUIDE.md` | 설치부터 full run까지 재현 절차 | 붙임 5 | REVIEW | code+secure GT+credential 3-part package 정의; Phase 9 clean-room drill 대기 |
-| KOLAS-DOC-011 | `11_API_ACCESS_GUIDE.md` | endpoint·auth·권한·오류 대응 | 붙임 5 | NOT_STARTED | 시험기관 계정 전략 |
+| KOLAS-DOC-011 | `11_API_ACCESS_GUIDE.md` | endpoint·auth·권한·오류 대응 | 붙임 5 | REVIEW | 최소권한/auth/entitlement/revoke 감사 완료; 기관계정·final endpoint 대기 |
 | KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
 | KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | NOT_STARTED | final package candidate |
 | KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | NOT_STARTED | version policy |
