@@ -35,50 +35,49 @@ SEEXR의 `modelMode=fast`는 제품 내부 execution profile 선택값이다.
 
 | Agent | 역할 | 모델 source identifier | 호출 설정 |
 |---|---|---|---|
-| `riskWorkClassifierAgent` | 작업 맥락 분류 | `openai/gpt-4.1` | `maxSteps=1`, Structured Output, 최대 2회 application-level validation attempt |
-| `riskCandidateScopeValidatorAgent` | 검색 후보의 scope 적합성 검증 | `openai/gpt-4.1` | `maxSteps=1`, Structured Output, 최대 2회 validation attempt |
-| `quickFastRiskDraftV1_0_0Agent` | 위험성평가 draft 생성 | `openai/gpt-4.1` | `maxSteps=1`, Structured Output, 최대 2회 validation attempt |
-| `quickFastRiskVerifyV1_0_0Agent` | draft 검증/보정 | `openai/gpt-4.1` | `maxSteps=1`, Structured Output |
+| `riskWorkClassifierAgent` | 작업 맥락 분류 | `RISK_MODELS.gpt41` (default `openai/gpt-4.1`) | `maxSteps=1`, Structured Output, 최대 2회 application-level validation attempt |
+| `riskCandidateScopeValidatorAgent` | 검색 후보의 scope 적합성 검증 | `RISK_MODELS.gpt41` (default `openai/gpt-4.1`) | `maxSteps=1`, Structured Output, 최대 2회 validation attempt |
+| `quickFastRiskDraftV1_0_0Agent` | 위험성평가 draft 생성 | `RISK_MODELS.gpt41` (default `openai/gpt-4.1`) | `maxSteps=1`, Structured Output, 최대 2회 validation attempt |
+| `quickFastRiskVerifyV1_0_0Agent` | draft 검증/보정 | `RISK_MODELS.gpt41` (default `openai/gpt-4.1`) | `maxSteps=1`, Structured Output |
 
 ### 3.2 조건부 모델
 
 | Agent | 모델 | KOLAS 표준조건에서의 상태 |
 |---|---|---|
-| `riskPolicyDecisionAgent` | `openai/gpt-4.1-mini` | user/project saved instruction이 empty이면 호출되지 않고 local fallback 사용 |
-| `contextualRiskCandidateAgent` | `openai/gpt-4.1` | `deviceContext`가 없어 environment context가 없으므로 표준 KOLAS에서는 skip 대상 |
-| `photoAgent` | `openai/gpt-4o` | image/attachment가 없어 표준 KOLAS에서는 실질적 호출 없음 |
-| `accidentAgent` | `openai/gpt-4o` | accident-cases가 omit이면 skip |
+| `riskPolicyDecisionAgent` | `RISK_MODELS.gpt41Mini` (default `openai/gpt-4.1-mini`) | user/project saved instruction이 empty이면 호출되지 않고 local fallback 사용 |
+| `contextualRiskCandidateAgent` | `RISK_MODELS.gpt41` (default `openai/gpt-4.1`) | `deviceContext`가 없어 environment context가 없으므로 표준 KOLAS에서는 skip 대상 |
+| `photoAgent` | `RISK_MODELS.gpt4o` (default `openai/gpt-4o`) | image/attachment가 없어 표준 KOLAS에서는 실질적 호출 없음 |
+| `accidentAgent` | `RISK_MODELS.gpt4o` (default `openai/gpt-4o`) | accident-cases가 omit이면 skip |
 
 따라서 **정상 KOLAS test path의 생성 LLM은 사실상 GPT-4.1 계열 4단계**로 구성되는 것이 목표다. saved instruction, 사진, 환경 context, 사고사례 flag가 달라지면 호출 graph가 달라질 수 있으므로 이 입력상태도 함께 freeze해야 한다.
 
 ## 4. 모델 alias와 snapshot
 
-현재 source는 `openai/gpt-4.1`, `openai/gpt-4o`, `openai/gpt-4.1-mini`처럼 alias형 identifier를 사용한다.
+Agents commit `86b7f1b`에서 위험성평가 quick-fast agent군의 모델 ID를 `riskModelConfig.ts`로 모으고, **기본 Green 동작은 기존 alias 그대로 유지하면서 KOLAS 전용 배포에서만 env override로 dated snapshot을 pin**할 수 있게 했다.
 
-OpenAI 공식 모델 문서는 GPT-4.1에 고정 snapshot `gpt-4.1-2025-04-14`를 제공하고, snapshot은 모델의 특정 버전을 고정하여 behavior consistency를 높이는 용도라고 설명한다.
+기본값:
 
-- GPT-4.1: `https://developers.openai.com/api/docs/models/gpt-4.1`
-- GPT-4o: `https://developers.openai.com/api/docs/models/gpt-4o`
+```text
+SEEXR_RISK_GPT41_MODEL=openai/gpt-4.1
+SEEXR_RISK_GPT41_MINI_MODEL=openai/gpt-4.1-mini
+SEEXR_RISK_GPT4O_MODEL=openai/gpt-4o
+```
 
-GPT-4o에는 여러 snapshot이 제공된다.
+KOLAS freeze candidate 값:
 
-현재 제품 source를 임의로 snapshot identifier로 변경하지 않는다. 변경 시 SUT 자체가 달라지기 때문이다.
+```text
+SEEXR_RISK_GPT41_MODEL=openai/gpt-4.1-2025-04-14
+SEEXR_RISK_GPT41_MINI_MODEL=openai/gpt-4.1-mini-2025-04-14
+SEEXR_RISK_GPT4O_MODEL=openai/gpt-4o-2024-11-20
+```
 
-공인시험 전 다음 중 하나를 `DEC-INF-001`로 승인한다.
+OpenAI 공식 모델 문서에서 위 dated snapshot ID가 제공되는 것을 2026-10-11 확인했다. Mastra `1.57.0`에서 세 ID 모두 `Agent` construction smoke가 PASS했고, 이어서 Agents `.env.local`의 기존 provider credential을 사용한 격리 `Agent.generate()` smoke에서도 **세 dated snapshot 모두 실제 provider call PASS**했다. 응답 내용·credential은 증적에 저장하지 않고 모델별 PASS/elapsed 여부만 확인했다.
 
-**A. 현재 alias 유지**
+따라서 `DEC-INF-001`은 다음과 같이 해결한다.
 
-- 실제 provider response의 resolved model identifier를 각 LLM call evidence에 기록
-- 시험기간 alias behavior가 바뀌지 않았음을 provider evidence로 확인 가능한 범위에서 기록
-- 재현성 수준은 snapshot pinning보다 약함
+> **RESOLVED — KOLAS 전용 immutable deployment는 dated snapshot pinning을 사용한다. 일반 Green/production은 env override가 없으면 기존 alias를 유지한다.**
 
-**B. snapshot pinning**
-
-- SUT release에서 승인된 snapshot identifier를 직접 지정
-- 변경 전/후 validation 후 해당 build를 시험대상 제품 버전으로 선언
-- production/test 동일성 정책을 별도 명시
-
-재현성을 최우선으로 하면 B가 강하지만, 이는 제품 설정 변경이므로 시험대상 정의 승인 없이 자동 적용하지 않는다.
+이 결정은 공인시험의 재현성을 높이면서 현재 일반 서비스의 기본 모델 동작을 바꾸지 않는다. 최종 시험 manifest에는 세 env의 effective non-secret 값과 Agents commit/fingerprint를 함께 기록한다.
 
 ## 5. Sampling / token / reasoning 관련 파라미터
 
@@ -106,14 +105,15 @@ SEEXR prompt는 단일 `.md` 파일이 아니라 agent source와 runtime context
 
 | Source | SHA-256 |
 |---|---|
-| `riskWorkClassifierAgent.ts` | `b462f6bb1c0065988d1f0e269c2d31fb49693fd22ec493fbf1cddd05d446bfe2` |
-| `riskCandidateScopeValidatorAgent.ts` | `3841129cf4ee7bd7ce0d9c4c14f8e17dda92dcf34df164254cd295f0e88a6d53` |
-| `quickFastRiskDraftV1_0_0Agent.ts` | `c47afd43bec4dbd262bb7a2f07fd5bea0cda6b9c80f2b2fde1be84f04ef10fef` |
-| `quickFastRiskVerifyV1_0_0Agent.ts` | `3b3e715dcdbd85f8ae36fa14e6fa7f8a6d067de9af2477403d059a930ffa93e5` |
-| `riskPolicyDecisionAgent.ts` | `79fb37d252cfee7c0d5de27e57a6b3f768e13e4e23a87351304e1f77811ae911` |
-| `contextualRiskCandidateAgent.ts` | `9c3d5d101cf51bdc2a60676a99841952035ee23994e684202050dac2867f5ca5` |
-| `photoAgent.ts` | `2539250e60afe3eb0ba050e5f317f5817761f46f1297babe2c35b58e68baa112` |
-| `accidentAgent.ts` | `20b0b31d7ca9b369902c24bdce666860eb2087588b77dae79e225dbd0c73fe5f` |
+| `riskWorkClassifierAgent.ts` | `37d1d8894c04c9c1c99834cddf17d6f2fe0a9c23007f673395d3286f53c56286` |
+| `riskCandidateScopeValidatorAgent.ts` | `e89bc9c9c3207055717e895756530881edf42ec211ac18af346d8709a9523389` |
+| `quickFastRiskDraftV1_0_0Agent.ts` | `6fc75387805da8c678857cc7261d4f54bf1b46afa4f5fc6377b616c9e3a73f5f` |
+| `quickFastRiskVerifyV1_0_0Agent.ts` | `3602c495ae1ad109baf71b7b4264376844d04ff99b724b4b2fcc05e3be9e9204` |
+| `riskPolicyDecisionAgent.ts` | `ba2ea6b80a1d434f0b2fc01db0f3c53deb3ade5d370b9e430ba34c47fb41bbd4` |
+| `contextualRiskCandidateAgent.ts` | `bc510d2f9dcec226c722517d5fbe461345a7cff8919f381bc983a0b47eea506e` |
+| `photoAgent.ts` | `808c2045fd057e95c0e4c2edcb4d3aec40385c6ac1fce23820d954d5e6bf5899` |
+| `accidentAgent.ts` | `7e5c765fd6644c0dfa84b064409a342770a04712e471024d31e47ecc5333587f` |
+| `riskModelConfig.ts` | `bc7a750625b9ed86200c3bec9526529ba8af6ea310f19ce78229914c68a15385` |
 
 ### 6.2 Workflow / prompt-builder hash
 
@@ -231,10 +231,10 @@ secret이나 전체 hidden reasoning은 보존하지 않는다.
 
 | ID | 중요도 | 항목 | 상태 |
 |---|---|---|---|
-| `DEC-INF-001` | Critical | GPT-4.1 alias 유지 vs snapshot pinning | 승인 필요 |
+| `DEC-INF-001` | Resolved | KOLAS 전용 deployment model policy | dated snapshot pinning via `SEEXR_RISK_*_MODEL`; provider live smoke PASS; final deployment env freeze만 남음 |
 | `GAP-INF-001` | High | SUT sampling/service tier가 명시적으로 고정되지 않음 | provider/framework 지원범위 확인 후 정책 확정 |
 | `GAP-INF-002` | High | 내부 LLM call의 resolved model metadata가 KOLAS evidence에 연결되지 않음 | observability export 필요 |
-| `GAP-INF-003` | Critical | saved user instruction에 따라 policy agent 및 execution decision이 달라질 수 있음 | evaluation account empty freeze |
+| `GAP-INF-003` | Critical | 현재 내부 rehearsal account Saved Instruction이 NON_EMPTY | official preflight 자동 FAIL 구현; 별도 empty-instruction 계정 필요 |
 | `GAP-INF-004` | Critical | RA embedding vector snapshot identity 없음 | DB snapshot/hash 필요 |
 | `GAP-INF-005` | High | Law DB content identity 없음 | DB snapshot/hash 필요 |
 

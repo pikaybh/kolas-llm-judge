@@ -54,7 +54,7 @@ Official runtime의 frozen 설정은 다음과 같다.
 |---|---|---|
 | `prompts/judge_binary_v1.md` | Judge instruction | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` |
 | `configs/rubric_binary_v1.yaml` | Boolean rubric | `d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22` |
-| `configs/official_runtime_v1.yaml` | official freeze envelope | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` |
+| `configs/official_runtime_v1.yaml` | official freeze envelope | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` |
 
 Official runtime validator는 위 파일의 현재 hash가 frozen runtime에 기록된 값과 다르면 실행을 거부한다.
 
@@ -143,7 +143,11 @@ Quality/safety diagnostics도 Boolean count로 계산되며 LLM이 소수점 점
 
 Official runtime은 evaluator source aggregate SHA-256을 다음 값으로 고정한다.
 
-`78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1`
+`0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`
+
+현재 source aggregate revision에는 Judge 판정 의미를 바꾸지 않는 **official evaluation-account readiness preflight**가 추가되어 있다. live official preflight는 `/instructions/me`와 `/users/me/plan`을 읽어 Saved Instruction empty 여부와 AI token allowance를 검사하며, instruction 원문은 보존하지 않고 SHA-256만 기록한다.
+
+이 변경은 prompt/rubric/Boolean match/aggregation을 바꾸지 않았지만 evaluator aggregate가 변경되었으므로 최종 candidate에서는 fresh AJQG를 다시 통과해야 한다.
 
 현재 핵심 source 개별 hash:
 

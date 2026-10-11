@@ -182,6 +182,10 @@ mutation: reverse safe-control principle
 
 ## 9. 2026-10-11 현재 재실행 상태
 
+현재 evaluator source aggregate는 account-readiness preflight 강화로 `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`로 갱신되었다. 변경 내용은 Saved Instruction empty 및 AI token allowance의 official preflight 검사이며 Judge prompt/rubric/Boolean 판정·aggregation 의미론은 변경하지 않았다.
+
+따라서 과거 9개 AJQG PASS는 Judge 측정특성의 historical evidence로 유지하지만, **현재 source aggregate의 final qualification으로 승계하지 않는다.** 본 문서의 requalification rule에 따라 최종 시험 전 fresh AJQG가 필수다.
+
 2026-10-11 현 상태에서 동일 `qualify-judge --repeats 2 --require-pass` 실행을 시도했으나 `.env`의 OpenAI credential이 현재 인증되지 않아 API 401에서 중단됐다.
 
 이 실행은 Judge가 control을 판정하기 전에 API 인증 단계에서 실패했으므로 AJQG FAIL로 계산하지 않는다. 시험기관용 credential provisioning 단계에서 유효 key를 설정한 뒤 AJQG를 다시 실행해야 한다.

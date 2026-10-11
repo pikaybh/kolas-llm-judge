@@ -1,7 +1,7 @@
 # KOLAS 제출용 버전 및 Freeze Manifest
 
 - 문서 ID: `KOLAS-DOC-012`
-- 버전: `0.2-draft`
+- 버전: `0.3-draft`
 - 상태: `REVIEW`
 - 기준일: `2026-10-11`
 - Freeze candidate ID: `SEEXR-RA-SUT-RC-2026.10.11.1`
@@ -17,8 +17,8 @@
 | submission candidate base commit before Phase 8 integrity build | `08e0419` | Phase 8 생성 시점의 committed base; final release 아님 |
 | final measurement tag | `{{FINAL_MEASUREMENT_RELEASE_TAG}}` | PENDING |
 | official runtime | `official-runtime-v1` | 확인 |
-| `configs/official_runtime_v1.yaml` SHA-256 | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` | 확인 |
-| `sut_client.py` SHA-256 | `e4edbb19e11b5bb58482c3579a7f74fbf82c7bba3c1b428b98ba204ea4383d79` | 확인 |
+| `configs/official_runtime_v1.yaml` SHA-256 | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` | 확인 |
+| `sut_client.py` SHA-256 | `45cbc9a94f1f4e7497d4bd55826eaf5a032ab03f33e86494d82126cab4d42e1d` | 확인 |
 | Python | `3.12.3` | Phase 0 audit |
 | uv | `0.8.5` | Phase 0 audit |
 | `uv.lock` SHA-256 | `59502e93ca708512472ab858e78d22e3e4f06f5a8de63ddf9e51c8d3475c5c6f` | Phase 0 audit |
@@ -48,8 +48,8 @@
 
 | 항목 | 값 | 상태 |
 |---|---|---|
-| evaluator source aggregate SHA-256 | `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` | frozen |
-| official runtime SHA-256 | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` | 확인 |
+| evaluator source aggregate SHA-256 | `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701` | frozen |
+| official runtime SHA-256 | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` | 확인 |
 | Judge model | `gpt-5.6-sol` | frozen |
 | reasoning effort | `medium` | frozen |
 | prompt SHA-256 | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` | frozen |
@@ -91,11 +91,12 @@
 ### 3.1 Core
 
 - repository path: `/srv/green-server/seexr-api-core`
-- audit HEAD: `622b25416e925b898dffba05b4cd9c936311f257`
-- audit Git tree: `e1d4babd4e8f4eb4f3d144e6f715675b6de6ee37`
+- current candidate HEAD: `279bc052830bca596183ecbe8378dd69d6722f15`
+- current candidate Git tree: `91de2c76fa7cb96dc301ebf2e85abc8a560051d9`
 - audit state: **NOT fully clean** — untracked `apple-root-certs/` 1건
 - package.json SHA-256: `202942b61cfcfb56e51509fc83d45b2b9fc31f4724d41347fe600b85f6fa95eb`
 - package-lock SHA-256: `b0cd5e227a2460637871e33b59e5d1a453dd2a3c1caf37887d1c96554753307a`
+- relevant source fingerprint: `df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5`
 - final tag/commit: `{{CORE_FINAL_COMMIT}}` — PENDING
 
 Critical source hashes:
@@ -112,11 +113,13 @@ Critical source hashes:
 ### 3.2 Agents
 
 - repository path: `/srv/green-server/seexr-api-agents`
-- audit HEAD: `66eeb579b3e76b474e88a658b1e1acf53af6af25`
-- audit Git tree: `0bc60a562c9dab834ea0abeda924eee2951d9a82`
+- current candidate HEAD: `86b7f1bfdefad8bac5eeee68e685277cd955f37c`
+- current candidate Git tree: `62f1f1430a258adfed036bc4a815ca94f00e2f87`
 - audit state: clean
 - package.json SHA-256: `71cbaf0ab3267c5c42bb45310bbda25576ee320ee6fe5b9df570442a261a820f`
 - package-lock SHA-256: `46b636cc21d7de09b2cd314912c5c6b70b3db1a7dfcd65f2fb327f375d58d372`
+- relevant source fingerprint: `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b`
+- model snapshot override implementation: Agents commit `86b7f1b`
 - final tag/commit: `{{AGENTS_FINAL_COMMIT}}` — PENDING
 - `quickFastRiskAssessmentWorkflow.ts` SHA-256: `530a03c2858da98a1c033b378ab349364e477ae7104ac224873e47b8b6b9b464`
 
@@ -138,7 +141,9 @@ RA stateful data audit:
 | ID range | `1..6443` | 확인 |
 | visible canonical content SHA-256 | `8d25e2b57701bc97aa61331f55f170655ec52950c555563ebfc8dba3f6f1a493` | audit fingerprint |
 | embedding model candidate | `text-embedding-3-large` | env override 없음 + source default |
-| embedding dimensions candidate | `1536` | env override 없음 + source default |
+| embedding dimensions candidate | `1536` | source/runtime contract |
+| embedding coverage | `6,443 / 6,443` | live DB 확인 |
+| embedding version | `risk-search-v1` | live DB 전 행 동일 |
 | embedding-vector-inclusive snapshot hash | `{{RA_DB_FULL_SNAPSHOT_SHA256}}` | PENDING |
 | DB snapshot timestamp | `{{RA_DB_SNAPSHOT_AT}}` | PENDING |
 
@@ -151,6 +156,7 @@ RA stateful data audit:
 - package.json SHA-256: `87719b1ad5cb76f8b95d3a6f84e26a42d5002eb7a36ebc2249b4f4362cbf6a3c`
 - package-lock SHA-256: `693784dc44ca3746e56e865117c0067f8b6880b24b7f64a3ca42c9f8261c5cd2`
 - final tag/commit: `{{LAW_FINAL_COMMIT}}` — PENDING
+- live DB content counts: `laws=17`, `law_articles=2861`, `law_files=323` — 확인
 - law DB full snapshot SHA-256: `{{LAW_DB_SNAPSHOT_SHA256}}` — PENDING
 - law DB snapshot timestamp: `{{LAW_DB_SNAPSHOT_AT}}` — PENDING
 
@@ -179,9 +185,11 @@ RA stateful data audit:
 
 | 항목 | 목표 값 | Freeze evidence |
 |---|---|---|
-| dedicated non-admin account | yes | `{{EVAL_ACCOUNT_ID_HASH}}` |
-| user saved instruction | empty | `{{EVAL_USER_INSTRUCTION_SHA256}}` |
-| expected empty SHA-256 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` | PENDING verification |
+| dedicated non-admin account | yes | `{{EVAL_ACCOUNT_ID_HASH}}` — final institution account PENDING |
+| required user saved instruction | empty | expected SHA-256 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| current internal rehearsal account | **NON_EMPTY — official 사용 불가** | content 미기록; SHA-256 `cdbc9181ebaa959ae0b2e237b8b4fd1163a09ff542fdd546ee69a2ad5a7c0bad` |
+| current AI allowance | available | used `96320`, limit `null` |
+| official readiness enforcement | automatic | live official doctor가 Saved Instruction + allowance 검사 |
 | project | none | run/session manifest |
 | project instruction | none | run/session manifest |
 
@@ -193,19 +201,19 @@ RA stateful data audit:
 
 | Stage | Model identifier in source |
 |---|---|
-| work classification | `openai/gpt-4.1` |
-| candidate scope validation | `openai/gpt-4.1` |
-| draft | `openai/gpt-4.1` |
-| verify | `openai/gpt-4.1` |
+| work classification | `RISK_MODELS.gpt41`; KOLAS=`openai/gpt-4.1-2025-04-14` |
+| candidate scope validation | `RISK_MODELS.gpt41`; KOLAS=`openai/gpt-4.1-2025-04-14` |
+| draft | `RISK_MODELS.gpt41`; KOLAS=`openai/gpt-4.1-2025-04-14` |
+| verify | `RISK_MODELS.gpt41`; KOLAS=`openai/gpt-4.1-2025-04-14` |
 
 ### 6.2 Conditional models
 
 | Stage | Model | Standard KOLAS target |
 |---|---|---|
-| saved-policy resolution | `openai/gpt-4.1-mini` | skip when saved instruction empty |
-| contextual candidate | `openai/gpt-4.1` | skip when environment absent |
-| photo | `openai/gpt-4o` | skip |
-| accident cases | `openai/gpt-4o` | skip |
+| saved-policy resolution | KOLAS=`openai/gpt-4.1-mini-2025-04-14` | skip when saved instruction empty |
+| contextual candidate | KOLAS=`openai/gpt-4.1-2025-04-14` | skip when environment absent |
+| photo | KOLAS=`openai/gpt-4o-2024-11-20` | skip |
+| accident cases | KOLAS=`openai/gpt-4o-2024-11-20` | skip |
 
 ### 6.3 Unset/provider-controlled fields
 
@@ -216,7 +224,7 @@ RA stateful data audit:
 - provider reasoning effort: `UNSET`
 - provider `service_tier`: `UNSET`
 
-Final model snapshot strategy: `{{MODEL_SNAPSHOT_POLICY}}` — PENDING (`DEC-INF-001`).
+Final model snapshot strategy: **RESOLVED — dedicated KOLAS deployment에서 dated snapshot env pinning**. 일반 Green 기본 alias는 변경하지 않는다. Dated ID Mastra construction 및 실제 provider-call smoke는 모두 PASS했으며 final deployment에서 effective env를 다시 freeze한다.
 
 ## 7. Runtime Dependencies
 
@@ -250,7 +258,7 @@ Final OS/container/image identity: `{{FINAL_DEPLOYMENT_IMAGE_OR_OS_ID}}` — PEN
 | max concurrency | `12` |
 | prompt SHA-256 | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` |
 | rubric SHA-256 | `d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22` |
-| evaluator source aggregate SHA-256 | `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` |
+| evaluator source aggregate SHA-256 | `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701` |
 
 Judge의 temperature/top_p/max_output_tokens/service_tier는 현재 요청에서 명시하지 않는다. 이 항목은 Phase 5에서 측정시스템 관점으로 최종 처리한다.
 
@@ -269,7 +277,7 @@ Judge의 temperature/top_p/max_output_tokens/service_tier는 현재 요청에서
 - [ ] evaluation account empty-instruction hash
 - [ ] RA full DB/embedding snapshot hash
 - [ ] Law DB snapshot hash
-- [ ] model alias/snapshot policy 승인
+- [x] model alias/snapshot policy 승인 — dedicated KOLAS deployment snapshot pinning
 - [ ] effective non-secret env manifest hash
 - [ ] API smoke PASS
 - [ ] clean-room dry-run PASS

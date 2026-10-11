@@ -60,20 +60,21 @@
 - [x] 관련 repository별 commit SHA 기록 — Core/Agents/RA/Law audit snapshot 및 Git tree 기록
 - [x] API endpoint와 request/response schema version 기록 — protocol v2 / quick-fast-v1.0.0 / SSE/XML contract 기록
 - [x] agent별 모델 identifier 기록 — normal/conditional KOLAS path 분리 기록
+- [x] dated snapshot freeze policy 결정/구현 — GPT-4.1/mini `2025-04-14`, GPT-4o `2024-11-20`; Agents commit `86b7f1b`; isolated provider-call smoke PASS; final deployment env freeze는 PENDING
 - [x] reasoning/fast/instant 등 provider mode를 실제 요청 기준 기록 — SEEXR `fast`와 OpenAI service tier를 분리하고 SUT service tier 직접 설정 없음 확인
 - [x] temperature/top_p/max tokens/seed 등 설정값 기록 — relevant quick-fast source에서 explicit 설정 없음 확인
 - [x] 설정 불가 값은 `미지원` 또는 `provider-controlled`로 명시
 - [x] prompt 파일 또는 prompt content hash 기록 — 단일 prompt 파일 대신 agent/workflow/prompt-builder source SHA-256 집합으로 기록
 - [x] tool/function/schema 설정 기록 — RA hybrid retrieval, structured-output schemas, conditional branches 정리
 - [x] dependency/runtime 버전 기록 — Node/npm/package-lock 및 주요 resolved package 기록
-- [ ] DB/schema/migration 최종 상태 기록 — RA API-visible 6,443행 hash 확보; embedding 포함 RA snapshot 및 Law DB snapshot은 PENDING
-- [x] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화 — secret 제외 whitelist와 source default/override 경로 기록
+- [ ] DB/schema/migration 최종 상태 기록 — RA 6,443/6,443 embedding coverage(`text-embedding-3-large`, `risk-search-v1`) 및 Law `17/2861/323` row counts 확인; full content/vector snapshot hash는 operator-side PENDING
+- [x] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화 — secret 제외 whitelist + Agents `86b7f1b` model snapshot override 경로 구현
 - [x] `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md` REVIEW 초안 작성
 
 **완료 조건:** 시험기관이 어떤 버전/모델/설정으로 호출해야 하는지 모호성이 없다.
 
 **Phase 2 Drafts:** `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md`
-**현재 상태:** 소스/API/모델/prompt/runtime 감사 완료. final immutable deployment, evaluation-account instruction, RA embedding snapshot, Law DB snapshot, model snapshot policy가 남아 있어 Phase 2는 아직 `REVIEW`다.
+**현재 상태:** model snapshot 정책은 **resolved/implemented**(KOLAS 전용 dated snapshot pinning, 일반 Green 기본 alias 불변). current internal rehearsal account는 Saved Instruction NON_EMPTY라 official preflight가 자동 차단한다. final immutable deployment, dedicated empty-instruction account, RA/Law full snapshot hash가 남아 있어 Phase 2는 `REVIEW`다.
 
 ## Phase 3. GT 정당성·출처·무결성 확립
 
@@ -117,12 +118,13 @@
 - [x] provider 비결정성으로 인한 변동 범위 측정 — mitigation 99.21875~100%, decision stability 99.73404~100%
 - [x] evaluator 변경 시 재qualification 조건 정의
 - [x] `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md` 작성
+- [x] official account readiness preflight 강화 — Saved Instruction empty + AI token allowance 자동검사; evaluator source `0069d7c2...`; Judge semantics 불변
 - [ ] 시험 직전 live AJQG 재실행 — 2026-10-11 현재 `.env` OpenAI credential 인증 실패(401), credential 갱신 후 실행
 
 **완료 조건:** Judge가 왜 측정도구로 사용할 수 있는지 별도 근거가 존재하고, 시험 직전 동일 frozen gate를 다시 통과한다.
 
 **Phase 5 Drafts:** `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md`
-**현재 상태:** evaluator 구조·freeze·과거 적격성·반복안정성 증적은 `REVIEW` 수준으로 정리 완료. 공식 시험 직전 유효 credential로 live AJQG를 다시 실행하는 운영 항목만 남음.
+**현재 상태:** evaluator 구조·과거 적격성·반복안정성 증적 정리 완료. account-readiness preflight 추가로 source aggregate가 갱신되어 fresh AJQG가 다시 필요하며, 현재 OpenAI credential 401 때문에 최종 requalification은 PENDING이다.
 
 ## Phase 6. 재현 프로그램 패키지화
 
@@ -161,6 +163,7 @@
 - [x] sample request/response 구조 작성 — 실제 secret/token 미포함
 - [x] timeout/rate limit/retry/error code 설명
 - [x] session/run user ownership 격리 확인
+- [x] Saved Instruction/AI allowance official preflight 자동검사 구현 — 현재 내부 rehearsal 계정은 NON_EMPTY라 의도대로 FAIL
 - [x] 시험 중 운영환경 변경 금지/통지 절차 정의
 - [x] `11_API_ACCESS_GUIDE.md` 작성
 - [ ] 시험기관 담당자/전용 계정 실제 생성 및 entitlement 부여
@@ -201,7 +204,7 @@
 - [x] readiness blocking 확인 — `doctor --official --require-ready` exit code 2
 - [x] fresh-clone offline regression — 18/18 PASS
 - [x] 기존 환경 live SUT auth 교차확인 — email/password renewal + authenticated API + risk agent PASS
-- [ ] clean-room live preflight PASS — secure institution credential provisioning 필요
+- [ ] clean-room live preflight PASS — dedicated empty-instruction institution credential provisioning 필요
 - [ ] 유효 OpenAI credential로 AJQG PASS — 현재 내부 key는 live AJQG에서 401
 - [ ] sample subset 실행
 - [ ] full 425-case run 실행
@@ -215,7 +218,7 @@
 **완료 조건:** 작성자가 직접 개입하지 않아도 secure credential을 받아 end-to-end sample/full run과 seal 검증까지 재현 가능하다.
 
 **Evidence:** `CLEAN_ROOM_REHEARSAL_20261011.md`
-**현재 상태:** offline clean-room reconstruction은 PASS. live reproduction은 유효 OpenAI credential, 기관용 SEEXR credential, final SUT freeze가 없어서 `BLOCKED`; 최종 sign-off는 아직 아니다.
+**현재 상태:** offline clean-room reconstruction은 PASS. live reproduction은 유효 OpenAI credential, dedicated empty-instruction SEEXR 계정, dated-snapshot final SUT deployment가 없어 `BLOCKED`; 최종 sign-off는 아직 아니다.
 
 ## Phase 10. 공문형 HWP/HWPX 작성
 

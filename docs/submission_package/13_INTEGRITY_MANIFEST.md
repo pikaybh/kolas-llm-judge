@@ -1,24 +1,24 @@
 # KOLAS 제출자료 무결성 Manifest
 
 - 문서 ID: `KOLAS-DOC-013`
-- 버전: `0.3-review`
+- 버전: `0.4-review`
 - 상태: `REVIEW`
 - 기준일: `2026-10-11`
 - Machine manifest: `data/submission/submission_integrity_manifest_v1.json`
 - Manifest schema: `submission-integrity-v1`
 - 상태: `CANDIDATE`
 
-> Phase 9 clean-room rehearsal evidence까지 반영한 최신 제출후보 무결성 요약이다. 최종 공인 제출 checksum은 아니다.
+> Phase 9 rehearsal 이후 evaluation-account readiness gate와 SUT model snapshot freeze 경로까지 반영한 최신 제출후보 무결성 요약이다. 최종 공인 제출 checksum은 아니다.
 
 ## 1. Candidate integrity identity
 
 | 항목 | 값 |
 |---|---|
 | artifact count | `77` |
-| artifact root SHA-256 | `6473c87dd1f3d55aeecf243d96eb95c9f0322d8614b6d5480125cb033c0f72fd` |
-| machine manifest SHA-256 | `b40fce72075d351c142f95afc86ff48e5219e7051a25718cf1b3a3018a39cfa4` |
-| generated at UTC | `2026-10-11T03:44:08.524520+00:00` |
-| repository committed base at generation | `d4465e12109ace5d9405c3e36cd84c2ecc405e71` |
+| artifact root SHA-256 | `993f2537abcf286089c84fd197ca9f3889ec0850fd13329212e07248b23ceffe` |
+| machine manifest SHA-256 | `34a106dd829ae13612352157328b19f712f618e89be7390cf719aa8373713bbf` |
+| generated at UTC | `2026-10-11T04:44:08.052879+00:00` |
+| repository committed base at generation | `3fbb1eedf6d3af302ebbb305d2278cbe138fad18` |
 | generator | `tools/build_submission_manifest.py` |
 | generator SHA-256 | `0abce3b635e2b99fc7dba157b197181de9dc01a0a0dd3633f26b9416b8b594b6` |
 | hash algorithm | `SHA-256` |
@@ -42,7 +42,15 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 
 77개 대상 중 하나라도 삭제되거나 내용/크기가 변경되면 검증은 실패한다.
 
-## 3. 범위
+## 3. 이번 revision의 주요 integrity-impact 변경
+
+- official evaluator source aggregate가 account-readiness preflight 추가로 `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`로 갱신됨
+- official runtime SHA-256이 `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3`로 갱신됨
+- live official preflight가 Saved Instruction empty와 AI token allowance를 자동 검사함
+- SUT Agents `86b7f1b`에 KOLAS dated model snapshot override 경로가 추가됨
+- Core/Agents current relevant source fingerprint와 RA/Law live-state audit가 문서에 반영됨
+
+## 4. 범위
 
 포함: 제출 Markdown/템플릿(본 문서 제외), clean-room rehearsal evidence, evaluator source, config/prompt, canonical GT/provenance, dependency lock, 기술문서와 생성도구.
 
@@ -50,7 +58,7 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 
 본 문서는 machine manifest SHA와 artifact root를 기록하므로 자기참조 방지를 위해 root 대상에서 제외한다.
 
-## 4. Artifact category summary
+## 5. Artifact category summary
 
 | 범주 | 파일 수 |
 |---|---:|
@@ -60,7 +68,7 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 | GT/Provenance data | 8 |
 | Package/기술문서/도구 | 10 |
 
-## 5. 전체 artifact checksum 목록
+## 6. 전체 artifact checksum 목록
 
 | # | Path | Size (bytes) | SHA-256 |
 |---:|---|---:|---|
@@ -70,7 +78,7 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 | 4 | `configs/ajqg_seed_v1.yaml` | 3298 | `f0f11537d77555e55fe5ae143fa92e92ddc631da1d7a1711fe2f070ad38b8586` |
 | 5 | `configs/evaluation.yaml` | 3016 | `6ae43cac40b1db1ef506ddfc3fcc980bfb61b90a78aac6e092ad26cb7f7fe580` |
 | 6 | `configs/gt_provenance_schema_v1.yaml` | 1787 | `58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2` |
-| 7 | `configs/official_runtime_v1.yaml` | 3002 | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` |
+| 7 | `configs/official_runtime_v1.yaml` | 3002 | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` |
 | 8 | `configs/rubric_binary_v1.yaml` | 1226 | `d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22` |
 | 9 | `configs/rubric_v1.yaml` | 1314 | `6e6f4eed6561475f8357fe430a3d30ec4214efc944bf5ba2f6396adc281630a6` |
 | 10 | `data/cases/GT_CHANGELOG.md` | 2101 | `49ba52c6f181798620e5eac846b4ce94afaeef40b6eae65b1b60deef20f50661` |
@@ -85,22 +93,22 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 | 19 | `docs/evaluation_spec.md` | 17541 | `ad821fa9c1037b7565943d4bd0d7baaac0b785ee3fed8a21dea5f1f2060e46d2` |
 | 20 | `docs/kolas_compliance_plan_v1.md` | 7580 | `1cd45a71306ca1acd086bf5736930c100234cac8b38533224069a5c6de67d149` |
 | 21 | `docs/submission_package/00_PHASE0_AUDIT_LOG.md` | 2513 | `0ccf2ec50e5045f8b7821fc3bc2c16d1b059a13cdea3a3ce2c2da143ce8c1847` |
-| 22 | `docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md` | 18856 | `4fff8fa0cd7bd4305150da8c4721eedd51a4b92f493d4b5810958ea52908e409` |
+| 22 | `docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md` | 19911 | `91f8f221d7af10638c70794289e02a0bd260421811d098928fbfbbac8a26efd0` |
 | 23 | `docs/submission_package/01_TEST_METHOD.md` | 13340 | `63baa7bd96e5e6a427be1bfd0c8c9640b4ce0d38da9ae4ca5bd07a12b5dcb6ad` |
-| 24 | `docs/submission_package/02_SYSTEM_UNDER_TEST.md` | 13757 | `d8f4942f613953f62112ab15a582383b7cd9cd13705d38a7fa880eea68dfab5f` |
-| 25 | `docs/submission_package/03_INFERENCE_CONFIGURATION.md` | 12509 | `74a2f7e5da9a409fa0938f3efeb64507c9da37f05d5b15d6e94e7fc8e0bc58f1` |
+| 24 | `docs/submission_package/02_SYSTEM_UNDER_TEST.md` | 14932 | `f5d6d6dfa6186d477105c63b4f874d7857b8a44b1f83f215520d54f6f17c3f8e` |
+| 25 | `docs/submission_package/03_INFERENCE_CONFIGURATION.md` | 13140 | `df1079db7fa3e4ada3420d66488efdea74f344b58f995dba6c47707306722d12` |
 | 26 | `docs/submission_package/04_GT_SPECIFICATION.md` | 13092 | `786b127ef77d84cff79836218cdaa621a9805b46271d6d0bee80c537d1717422` |
 | 27 | `docs/submission_package/05_GT_SOURCE_PROVENANCE.md` | 12814 | `bf573130778e622479345959a5e6a176856eee0b1c5afd4e43ba8a081caf7fc8` |
-| 28 | `docs/submission_package/08_EVALUATOR_SPECIFICATION.md` | 7603 | `e19a2ef15846b523ae634c745937647fd6e73d0e7ea8d31e13ff45d50fd53bb8` |
-| 29 | `docs/submission_package/09_EVALUATOR_QUALIFICATION.md` | 7396 | `1879ad262dfaec181328ac27590823a1bdda973625c6ccc49cfa4e95df4d15ea` |
-| 30 | `docs/submission_package/10_REPRODUCIBILITY_GUIDE.md` | 12713 | `60c3116372e3e62582c021266080b3b249811ec65dc7f9ec0e1d99f92534c566` |
-| 31 | `docs/submission_package/11_API_ACCESS_GUIDE.md` | 13240 | `21d2590dd04e1789a839bc49847d3cbac9bd526a9141be4bba13e18da372938a` |
-| 32 | `docs/submission_package/12_VERSION_MANIFEST.md` | 12985 | `5f8a52e91cbcc0f98ab2deac6e2701dfa086e2565457c637b737eeef844eb71e` |
+| 28 | `docs/submission_package/08_EVALUATOR_SPECIFICATION.md` | 8166 | `02c9b022b31dab4098de51dcc44db12c05fe087a1a325370df54e57060b73123` |
+| 29 | `docs/submission_package/09_EVALUATOR_QUALIFICATION.md` | 8010 | `31140ea35a2a6cfbebf5584917af148b3c377d7ae07d1de9c7847ddd4790bfa3` |
+| 30 | `docs/submission_package/10_REPRODUCIBILITY_GUIDE.md` | 13229 | `f1787cd1be36cdbdda040cbba4a6f4e33d5490c037c4a34f945ca91574d93c33` |
+| 31 | `docs/submission_package/11_API_ACCESS_GUIDE.md` | 14028 | `ca0b628d263ff528baa48f06e0b101bd8f41b83b078faf4890000dc037f60436` |
+| 32 | `docs/submission_package/12_VERSION_MANIFEST.md` | 14309 | `055f52a0213dd4a72ffc099a8c902ad99ccad0206dcc2a8fa98633fa686f6630` |
 | 33 | `docs/submission_package/14_CHANGE_CONTROL.md` | 9563 | `d66c3ad06a43f4f6119d01f8fa3330c155909812dbc2a7334a09f518cd9a1f89` |
 | 34 | `docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md` | 7690 | `006a4f67f843fd11b1886443ce3b33e68c8c8850c32acafeb6c92214d55b9e56` |
 | 35 | `docs/submission_package/DOCUMENT_REGISTER.md` | 3908 | `80741ebff15146b1bde806fcb6cda21e5720a0d1fc688203768d1a04b9b283e6` |
 | 36 | `docs/submission_package/HWP_HANDOFF_SPEC.md` | 7415 | `b336e549febab035a2aeabbe59d3721ab7b1ddc3823e5eeff7b1ea5ee75628a7` |
-| 37 | `docs/submission_package/MASTER_PLAN.md` | 20283 | `026923f866745a3e3065fd9f8d12e505dedef30b5f14ff96f0aef4b25c84ea15` |
+| 37 | `docs/submission_package/MASTER_PLAN.md` | 21145 | `a56ff3bd102d39f07dbb08b4d8f8bc2c9ea8ecdd8b946c1d00ca8515692aa5fb` |
 | 38 | `docs/submission_package/README.md` | 7762 | `7a3b979f77db90848f070213979b1c1bb012ceb9d3feab8aac7f4956d003bd7b` |
 | 39 | `docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv` | 370 | `7774b5985c0b9055c219119a30bfd8cfdb00f19635c6978fc0afce87b50c1a36` |
 | 40 | `docs/submission_package/templates/SECTION_TEMPLATE.md` | 907 | `165f7bcc895d3e8f5d71dafec58fa0a983ed611f397b8fac7bd4f7a4724140fe` |
@@ -119,7 +127,7 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 | 53 | `src/kolas_llm_judge/dataset.py` | 6033 | `bcbf5d6b29b1b89e1c56502c0918719c5fc836d23b4bbab87f84f209434599cd` |
 | 54 | `src/kolas_llm_judge/derived_analysis.py` | 8426 | `ddffe60865815b8bcffe00380e08e6bf88581160ec0bc25cb056d702a85574e4` |
 | 55 | `src/kolas_llm_judge/deterministic.py` | 10162 | `72e8d073d72988d262aeddd907e3f469bc892d59a5c2b289dfe2a3d707e86d77` |
-| 56 | `src/kolas_llm_judge/doctor.py` | 11659 | `7a41ab5bbd615127a004d4d0265915aad3a650898a9ba067678e298cd0666fa2` |
+| 56 | `src/kolas_llm_judge/doctor.py` | 13442 | `7e2cf0c89f0e58f2ddcc3f1f43d1a6c4cfe6262d6fb1db2fde3ecf93c294b082` |
 | 57 | `src/kolas_llm_judge/identification.py` | 3415 | `4f62b70e26cb37fa983f487d75a7ac9cffad1026dd202b7618574b1a136be71b` |
 | 58 | `src/kolas_llm_judge/io_utils.py` | 1565 | `ccf901ad293af1ae7a16245540847e08a7c052a7a9433a5227429ae102ab00b8` |
 | 59 | `src/kolas_llm_judge/judge.py` | 25729 | `6e37b29d184b658e66d6a853eeb0875b2bcef54b82edadd563e7e4f0dca334d4` |
@@ -137,44 +145,47 @@ PYTHONPATH="$PWD:$PWD/src" uv run python tools/build_submission_manifest.py veri
 | 71 | `src/kolas_llm_judge/report.py` | 25280 | `b6b0028aba22e1eedcc5ea08ea7545afeb92f306cd8f9b1c1738e0a914978543` |
 | 72 | `src/kolas_llm_judge/runner.py` | 22241 | `1a53a4ac32956c920183881e6d0b2ab015569f5daf1501e16bbc3fb3213c528f` |
 | 73 | `src/kolas_llm_judge/seal.py` | 6908 | `c6b82efbb42bf7d425f7452cf764ed3c139b3c5304c958d73c70d8fe4e91014b` |
-| 74 | `src/kolas_llm_judge/sut_client.py` | 25968 | `e4edbb19e11b5bb58482c3579a7f74fbf82c7bba3c1b428b98ba204ea4383d79` |
+| 74 | `src/kolas_llm_judge/sut_client.py` | 27828 | `45cbc9a94f1f4e7497d4bd55826eaf5a032ab03f33e86494d82126cab4d42e1d` |
 | 75 | `tools/build_submission_manifest.py` | 9609 | `0abce3b635e2b99fc7dba157b197181de9dc01a0a0dd3633f26b9416b8b594b6` |
 | 76 | `tools/gt_provenance.py` | 3714 | `a52d7e7c35ed87233d0f9e5555233e6cb744fbdff53313d654d95e70206cdf4f` |
 | 77 | `uv.lock` | 173838 | `59502e93ca708512472ab858e78d22e3e4f06f5a8de63ddf9e51c8d3475c5c6f` |
 
-## 6. Candidate root history
+## 7. Candidate root history
 
 | 단계 | Artifact 수 | Root SHA-256 | 의미 |
 |---|---:|---|---|
 | Phase 8 최초 candidate | 76 | `7566872820ed951f05ad6ec18c7dc4aef5ead94dc3a3d35180056f4f8bb6c1ba` | fresh clone에서 동일 root 재현 |
-| Phase 9 evidence 최초 반영 | 77 | `bb19657f25108c7b4388ec041b96dc92844cdfa0e97886478bea02b8e63db1b7` | rehearsal evidence/가이드 반영 |
-| Phase 9 register 정리 반영 | 77 | `6473c87dd1f3d55aeecf243d96eb95c9f0322d8614b6d5480125cb033c0f72fd` | 현재 최신 candidate |
+| Phase 9 clean-room evidence 반영 | 77 | `6473c87dd1f3d55aeecf243d96eb95c9f0322d8614b6d5480125cb033c0f72fd` | clean-room rehearsal/등록부 반영 |
+| Account gate + model snapshot freeze revision | 77 | `993f2537abcf286089c84fd197ca9f3889ec0850fd13329212e07248b23ceffe` | 현재 최신 candidate |
 
 이전 manifest는 Git 이력에서 감사 가능하다.
 
-## 7. 핵심 identity 교차확인
+## 8. 핵심 identity 교차확인
 
-| 항목 | SHA-256 |
+| 항목 | SHA-256 / identity |
 |---|---|
 | GT raw | `b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a` |
 | scenarios | `2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c` |
-| official runtime | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` |
+| official runtime | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` |
 | Judge prompt | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` |
 | Judge rubric | `d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22` |
-| frozen evaluator source aggregate | `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` |
+| evaluator source aggregate | `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701` |
+| Core relevant source | `df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5` |
+| Agents relevant source | `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b` |
 
-## 8. 아직 final이 아닌 이유
+## 9. 아직 final이 아닌 이유
 
-- final SUT release/tag 및 stateful DB snapshot 미확정
-- final SUT base URL 미확정
-- 시험기관 credential provisioning 미완료
-- 유효 OpenAI credential 기반 AJQG 미완료
+- final SUT immutable deployment/tag 및 effective dated-snapshot env freeze 미완료
+- dedicated empty-instruction institution account provisioning 미완료
+- 유효 Judge OpenAI credential 기반 fresh AJQG 미완료
+- RA embedding-inclusive full snapshot hash 미완료
+- Law DB full content snapshot hash 미완료
 - live clean-room sample/full run 미완료
 - 독립 제3자 sign-off 미완료
 - 최종 HWP/HWPX/PDF 미생성
 
 따라서 현재 root를 최종 공인 제출 checksum으로 표현하지 않는다.
 
-## 9. Final freeze
+## 10. Final freeze
 
-Phase 2/7/9 미확정값과 live clean-room sign-off를 완료한 뒤 final HWP/HWPX/PDF까지 scope에 추가해 manifest를 재생성하고 최종 Git tag/release를 생성한다. 이후 변경은 `14_CHANGE_CONTROL.md`를 따른다.
+Phase 1/2/7/9의 외부·운영 미확정값을 닫고 live clean-room sign-off를 완료한 뒤 final HWP/HWPX/PDF까지 scope에 추가해 manifest를 재생성하고 최종 Git tag/release를 생성한다. 이후 변경은 `14_CHANGE_CONTROL.md`를 따른다.

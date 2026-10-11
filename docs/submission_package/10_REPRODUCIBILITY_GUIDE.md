@@ -175,6 +175,10 @@ uv run kolas-llm-judge doctor --live --official --require-ready
 - renewable auth mode
 - authenticated Core API call
 - `risk-assessment` agent 존재/활성 여부
+- evaluation account Saved Instruction empty — 원문은 기록하지 않고 empty 여부 + SHA-256만 사용
+- evaluation account AI token allowance available
+
+현재 내부 rehearsal 계정은 allowance는 PASS지만 Saved Instruction이 NON_EMPTY여서 이 gate에서 `NOT READY`가 된다. `official-live`도 내부적으로 같은 doctor gate를 실행하므로 우회해 공식 run을 시작할 수 없다.
 
 OpenAI credential의 실제 provider 인증은 이어지는 AJQG 호출에서 검증된다.
 
@@ -447,7 +451,8 @@ Fresh clone + secure GT 배치 + `uv sync --frozen` + integrity verification + o
 2026-10-11 기준 아래는 코드를 더 구현해야 하는 문제가 아니라 **최종 공인시험 환경에서 완료해야 할 운영 항목**이다.
 
 - 유효한 OpenAI 시험 credential provisioning 및 시험 직전 AJQG 재실행
-- final SUT release의 clean commit/tag 확정
+- final SUT release의 clean commit/tag 및 dated-model snapshot env 확정
+- dedicated evaluation account의 Saved Instruction empty 상태 확정
 - RA retrieval DB embedding 포함 snapshot identity 확정
 - Law DB snapshot identity 확정
 - 시험기관 clean-room에서 실제 end-to-end 재현 drill 수행

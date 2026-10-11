@@ -1,6 +1,6 @@
 runtime_version: "official-runtime-v1"
 protocol: "automated-kolas-v1"
-evaluator_source_sha256: "78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1"
+evaluator_source_sha256: "0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701"
 dataset:
   dataset_id: "KOLAS_RA_GT"
   dataset_version: "1.0.0"

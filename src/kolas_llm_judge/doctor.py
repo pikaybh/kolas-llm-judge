@@ -402,6 +402,50 @@ async def run_doctor(
                     risk_available,
                     sut_config.agent_id,
                 )
+                if official:
+                    account_state = (
+                        await sut.evaluation_account_state()
+                    )
+                    instruction_empty = bool(
+                        account_state.get(
+                            "saved_instruction_empty"
+                        )
+                    )
+                    add(
+                        "evaluation_saved_instruction_empty",
+                        instruction_empty,
+                        (
+                            "empty; sha256="
+                            + str(
+                                account_state.get(
+                                    "saved_instruction_sha256"
+                                )
+                            )
+                            if instruction_empty
+                            else (
+                                "NON_EMPTY; sha256="
+                                + str(
+                                    account_state.get(
+                                        "saved_instruction_sha256"
+                                    )
+                                )
+                            )
+                        ),
+                    )
+                    add(
+                        "evaluation_ai_token_allowance",
+                        bool(
+                            account_state.get(
+                                "allowance_available"
+                            )
+                        ),
+                        (
+                            "tokens_used_month="
+                            f"{account_state.get('tokens_used_month')}, "
+                            "tokens_limit="
+                            f"{account_state.get('tokens_limit')}"
+                        ),
+                    )
         except Exception as exc:
             add(
                 "seexr_live_auth",

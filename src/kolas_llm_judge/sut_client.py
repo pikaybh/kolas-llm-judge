@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 import time
@@ -436,6 +437,73 @@ class SeexrSutClient:
             if isinstance(data, dict)
             else {"data": data}
         )
+
+    async def evaluation_account_state(
+        self,
+    ) -> dict[str, Any]:
+        instruction_response = (
+            await self._request_with_auth_retry(
+                "GET",
+                "/instructions/me",
+            )
+        )
+        plan_response = (
+            await self._request_with_auth_retry(
+                "GET",
+                "/users/me/plan",
+            )
+        )
+        instruction = _unwrap(
+            instruction_response.json()
+        )
+        plan = _unwrap(plan_response.json())
+
+        content = (
+            str(instruction.get("content") or "")
+            if isinstance(instruction, dict)
+            else ""
+        )
+        normalized_instruction = content.strip()
+        usage = (
+            plan.get("usage")
+            if isinstance(plan, dict)
+            else None
+        )
+        if not isinstance(usage, dict):
+            usage = {}
+
+        tokens_used = usage.get(
+            "tokens_used_month"
+        )
+        tokens_limit = usage.get(
+            "tokens_limit"
+        )
+        allowance_available = (
+            tokens_limit is None
+            or (
+                isinstance(tokens_used, (int, float))
+                and isinstance(tokens_limit, (int, float))
+                and tokens_used < tokens_limit
+            )
+        )
+
+        return {
+            "saved_instruction_empty": (
+                normalized_instruction == ""
+            ),
+            "saved_instruction_sha256": (
+                hashlib.sha256(
+                    normalized_instruction.encode(
+                        "utf-8"
+                    )
+                ).hexdigest()
+            ),
+            "tokens_used_month": tokens_used,
+            "tokens_limit": tokens_limit,
+            "allowance_available": (
+                allowance_available
+            ),
+        }
 
     async def create_session(
         self,

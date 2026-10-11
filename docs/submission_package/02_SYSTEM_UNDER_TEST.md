@@ -29,12 +29,19 @@
 
 | Component | Repository | Git HEAD | Git tree | 2026-10-11 상태 |
 |---|---|---|---|---|
-| Core | `/srv/green-server/seexr-api-core` | `622b25416e925b898dffba05b4cd9c936311f257` | `e1d4babd4e8f4eb4f3d144e6f715675b6de6ee37` | untracked `apple-root-certs/` 1건 존재 |
-| Agents | `/srv/green-server/seexr-api-agents` | `66eeb579b3e76b474e88a658b1e1acf53af6af25` | `0bc60a562c9dab834ea0abeda924eee2951d9a82` | clean |
+| Core | `/srv/green-server/seexr-api-core` | `279bc052830bca596183ecbe8378dd69d6722f15` | `91de2c76fa7cb96dc301ebf2e85abc8a560051d9` | KOLAS relevant source clean; repo 전체에는 untracked `apple-root-certs/` 1건 |
+| Agents | `/srv/green-server/seexr-api-agents` | `86b7f1bfdefad8bac5eeee68e685277cd955f37c` | `62f1f1430a258adfed036bc4a815ca94f00e2f87` | clean; KOLAS model snapshot override path 포함 |
 | RA search API | `/srv/green-server/agent-api-ra` | `b400f87ffc483764e8a8857e12c188867425c2b2` | `db2089af3f6b50eff83ee19baf41d8f8949c893a` | clean |
 | Law API | `/srv/green-server/seexr-api-law` | `ddb8a25f2f4526f2625cac57849593e7166ef667` | `da66acf84c366b491c7adb26e63a4a712b0771a0` | clean |
 
 이 표는 **audit snapshot**이며 최종 시험 release tag가 아니다. 공인시험 시작 전 네 repository 모두 clean이어야 하며 최종 commit/tag를 새 manifest에 다시 기록한다.
+
+현재 KOLAS relevant-source fingerprint:
+
+- Core: `df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5`
+- Agents: `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b`
+
+Agents `86b7f1b`는 일반 Green의 기본 alias를 바꾸지 않고 KOLAS 전용 배포에서만 dated model snapshot을 env로 pin할 수 있는 경로를 추가했다.
 
 ## 3. KOLAS 호출 경로
 
@@ -126,7 +133,7 @@ Agents는 이 instruction을:
 - 시험 직전 API 또는 DB의 비밀이 아닌 검증 절차로 empty 상태 확인
 - run manifest에 content 자체 대신 `is_empty=true`와 hash 기록
 
-현재 audit에서는 시험 계정의 저장 instruction 상태를 공식 freeze evidence로 확인하지 않았으므로 `PENDING`이다.
+2026-10-11 현재 내부 rehearsal 계정을 API로 검사한 결과 Saved Instruction은 **NON_EMPTY**였고, 내용은 보존/출력하지 않은 채 SHA-256 `cdbc9181ebaa959ae0b2e237b8b4fd1163a09ff542fdd546ee69a2ad5a7c0bad`만 기록했다. 따라서 이 계정은 공식시험에 사용할 수 없다. evaluator preflight는 이제 official live mode에서 이 상태를 자동 FAIL 처리한다. 최종 시험에는 별도의 empty-instruction 전용 계정이 필요하다.
 
 ### 5.2 Project instruction
 
@@ -196,6 +203,9 @@ quick-fast는 `riskAssessmentDbTool`을 통해 다음 API에 후보를 요청한
 - row count: `6,443`
 - first ID: `1`
 - last ID: `6,443`
+- embedding populated: `6,443 / 6,443`
+- embedding model: `text-embedding-3-large`
+- embedding version: `risk-search-v1`
 - visible canonical row SHA-256: `8d25e2b57701bc97aa61331f55f170655ec52950c555563ebfc8dba3f6f1a493`
 
 위 hash는 API가 반환하는 다음 필드를 ID 순으로 canonical JSON화해 계산한 audit fingerprint다.
@@ -219,7 +229,7 @@ quick-fast의 legal-basis verification은 Agents에서 Core의 `/api/law/search`
 - canonical content hash 또는 read-only snapshot hash
 - 시험기간 자동 scraping/update 중지 여부
 
-현재 이 DB content snapshot identity는 `PENDING`이다.
+2026-10-11 live DB에서 `laws=17`, `law_articles=2,861`, `law_files=323`을 확인했다. 다만 row 전체 content를 포함한 canonical snapshot hash는 현재 도구 보안경계에서 직접 추출하지 않았으므로 최종 운영자-side snapshot 단계로 `PENDING`이다.
 
 ## 9. API schema/versioning
 
@@ -307,7 +317,7 @@ Core 주요 resolved package:
 | ID | 중요도 | 항목 | 현재 상태 |
 |---|---|---|---|
 | `GAP-SUT-002` | Critical | Green dev/watch deployment는 immutable하지 않음 | final endpoint/deployment 필요 |
-| `GAP-SUT-003` | Critical | evaluation account user instruction 상태가 frozen evidence로 없음 | empty + hash 검증 필요 |
+| `GAP-SUT-003` | Critical | 현재 내부 rehearsal 계정 Saved Instruction이 NON_EMPTY | official preflight가 자동 차단; 별도 empty-instruction 계정 필요 |
 | `GAP-SUT-004` | Critical | RA embedding vector 포함 DB snapshot identity 없음 | snapshot/hash 필요 |
 | `GAP-SUT-005` | High | Law DB snapshot identity 없음 | snapshot/hash 필요 |
 | `GAP-SUT-006` | High | Core repo에 untracked `apple-root-certs/` 존재 | 최종 release는 fully clean 필요 |

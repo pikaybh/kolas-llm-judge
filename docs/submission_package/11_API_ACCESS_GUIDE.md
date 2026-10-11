@@ -328,6 +328,15 @@ Global `60 ms`는 의도 여부와 별개로 **현재 effective configuration을
 | SSE disconnect | 마지막 sequence 이후 reconnect/replay |
 | terminal `run-failed` / `run-cancelled` | reconnect하지 않고 SUT failure 기록 |
 
+### 11.1 Official preflight account-state gate
+
+2026-10-11 evaluator revision부터 `doctor --live --official --require-ready`는 인증 후 다음을 자동 검사한다.
+
+- `GET /instructions/me` → normalized Saved Instruction이 empty인지 확인; 원문은 출력/저장하지 않고 SHA-256만 기록
+- `GET /users/me/plan` → `tokens_used_month` / `tokens_limit`로 AI token allowance 확인
+
+현재 내부 rehearsal 계정은 allowance는 사용 가능하지만 Saved Instruction이 NON_EMPTY이므로 official preflight에서 FAIL한다. 해당 계정의 instruction 내용은 본 패키지에 기록하지 않는다. 최종 시험에는 별도 empty-instruction 계정을 provisioning한다.
+
 ## 12. 시험기관 계정 provisioning checklist
 
 운영 담당자가 secret을 제외한 체크 결과만 서명/기록한다.
@@ -337,9 +346,9 @@ Global `60 ms`는 의도 여부와 별개로 **현재 effective configuration을
 - [ ] `status=active`
 - [ ] `role=user`
 - [ ] admin/RBAC 권한 없음
-- [ ] Saved Instruction empty 확인
+- [ ] Saved Instruction empty 확인 — official live preflight 자동검사
 - [ ] project 연결 없음 또는 시험에 영향 없는 상태 확인
-- [ ] `/users/me/plan`에서 AI token allowance 확인
+- [ ] `/users/me/plan`에서 AI token allowance 확인 — official live preflight 자동검사
 - [ ] access/refresh TTL 확인
 - [ ] final base URL 확인
 - [ ] `GET /agents`에서 `risk-assessment` 활성 확인

@@ -46,11 +46,11 @@
 
 | Evidence ID | 대상 | 위치 | 확인 내용 |
 |---|---|---|---|
-| `EV-EVAL-001` | Official runtime | `configs/official_runtime_v1.yaml` | runtime `official-runtime-v1`; current file SHA-256 `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` |
+| `EV-EVAL-001` | Official runtime | `configs/official_runtime_v1.yaml` | runtime `official-runtime-v1`; current file SHA-256 `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` |
 | `EV-EVAL-002` | Binary prompt | `prompts/judge_binary_v1.md` | official runtime이 prompt SHA를 고정 |
 | `EV-EVAL-003` | Binary rubric | `configs/rubric_binary_v1.yaml` | MATCH primary = `same_hazard_mechanism AND context_compatible` |
 | `EV-EVAL-004` | Judge implementation | `src/kolas_llm_judge/binary_judge.py` | OpenAI Responses `parse`, structured Pydantic output, `store=False` |
-| `EV-EVAL-005` | Evaluator source aggregate hash | `configs/official_runtime_v1.yaml` + validator | expected/actual `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` 일치; `validate_official_runtime(...)` PASS (2026-10-11) |
+| `EV-EVAL-005` | Evaluator source aggregate hash | `configs/official_runtime_v1.yaml` + validator | expected/actual `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701` 일치; evaluation-account readiness preflight 강화분 포함; `validate_official_runtime(...)` PASS (2026-10-11) |
 | `EV-EVAL-006` | AJQG seed/gate | `configs/ajqg_seed_v1.yaml`, `configs/ajqg_gate_v1.yaml` | official runtime이 SHA로 고정 |
 | `EV-EVAL-007` | AJQG hardening summary | `runs/_qualification/20260914-kolas-v1-hardening/summary.json` | SHA-256 `8ecffc8120381fb612b20b318ce916889a71da2005fde9b643515e6b3ac99309`; 104 controls × 2; 376/376 stability; PASS |
 | `EV-EVAL-008` | AJQG hardening control rows | `runs/_qualification/20260914-kolas-v1-hardening/control_results.csv` | SHA-256 `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58`; 248 expected Boolean rows |
@@ -116,6 +116,11 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 | `EV-SUT-002` | SEEXR product model mode | official runtime | `fast` → Core에서 `quick-fast-v1.0.0`으로 routing |
 | `EV-SUT-003` | reasoning style | official runtime | `balanced` |
 | `EV-SUT-004` | RA method | official runtime | `빈도강도법 5x4` |
+| `EV-SUT-005` | Current Core relevant source | Core HEAD `279bc052830bca596183ecbe8378dd69d6722f15` | fingerprint `df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5`; relevant dirty=false |
+| `EV-SUT-006` | Current Agents relevant source | Agents HEAD `86b7f1bfdefad8bac5eeee68e685277cd955f37c` | fingerprint `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b`; model snapshot override path 포함 |
+| `EV-SUT-007` | RA live embedding coverage | `agent-api-ra` DB audit | 6,443/6,443 embedded; model `text-embedding-3-large`; version `risk-search-v1` |
+| `EV-SUT-008` | Law live content counts | `seexr-api-law` DB audit | `laws=17`, `law_articles=2861`, `law_files=323` |
+| `EV-API-009` | Current rehearsal account readiness | authenticated API, secret/content 미기록 | Saved Instruction **NON_EMPTY** (SHA-256 `cdbc9181ebaa959ae0b2e237b8b4fd1163a09ff542fdd546ee69a2ad5a7c0bad`) → official preflight FAIL; `tokens_limit=null`, used `96320` → allowance PASS |
 
 **용어 구분:** `SEEXR modelMode=fast`는 제품 내부 workflow 선택값이다. OpenAI API의 `service_tier=fast`와 동일하지 않다.
 
