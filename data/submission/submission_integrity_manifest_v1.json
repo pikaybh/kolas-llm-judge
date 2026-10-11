@@ -1,11 +1,11 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-11T05:26:02.363314+00:00",
-  "repository_base_head_at_generation": "182c9aa27f1e9712a0a935c3afa776d9af68f7d2",
+  "generated_at_utc": "2026-10-11T05:30:11.884479+00:00",
+  "repository_base_head_at_generation": "bed792904a7210581c8def3d8c439eb0734b2da9",
   "generator": {
     "path": "tools/build_submission_manifest.py",
-    "sha256": "4114c1efbbb954cffd96e1104d197bb04cfe25b53eceebeda53b9dce87bfab8b"
+    "sha256": "29b5af01cafcb2fa9d3377f662c554c9ba6d37af4d135b4b17a8859aa09d6706"
   },
   "scope": {
     "includes_secret_values": false,
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 84,
-  "artifact_root_sha256": "21b2c5af538f7a7779162a1e09d0b3909da276caf6b8f25617fd0a16ccf6cdcf",
+  "artifact_count": 87,
+  "artifact_root_sha256": "0e8900887d6ddbee2bb63162b7f6d58e459f79a3533a15b84ae3caf46c8f3ef6",
   "artifacts": [
     {
       "path": ".env.example",
@@ -213,8 +213,18 @@
     },
     {
       "path": "docs/submission_package/DOCUMENT_REGISTER.md",
-      "size": 4940,
-      "sha256": "a5f82142cfe4281f97e4c18dcd4a2e7e9835fb6c3970c2e098d3a5d816865ff2"
+      "size": 5536,
+      "sha256": "159e0ba60aa8ff9ca30f9f29e2fe14cc5be3837ae46bf29f5942bda6533cf038"
+    },
+    {
+      "path": "docs/submission_package/FINALIZATION_BLOCKER_REGISTER.md",
+      "size": 6435,
+      "sha256": "08e7b2b73a8fab516a67f30f215988de03be26cc2b19297a3f6db663e1292f47"
+    },
+    {
+      "path": "docs/submission_package/HWP_ASSEMBLY_MAP.md",
+      "size": 5190,
+      "sha256": "dda3df6b56e2b8b5ac5ab4ae7fef98cc59845659fb030d8886062a31677c90a1"
     },
     {
       "path": "docs/submission_package/HWP_HANDOFF_SPEC.md",
@@ -228,13 +238,18 @@
     },
     {
       "path": "docs/submission_package/MASTER_PLAN.md",
-      "size": 22196,
-      "sha256": "5139924ba37686b8791ceb0979ecb91c89518dcb56de345dda717e3ac741fcc7"
+      "size": 22759,
+      "sha256": "85566846babbe999663a46d7d6d3365679f4019cd2c8f09b406bf3f9ae28f503"
+    },
+    {
+      "path": "docs/submission_package/PLACEHOLDER_AUDIT.md",
+      "size": 3994,
+      "sha256": "f5960e9560b50cc37fd0d69df8db2195017925813289ba9de31a47a8d63c1218"
     },
     {
       "path": "docs/submission_package/README.md",
-      "size": 7953,
-      "sha256": "875eef31471daf3701d183ae86c035bd983f8d6f0787b598610d3d216895af3b"
+      "size": 8193,
+      "sha256": "534831340a61ac0ff296986b5e6cb71c73a37855a37dc6cef66a6332e5711c10"
     },
     {
       "path": "docs/submission_package/SUT_FREEZE_CANDIDATE.md",
@@ -423,8 +438,8 @@
     },
     {
       "path": "tools/build_submission_manifest.py",
-      "size": 10112,
-      "sha256": "4114c1efbbb954cffd96e1104d197bb04cfe25b53eceebeda53b9dce87bfab8b"
+      "size": 10279,
+      "sha256": "29b5af01cafcb2fa9d3377f662c554c9ba6d37af4d135b4b17a8859aa09d6706"
     },
     {
       "path": "tools/gt_provenance.py",

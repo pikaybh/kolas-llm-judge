@@ -229,18 +229,20 @@
 
 - [ ] 기관 제공 양식 존재 여부 확인 — 존재하면 해당 양식을 최우선 적용
 - [ ] 제출 문서의 문서번호/수신/참조/제목/발신/결재 체계 확인
-- [ ] `HWP_HANDOFF_SPEC.md`에 따라 본문 구조 확정
-- [ ] Markdown의 `{{PLACEHOLDER}}` 잔여 항목 전수 점검
-- [ ] 표/그림/별첨 번호 재정렬
-- [ ] 본문과 별첨 간 cross-reference 검증
-- [ ] 버전·SHA·날짜가 manifest와 일치하는지 검증
-- [ ] secret/API key가 HWP에 포함되지 않았는지 검증
+- [x] `HWP_HANDOFF_SPEC.md`에 따라 본문/붙임 구조 확정 — `HWP_ASSEMBLY_MAP.md`
+- [x] Markdown `{{PLACEHOLDER}}` 전수 점검 — 22종/36회; final identity 9 + 행정 11 + literal example 2로 분류 (`PLACEHOLDER_AUDIT.md`)
+- [x] 표/그림/별첨 numbering contract 확정 — `HWP_ASSEMBLY_MAP.md`
+- [x] 본문과 별첨 source cross-reference 검증 — 붙임 source 15/15 + evidence 3/3 존재 확인
+- [x] candidate 버전·SHA·날짜 manifest 교차검증 — final freeze 후 최종값으로 1회 재검증 필요
+- [x] candidate secret/API key scan 수행 — secret 0건; final HWP 생성 후 재검증 필요
 - [ ] HWP/HWPX 생성
 - [ ] PDF preview 생성 후 레이아웃 검수
 - [ ] 페이지 번호/머리말/꼬리말/표 잘림/폰트 대체 검수
 - [ ] 연구책임자/검토자/승인자 내부 검토
 - [ ] 최종 HWP/HWPX와 PDF preview hash 계산
 - [ ] 최종 제출본 승인
+
+**현재 상태:** HWP 조립 구조·번호체계·placeholder/cross-reference audit까지 준비 완료. 기관 양식/행정정보, final freeze, live full run이 들어오기 전에는 HWP/HWPX 생성 및 `APPROVED/FROZEN` 승격을 의도적으로 차단한다.
 
 **완료 조건:** 다른 에이전트가 Markdown과 증적만 보고 임의 추정 없이 HWP를 재생성할 수 있고, 제출본이 내부 승인됨.
 

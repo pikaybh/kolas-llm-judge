@@ -79,6 +79,9 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 - 섹션 작성 템플릿: [`templates/SECTION_TEMPLATE.md`](./templates/SECTION_TEMPLATE.md)
 - SUT freeze candidate: [`SUT_FREEZE_CANDIDATE.md`](./SUT_FREEZE_CANDIDATE.md)
 - 시험기관 method decision register: [`LAB_METHOD_DECISION_REGISTER.md`](./LAB_METHOD_DECISION_REGISTER.md)
+- 최종화 blocker register: [`FINALIZATION_BLOCKER_REGISTER.md`](./FINALIZATION_BLOCKER_REGISTER.md)
+- HWP assembly map: [`HWP_ASSEMBLY_MAP.md`](./HWP_ASSEMBLY_MAP.md)
+- placeholder audit: [`PLACEHOLDER_AUDIT.md`](./PLACEHOLDER_AUDIT.md)
 
 현재 이 repository에는 이미 KOLAS 평가 하네스, `KOLAS_RA_GT v1.0.0`, frozen Boolean Rubric, official runtime, AJQG, live SUT 실행, repeatability, seal/verify 및 시험기관 협의용 문서가 구현되어 있다. 따라서 본 계획은 시스템을 처음 만드는 계획이 아니라 **기존 구현을 canonical evidence로 감사하고, 시험기관의 재현성 요구를 충족하고, 이미 연구실에서 검증된 GT의 상태와 evaluator 적격성 근거를 제출자료로 정리하는 계획**이다.
 

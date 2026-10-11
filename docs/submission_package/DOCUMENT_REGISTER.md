@@ -9,14 +9,14 @@
 |---|---|---|---|---|---|
 | KOLAS-DOC-001 | `01_TEST_METHOD.md` | 시험 범위·지표·판정·계산식 | 붙임 1 | REVIEW | Phase 0 완료; 시험기관 method 승인 대기 |
 | KOLAS-DOC-002 | `02_SYSTEM_UNDER_TEST.md` | SUT 구성·서비스·버전 | 붙임 1 | REVIEW | Phase 2 audit 완료; final deployment freeze 대기 |
-| KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | REVIEW | Phase 2 audit 완료; model snapshot policy 대기 |
+| KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | REVIEW | dated snapshot policy 구현·provider smoke PASS; final deployment effective env freeze 대기 |
 | KOLAS-DOC-004 | `04_GT_SPECIFICATION.md` | GT 스키마·ID·freeze | 붙임 3 | REVIEW | Phase 3 integrity/spec audit 완료; GT는 연구실 검증 완료 데이터 |
 | KOLAS-DOC-005 | `05_GT_SOURCE_PROVENANCE.md` | GT 근거자료와 traceability | 붙임 3 | REVIEW | file lineage 843/843; GT는 연구실 검증 완료; source provenance는 별도 추적정보 |
 | KOLAS-DOC-006 | `06_EXPERT_VALIDATION_PROTOCOL.md` | 기존 연구실 검증 사실 기록 | 붙임 3 | NOT_REQUIRED | 신규 전문가 검증 절차는 수행하지 않음 |
 | KOLAS-DOC-007 | `07_GT_RELIABILITY_REPORT.md` | 별도 GT 신뢰도 통계 보고서 | 붙임 3 | NOT_REQUIRED | GT는 연구실 검증 완료; 확인되지 않은 통계는 신규 생성하지 않음 |
 | KOLAS-DOC-008 | `08_EVALUATOR_SPECIFICATION.md` | Judge/판정 시스템 명세 | 붙임 4 | REVIEW | evaluator 코드·runtime·hash 감사 완료 |
-| KOLAS-DOC-009 | `09_EVALUATOR_QUALIFICATION.md` | Judge 적격성/반복성 검증 | 붙임 4 | REVIEW | historical AJQG 9/9 PASS; 시험 직전 live AJQG 재실행 필요 |
-| KOLAS-DOC-010 | `10_REPRODUCIBILITY_GUIDE.md` | 설치부터 full run까지 재현 절차 | 붙임 5 | REVIEW | code+secure GT+credential 3-part package 정의; Phase 9 clean-room drill 대기 |
+| KOLAS-DOC-009 | `09_EVALUATOR_QUALIFICATION.md` | Judge 적격성/반복성 검증 | 붙임 4 | REVIEW | current-source AJQG 104×2 PASS·376/376 stable; final freeze 직후 동일 gate 재실행 |
+| KOLAS-DOC-010 | `10_REPRODUCIBILITY_GUIDE.md` | 설치부터 full run까지 재현 절차 | 붙임 5 | REVIEW | code+secure GT+credential 3-part package 정의; offline clean-room PASS, live full run 대기 |
 | KOLAS-DOC-011 | `11_API_ACCESS_GUIDE.md` | endpoint·auth·권한·오류 대응 | 붙임 5 | REVIEW | 최소권한/auth/entitlement/revoke 감사 완료; 기관계정·final endpoint 대기 |
 | KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
 | KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | REVIEW | candidate machine manifest/root 구축; final HWP/PDF freeze 대기 |
@@ -40,6 +40,14 @@ Evidence IDs:
 관련 GT version:
 관련 evaluator version:
 ```
+
+### Finalization / HWP working evidence
+
+| Working ID | 파일 | 상태 | 비고 |
+|---|---|---|---|
+| `FINALIZATION-BLOCKERS-20261011` | `FINALIZATION_BLOCKER_REGISTER.md` | ACTIVE | human/lab/automation blocker 분리 |
+| `HWP-ASSEMBLY-MAP-20261011` | `HWP_ASSEMBLY_MAP.md` | READY_FOR_FINAL_INPUTS | 붙임 source/표·그림 numbering/final gate 정의 |
+| `PLACEHOLDER-AUDIT-20261011` | `PLACEHOLDER_AUDIT.md` | COMPLETE_FOR_CURRENT_CANDIDATE | 22종/36회 placeholder 분류; source existence audit PASS |
 
 ### SUT freeze / method decision working evidence
 
