@@ -14,7 +14,7 @@
 | 항목 | 값 | 상태 |
 |---|---|---|
 | repository | `pikaybh/kolas-llm-judge` | 확인 |
-| Phase 3 audit base commit | `801bac658ae18175bac1505d843ba6633dbb92a6` | 확인 |
+| submission candidate base commit before Phase 8 integrity build | `08e0419` | Phase 8 생성 시점의 committed base; final release 아님 |
 | final measurement tag | `{{FINAL_MEASUREMENT_RELEASE_TAG}}` | PENDING |
 | official runtime | `official-runtime-v1` | 확인 |
 | `configs/official_runtime_v1.yaml` SHA-256 | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` | 확인 |
@@ -73,6 +73,18 @@
 | session/run isolation | authenticated owner user ID enforced | 확인 |
 | endpoint-specific OAuth scopes | not implemented | role/ownership/entitlement model 사용 |
 | final institution account | `{{KOLAS_TEST_ACCOUNT_ID}}` | PENDING; secret는 manifest에 기록하지 않음 |
+
+## 2.3 Submission integrity policy
+
+| 항목 | 값 | 상태 |
+|---|---|---|
+| machine manifest | `data/submission/submission_integrity_manifest_v1.json` | Phase 8 candidate에서 생성 |
+| manifest version | `submission-integrity-v1` | 확인 |
+| hash algorithm | `SHA-256` | 확인 |
+| root algorithm | sorted `path\0sha256\0size\n` records | 확인 |
+| integrity report | `docs/submission_package/13_INTEGRITY_MANIFEST.md` | self-reference 방지를 위해 root 대상에서 제외 |
+| final HWP/HWPX/PDF | 아직 미생성 | Phase 10/11 직전 final manifest에 추가 |
+| final Git tag/release | `{{FINAL_MEASUREMENT_RELEASE_TAG}}` | PENDING |
 
 ## 3. SUT Source Snapshot
 

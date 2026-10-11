@@ -1,0 +1,400 @@
+{
+  "manifest_version": "submission-integrity-v1",
+  "status": "CANDIDATE",
+  "generated_at_utc": "2026-10-11T03:39:06.938761+00:00",
+  "repository_base_head_at_generation": "08e0419c82d323f8fb2a3b9f2cf5ff60d630ba0f",
+  "generator": {
+    "path": "tools/build_submission_manifest.py",
+    "sha256": "e712d281006fab155ee758d7aedd727d012a9aef6d51a94d344c95fdc9884085"
+  },
+  "scope": {
+    "includes_secret_values": false,
+    "includes_run_directories": false,
+    "includes_integrity_report_md": false,
+    "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
+  },
+  "artifact_count": 76,
+  "artifact_root_sha256": "7566872820ed951f05ad6ec18c7dc4aef5ead94dc3a3d35180056f4f8bb6c1ba",
+  "artifacts": [
+    {
+      "path": ".env.example",
+      "size": 1297,
+      "sha256": "3c82cb21e47b3c458570bc5bc67db6ac814bf87ccbac4bfd9f3ad445d9e3c3f9"
+    },
+    {
+      "path": "README.md",
+      "size": 15030,
+      "sha256": "82873969fb49f22724abb068412648c952fbadec4708e53e151655266c778f8c"
+    },
+    {
+      "path": "configs/ajqg_gate_v1.yaml",
+      "size": 437,
+      "sha256": "2ee9934e921fa82b10697d6cf9ffca6e72f151a49159ac3aff7a8b7d17421a6b"
+    },
+    {
+      "path": "configs/ajqg_seed_v1.yaml",
+      "size": 3298,
+      "sha256": "f0f11537d77555e55fe5ae143fa92e92ddc631da1d7a1711fe2f070ad38b8586"
+    },
+    {
+      "path": "configs/evaluation.yaml",
+      "size": 3016,
+      "sha256": "6ae43cac40b1db1ef506ddfc3fcc980bfb61b90a78aac6e092ad26cb7f7fe580"
+    },
+    {
+      "path": "configs/gt_provenance_schema_v1.yaml",
+      "size": 1787,
+      "sha256": "58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2"
+    },
+    {
+      "path": "configs/official_runtime_v1.yaml",
+      "size": 3002,
+      "sha256": "bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e"
+    },
+    {
+      "path": "configs/rubric_binary_v1.yaml",
+      "size": 1226,
+      "sha256": "d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22"
+    },
+    {
+      "path": "configs/rubric_v1.yaml",
+      "size": 1314,
+      "sha256": "6e6f4eed6561475f8357fe430a3d30ec4214efc944bf5ba2f6396adc281630a6"
+    },
+    {
+      "path": "data/cases/GT_CHANGELOG.md",
+      "size": 2101,
+      "sha256": "49ba52c6f181798620e5eac846b4ce94afaeef40b6eae65b1b60deef20f50661"
+    },
+    {
+      "path": "data/cases/dataset_manifest.json",
+      "size": 461,
+      "sha256": "e7679fabc39f6c6abb7eb53fdc72a9374deb8b0e64add9cdff4e89ec1cfddc2a"
+    },
+    {
+      "path": "data/cases/gt_lineage_index_v1.csv",
+      "size": 37755,
+      "sha256": "55c0aa75f8cc0ca542c1fb6755a06ed563f02b0150605a227f2539d907aefbd6"
+    },
+    {
+      "path": "data/cases/gt_provenance_audit_manifest_v1.json",
+      "size": 3063,
+      "sha256": "ec5bd4f9fded546ac4f2671da5e610688e674193135c9fc1c3b9ef7ac9c3727c"
+    },
+    {
+      "path": "data/cases/gt_provenance_register_v1.csv",
+      "size": 190676,
+      "sha256": "00b52d389e2afc170c4114ac0308075199beb94d33c725a1beed6b370a679f1c"
+    },
+    {
+      "path": "data/cases/scenarios_v1.jsonl",
+      "size": 484611,
+      "sha256": "2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c"
+    },
+    {
+      "path": "data/raw/PROVENANCE.md",
+      "size": 754,
+      "sha256": "571f5cf43ce7e309ac93cf1f4312879eff5f966c7dc457db601304939316367a"
+    },
+    {
+      "path": "data/raw/kolas_v7_73_test.csv.bz2",
+      "size": 52817,
+      "sha256": "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a"
+    },
+    {
+      "path": "docs/automated_kolas_protocol_v1.md",
+      "size": 14146,
+      "sha256": "848d621444721b7d8fc3f650f9dcbb53498c92702e5778bdce29f8153cf5a93b"
+    },
+    {
+      "path": "docs/evaluation_spec.md",
+      "size": 17541,
+      "sha256": "ad821fa9c1037b7565943d4bd0d7baaac0b785ee3fed8a21dea5f1f2060e46d2"
+    },
+    {
+      "path": "docs/kolas_compliance_plan_v1.md",
+      "size": 7580,
+      "sha256": "1cd45a71306ca1acd086bf5736930c100234cac8b38533224069a5c6de67d149"
+    },
+    {
+      "path": "docs/submission_package/00_PHASE0_AUDIT_LOG.md",
+      "size": 2513,
+      "sha256": "0ccf2ec50e5045f8b7821fc3bc2c16d1b059a13cdea3a3ce2c2da143ce8c1847"
+    },
+    {
+      "path": "docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md",
+      "size": 18856,
+      "sha256": "4fff8fa0cd7bd4305150da8c4721eedd51a4b92f493d4b5810958ea52908e409"
+    },
+    {
+      "path": "docs/submission_package/01_TEST_METHOD.md",
+      "size": 13340,
+      "sha256": "63baa7bd96e5e6a427be1bfd0c8c9640b4ce0d38da9ae4ca5bd07a12b5dcb6ad"
+    },
+    {
+      "path": "docs/submission_package/02_SYSTEM_UNDER_TEST.md",
+      "size": 13757,
+      "sha256": "d8f4942f613953f62112ab15a582383b7cd9cd13705d38a7fa880eea68dfab5f"
+    },
+    {
+      "path": "docs/submission_package/03_INFERENCE_CONFIGURATION.md",
+      "size": 12509,
+      "sha256": "74a2f7e5da9a409fa0938f3efeb64507c9da37f05d5b15d6e94e7fc8e0bc58f1"
+    },
+    {
+      "path": "docs/submission_package/04_GT_SPECIFICATION.md",
+      "size": 13092,
+      "sha256": "786b127ef77d84cff79836218cdaa621a9805b46271d6d0bee80c537d1717422"
+    },
+    {
+      "path": "docs/submission_package/05_GT_SOURCE_PROVENANCE.md",
+      "size": 12814,
+      "sha256": "bf573130778e622479345959a5e6a176856eee0b1c5afd4e43ba8a081caf7fc8"
+    },
+    {
+      "path": "docs/submission_package/08_EVALUATOR_SPECIFICATION.md",
+      "size": 7603,
+      "sha256": "e19a2ef15846b523ae634c745937647fd6e73d0e7ea8d31e13ff45d50fd53bb8"
+    },
+    {
+      "path": "docs/submission_package/09_EVALUATOR_QUALIFICATION.md",
+      "size": 7396,
+      "sha256": "1879ad262dfaec181328ac27590823a1bdda973625c6ccc49cfa4e95df4d15ea"
+    },
+    {
+      "path": "docs/submission_package/10_REPRODUCIBILITY_GUIDE.md",
+      "size": 12069,
+      "sha256": "50db2d432aba6a6fffcf78a21972a5f5a4bb770e849915c4b2dc9a2602cf2d96"
+    },
+    {
+      "path": "docs/submission_package/11_API_ACCESS_GUIDE.md",
+      "size": 13240,
+      "sha256": "21d2590dd04e1789a839bc49847d3cbac9bd526a9141be4bba13e18da372938a"
+    },
+    {
+      "path": "docs/submission_package/12_VERSION_MANIFEST.md",
+      "size": 12985,
+      "sha256": "5f8a52e91cbcc0f98ab2deac6e2701dfa086e2565457c637b737eeef844eb71e"
+    },
+    {
+      "path": "docs/submission_package/14_CHANGE_CONTROL.md",
+      "size": 9563,
+      "sha256": "d66c3ad06a43f4f6119d01f8fa3330c155909812dbc2a7334a09f518cd9a1f89"
+    },
+    {
+      "path": "docs/submission_package/DOCUMENT_REGISTER.md",
+      "size": 3657,
+      "sha256": "1eb62b8bb1f8fc3bce4f330ded08b5a9147774197bf32146225ab36a735a8570"
+    },
+    {
+      "path": "docs/submission_package/HWP_HANDOFF_SPEC.md",
+      "size": 7415,
+      "sha256": "b336e549febab035a2aeabbe59d3721ab7b1ddc3823e5eeff7b1ea5ee75628a7"
+    },
+    {
+      "path": "docs/submission_package/MASTER_PLAN.md",
+      "size": 19110,
+      "sha256": "764bf1c4f2512e8e64066ebdbe3caec2fc0ced64700a519c27ae739fee4c96eb"
+    },
+    {
+      "path": "docs/submission_package/README.md",
+      "size": 7762,
+      "sha256": "7a3b979f77db90848f070213979b1c1bb012ceb9d3feab8aac7f4956d003bd7b"
+    },
+    {
+      "path": "docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv",
+      "size": 370,
+      "sha256": "7774b5985c0b9055c219119a30bfd8cfdb00f19635c6978fc0afce87b50c1a36"
+    },
+    {
+      "path": "docs/submission_package/templates/SECTION_TEMPLATE.md",
+      "size": 907,
+      "sha256": "165f7bcc895d3e8f5d71dafec58fa0a983ed611f397b8fac7bd4f7a4724140fe"
+    },
+    {
+      "path": "docs/testing_lab_method_and_rubric_v1.md",
+      "size": 9514,
+      "sha256": "86d37134e19b853ae586dd44f066184ac16ac17322884262289274e04a34dd16"
+    },
+    {
+      "path": "prompts/judge_binary_v1.md",
+      "size": 2255,
+      "sha256": "97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf"
+    },
+    {
+      "path": "prompts/judge_v1.md",
+      "size": 751,
+      "sha256": "3bbe73a96c0c0bacf6a383c40de2047d78760abdc5a6fd233454597fe9a035b9"
+    },
+    {
+      "path": "pyproject.toml",
+      "size": 726,
+      "sha256": "f826d884f7e0c0dbe0c1fc156c3e9030ac13e98b63e6579a74cf24b18aab39d5"
+    },
+    {
+      "path": "src/kolas_llm_judge/__init__.py",
+      "size": 42,
+      "sha256": "a0ab02a688904925f1e7b0c6b3655f63378ed6e9094317469d5fb6842dc12343"
+    },
+    {
+      "path": "src/kolas_llm_judge/automated_manifest.py",
+      "size": 6754,
+      "sha256": "190c9f63e07ca83a18b5c43f8f52f424bfed0916539dd09592c94dd416fa849b"
+    },
+    {
+      "path": "src/kolas_llm_judge/automated_report.py",
+      "size": 12625,
+      "sha256": "d089edb2f059103a5492764ec899eb1e54f72ff5ccc54aaedb563c8bd10c7ac7"
+    },
+    {
+      "path": "src/kolas_llm_judge/binary_evaluation.py",
+      "size": 14207,
+      "sha256": "92ecedad4d246f9e91c0b5e3baf68628f4de728a0df96df2e105da9bd1dc3adb"
+    },
+    {
+      "path": "src/kolas_llm_judge/binary_human_calibration.py",
+      "size": 29612,
+      "sha256": "59b500189eb4267d514172ac08c988da2f19b3af0184aca55c19312b229e7572"
+    },
+    {
+      "path": "src/kolas_llm_judge/binary_judge.py",
+      "size": 11979,
+      "sha256": "6523cd65eeee33e618cefecbb68a6cb1ec394e85ca40898b88d49e53b7470cef"
+    },
+    {
+      "path": "src/kolas_llm_judge/calibration.py",
+      "size": 42624,
+      "sha256": "260372e85bea70db602117cbe5be48bd9656c718977843e0857e86da177f963c"
+    },
+    {
+      "path": "src/kolas_llm_judge/cli.py",
+      "size": 24580,
+      "sha256": "7648eac69d1feb5e25ab4595edc0cee0da7b7ab92edccc52f6c9e3c00400cea7"
+    },
+    {
+      "path": "src/kolas_llm_judge/dataset.py",
+      "size": 6033,
+      "sha256": "bcbf5d6b29b1b89e1c56502c0918719c5fc836d23b4bbab87f84f209434599cd"
+    },
+    {
+      "path": "src/kolas_llm_judge/derived_analysis.py",
+      "size": 8426,
+      "sha256": "ddffe60865815b8bcffe00380e08e6bf88581160ec0bc25cb056d702a85574e4"
+    },
+    {
+      "path": "src/kolas_llm_judge/deterministic.py",
+      "size": 10162,
+      "sha256": "72e8d073d72988d262aeddd907e3f469bc892d59a5c2b289dfe2a3d707e86d77"
+    },
+    {
+      "path": "src/kolas_llm_judge/doctor.py",
+      "size": 11659,
+      "sha256": "7a41ab5bbd615127a004d4d0265915aad3a650898a9ba067678e298cd0666fa2"
+    },
+    {
+      "path": "src/kolas_llm_judge/identification.py",
+      "size": 3415,
+      "sha256": "4f62b70e26cb37fa983f487d75a7ac9cffad1026dd202b7618574b1a136be71b"
+    },
+    {
+      "path": "src/kolas_llm_judge/io_utils.py",
+      "size": 1565,
+      "sha256": "ccf901ad293af1ae7a16245540847e08a7c052a7a9433a5227429ae102ab00b8"
+    },
+    {
+      "path": "src/kolas_llm_judge/judge.py",
+      "size": 25729,
+      "sha256": "6e37b29d184b658e66d6a853eeb0875b2bcef54b82edadd563e7e4f0dca334d4"
+    },
+    {
+      "path": "src/kolas_llm_judge/manifest.py",
+      "size": 14910,
+      "sha256": "b9a2c03eee5a4490979eab3692d2f730365a34e2baf9df53054af2a90a8d3210"
+    },
+    {
+      "path": "src/kolas_llm_judge/matching.py",
+      "size": 4261,
+      "sha256": "3ca23ee4cffc8d5333b29946c497f713d88cb26b02c86255ca10b069fa84d943"
+    },
+    {
+      "path": "src/kolas_llm_judge/metrics.py",
+      "size": 2576,
+      "sha256": "062306281e7f3884c86ee4dd36858565db2af77138d39778c7cab19893f864f7"
+    },
+    {
+      "path": "src/kolas_llm_judge/models.py",
+      "size": 5486,
+      "sha256": "786253ae6f453d5a01b992073f02577abf7ed9adab2c0791b22721136cde821c"
+    },
+    {
+      "path": "src/kolas_llm_judge/official_live.py",
+      "size": 11919,
+      "sha256": "845a86cebc156c6844d31225650226292521f60bbe6352ddf5fa44d00e58064e"
+    },
+    {
+      "path": "src/kolas_llm_judge/official_runtime.py",
+      "size": 13195,
+      "sha256": "0f012a4ffa35b9b2fb8794fa5eb599846b7d6ee89cd59e3d88c54a04b5f572f0"
+    },
+    {
+      "path": "src/kolas_llm_judge/parallel_runner.py",
+      "size": 14248,
+      "sha256": "5e61273b1568da53c92be89a3de26a97437cbe2e34aba285a8b482080a316019"
+    },
+    {
+      "path": "src/kolas_llm_judge/parser.py",
+      "size": 5143,
+      "sha256": "8f57878b18a2526c0df251026d70af9baf6a8399e071ecbd1ccc4a8642db3e45"
+    },
+    {
+      "path": "src/kolas_llm_judge/qualification.py",
+      "size": 10105,
+      "sha256": "6d6cfe505f03cafada91fe5e571a6bdc1109a92d88003041a444d1c4d6c7ba20"
+    },
+    {
+      "path": "src/kolas_llm_judge/qualification_controls.py",
+      "size": 11084,
+      "sha256": "be759e962a2625bc4515768096895bd8078557a3a752b12c6be1c8326d3fa5d5"
+    },
+    {
+      "path": "src/kolas_llm_judge/repeatability.py",
+      "size": 5964,
+      "sha256": "6e39c3d345c165ab78f224b0521e821e9e73f09ef65456eb38074468bb069bc4"
+    },
+    {
+      "path": "src/kolas_llm_judge/report.py",
+      "size": 25280,
+      "sha256": "b6b0028aba22e1eedcc5ea08ea7545afeb92f306cd8f9b1c1738e0a914978543"
+    },
+    {
+      "path": "src/kolas_llm_judge/runner.py",
+      "size": 22241,
+      "sha256": "1a53a4ac32956c920183881e6d0b2ab015569f5daf1501e16bbc3fb3213c528f"
+    },
+    {
+      "path": "src/kolas_llm_judge/seal.py",
+      "size": 6908,
+      "sha256": "c6b82efbb42bf7d425f7452cf764ed3c139b3c5304c958d73c70d8fe4e91014b"
+    },
+    {
+      "path": "src/kolas_llm_judge/sut_client.py",
+      "size": 25968,
+      "sha256": "e4edbb19e11b5bb58482c3579a7f74fbf82c7bba3c1b428b98ba204ea4383d79"
+    },
+    {
+      "path": "tools/build_submission_manifest.py",
+      "size": 9545,
+      "sha256": "e712d281006fab155ee758d7aedd727d012a9aef6d51a94d344c95fdc9884085"
+    },
+    {
+      "path": "tools/gt_provenance.py",
+      "size": 3714,
+      "sha256": "a52d7e7c35ed87233d0f9e5555233e6cb744fbdff53313d654d95e70206cdf4f"
+    },
+    {
+      "path": "uv.lock",
+      "size": 173838,
+      "sha256": "59502e93ca708512472ab858e78d22e3e4f06f5a8de63ddf9e51c8d3475c5c6f"
+    }
+  ]
+}

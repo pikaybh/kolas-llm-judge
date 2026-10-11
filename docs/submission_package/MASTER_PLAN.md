@@ -174,17 +174,22 @@
 
 ## Phase 8. 무결성·버전·변경통제
 
-- [ ] 제출대상 파일 최종 목록 생성
-- [ ] 모든 canonical 파일 SHA-256 계산
-- [ ] repo SHA 및 tag/release 기록
-- [ ] GT/evaluator/prompt/schema 각각 별도 version 부여
-- [ ] 생성 시각과 생성 도구 기록
-- [ ] manifest 자체의 무결성 보장 방식 결정
-- [ ] freeze 이후 변경 승인 절차 정의
-- [ ] 변경 발생 시 영향분석 및 재시험 범위 정의
-- [ ] `13_INTEGRITY_MANIFEST.md`, `14_CHANGE_CONTROL.md` 작성
+- [x] 제출대상 파일 candidate 목록 정의 — 문서/config/prompt/evaluator source/GT canonical·provenance/lockfile 포함
+- [x] 모든 candidate canonical 파일 SHA-256 계산 구조 구현
+- [x] repo SHA 기록 — 현재 Git commit으로 package revision 식별; final tag/release는 최종 freeze에서 생성
+- [x] GT/evaluator/prompt/schema 각각 별도 version/hash 체계 확인
+- [x] 생성 시각과 생성 도구 기록 구조 정의
+- [x] manifest 자체의 무결성 보장 방식 결정 — self-reference 제외 machine manifest + manifest file SHA + artifact root
+- [x] freeze 이후 변경 승인 절차 정의
+- [x] 변경 발생 시 영향분석 및 재시험 범위 정의 — Class A~G matrix
+- [x] `14_CHANGE_CONTROL.md` 작성
+- [x] `data/submission/submission_integrity_manifest_v1.json` candidate 생성/검증 — 76 candidate artifacts 대상
+- [x] `13_INTEGRITY_MANIFEST.md` 작성 및 candidate root 기록 — self-reference 방지를 위해 root 대상에서 제외
+- [ ] 최종 release/tag와 HWP/PDF까지 포함한 final integrity manifest 재생성 — Phase 10/11 직전
 
-**완료 조건:** 제출 이후 어떤 파일이 하나라도 바뀌면 탐지할 수 있고 변경 책임/재시험 범위를 판단할 수 있다.
+**완료 조건:** candidate 제출자료 변경을 path/size/SHA-256으로 탐지할 수 있고, 변경분류에 따라 재qualification/재시험 범위를 판정할 수 있다. 최종 제출 직전 HWP/PDF를 포함해 한 번 더 freeze한다.
+
+**현재 상태:** 변경통제 정책과 candidate integrity chain을 구축했다. 최종 release/tag 및 HWP/HWPX/PDF가 아직 없으므로 Phase 10/11 직전 final manifest를 한 번 더 생성한다.
 
 ## Phase 9. Clean-room 재현성 시험
 

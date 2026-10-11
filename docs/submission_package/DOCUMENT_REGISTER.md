@@ -19,8 +19,8 @@
 | KOLAS-DOC-010 | `10_REPRODUCIBILITY_GUIDE.md` | 설치부터 full run까지 재현 절차 | 붙임 5 | REVIEW | code+secure GT+credential 3-part package 정의; Phase 9 clean-room drill 대기 |
 | KOLAS-DOC-011 | `11_API_ACCESS_GUIDE.md` | endpoint·auth·권한·오류 대응 | 붙임 5 | REVIEW | 최소권한/auth/entitlement/revoke 감사 완료; 기관계정·final endpoint 대기 |
 | KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
-| KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | NOT_STARTED | final package candidate |
-| KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | NOT_STARTED | version policy |
+| KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | REVIEW | candidate machine manifest/root 구축; final HWP/PDF freeze 대기 |
+| KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | REVIEW | Class A~G 영향/재시험 matrix 작성 |
 
 ## 공통 metadata
 
@@ -45,7 +45,7 @@ Evidence IDs:
 
 - `EV-SUT-###` — SUT 코드/설정/배포 증적
 - `EV-GT-###` — GT 및 source provenance
-- `EV-EXP-###` — 전문가 검증/서명/통계
+- `EV-GT-###` — GT canonical identity, 기존 연구실 검증상태, provenance/lineage
 - `EV-EVAL-###` — evaluator/Judge 증적
 - `EV-RUN-###` — 실제 시험 run/raw 결과
 - `EV-API-###` — API contract/auth 증적

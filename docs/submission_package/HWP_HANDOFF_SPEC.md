@@ -28,7 +28,7 @@
 
 1. 붙임 1. 시험방법 및 시험대상 시스템 명세서
 2. 붙임 2. 모델·추론 고정 설정 명세서
-3. 붙임 3. Ground Truth 구축·출처·전문가 검증 보고서
+3. 붙임 3. Ground Truth 구성·출처·검증 상태 보고서
 4. 붙임 4. 측정시스템(Evaluator/Judge) 명세 및 적격성 검증 보고서
 5. 붙임 5. 시험 재현 절차 및 API 접속 가이드
 6. 붙임 6. 버전·무결성·변경통제 명세서
@@ -77,8 +77,8 @@ HWP 작성 에이전트는 다음 규칙을 따른다.
 - 모델 및 추론 파라미터 표
 - GT 버전/건수/hash 표
 - GT source type 및 provenance coverage 표
-- 전문가 자격/역할 표
-- 전문가 검증 결과/일치도 통계 표
+- GT 검증 상태 표 — 연구실 구성원 검토·검증 완료 사실만 기재
+- GT provenance/lineage 상태 표 — 검증 여부와 원작성 source traceability를 구분
 - evaluator 모델/config/prompt/schema version 표
 - 재현 실행환경 표
 - API endpoint/권한 표
@@ -124,7 +124,7 @@ HWP 작성 에이전트는 다음 규칙을 따른다.
 4. 시험방법 및 평가 지표
 5. AI 모델 및 추론 고정 설정
 6. Ground Truth 구성 및 출처
-7. 전문가 검증 절차 및 신뢰성 분석
+7. Ground Truth 검증 상태 및 provenance
 8. Evaluator/Judge 구성 및 적격성 검증
 9. 시험 재현 절차
 10. API 접속 및 권한
@@ -140,7 +140,7 @@ HWP 작성 에이전트는 다음 규칙을 따른다.
 - `{{PLACEHOLDER}}`가 남아 있으나 미확정 목록에 기록되지 않음
 - model identifier 또는 핵심 inference 설정이 코드/API와 대조되지 않음
 - GT canonical file/hash가 확정되지 않음
-- 전문가 검증이 완료되지 않았는데 완료된 것처럼 서술됨
+- GT가 연구실 구성원 검토를 거쳐 검증되었다는 확인 사실과 별개로, 확인되지 않은 검증 인원수·방법·일치도 통계를 임의 기재함
 - evaluator version/prompt가 고정되지 않음
 - API credential 자체가 문서에 평문으로 들어감
 - repository SHA가 실제 제출 package와 다름
@@ -166,7 +166,7 @@ HWP 작성 에이전트는 다음 규칙을 따른다.
 
 HWP 생성 작업을 다른 에이전트에게 인계할 때 다음을 함께 준다.
 
-1. `docs/kolas/` 전체
+1. `docs/submission_package/` 전체
 2. freeze된 GT 또는 GT의 제공 가능한 사본
 3. version/integrity manifest
 4. 필요한 표/그림 원본

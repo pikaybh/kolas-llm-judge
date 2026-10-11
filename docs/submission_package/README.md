@@ -1,4 +1,4 @@
-# KOLAS 재현성·GT 전문가 검증·시험기관 제출 패키지
+# KOLAS 재현성·GT 검증상태·시험기관 제출 패키지
 
 > 이 디렉토리는 SEEXR 위험성평가 AI의 KOLAS 시험 대응을 위한 **영구 기준 문서**다.
 > GitHub Issue는 진행 상황을 추적하는 작업 원장이고, 시험방법·고정값·GT 근거·재현절차·HWP 편집 기준의 최종 기준은 이 디렉토리에 남긴다.
@@ -17,7 +17,7 @@
 4. GT는 왜 정답지로 사용할 수 있는가?
 5. GT의 각 항목은 어떤 출처에 근거하는가?
 6. GT가 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터임을 어떻게 명시할 것인가?
-7. 전문가 간 일치도와 GT 신뢰성은 정량적으로 어느 수준인가?
+7. GT가 연구실 구성원의 검토를 거쳐 검증된 데이터라는 사실을 제출문서에서 어떻게 명확히 기록하는가?
 8. LLM Judge를 포함한 측정 시스템은 어떻게 고정·검증되었는가?
 9. 외부 시험기관이 같은 시험을 어떤 명령과 권한으로 재실행하는가?
 10. 제출 이후 파일·설정·코드가 바뀌지 않았음을 어떻게 증명하는가?
@@ -26,7 +26,7 @@
 
 - **재현성 우선**: 성능 수치만 남기지 않고 수치를 생성한 전체 측정 체인을 고정한다.
 - **추측 금지**: 실제 코드·API 응답·공식 문서에서 확인되지 않은 모델 파라미터나 시스템 동작을 사실처럼 기재하지 않는다.
-- **GT provenance 필수**: 각 GT 항목은 근거 출처와 전문가 검증 이력을 추적할 수 있어야 한다.
+- **GT 검증과 provenance 구분**: GT는 연구실 구성원 검토를 거쳐 검증된 데이터로 취급하며, 원작성 source provenance는 별도의 traceability 정보로 관리한다.
 - **버전 고정**: SUT, GT, evaluator, prompt, schema, dependency, API contract를 명시적 버전 또는 commit SHA로 묶는다.
 - **무결성 보장**: 최종 제출물과 핵심 중간 산출물에 SHA-256을 기록한다.
 - **비밀정보 분리**: API key, password, refresh token 등 실제 secret은 Git/HWP에 넣지 않는다. 문서에는 발급·전달·권한 범위만 명시한다.
@@ -59,8 +59,8 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 3. `03_INFERENCE_CONFIGURATION.md` — 모델, reasoning/fast mode, sampling/runtime 설정
 4. `04_GT_SPECIFICATION.md` — GT 스키마, 범위, freeze 규칙
 5. `05_GT_SOURCE_PROVENANCE.md` — GT 출처와 추적 체계
-6. `06_EXPERT_VALIDATION_PROTOCOL.md` — 기존 연구실 검증 사실 기록(신규 검증 절차 아님)
-7. `07_GT_RELIABILITY_REPORT.md` — 일치도, 신뢰도, consensus 결과
+6. `06_EXPERT_VALIDATION_PROTOCOL.md` — **작성 불필요**; GT는 기존 연구실 검증 완료 사실만 본문에 기록
+7. `07_GT_RELIABILITY_REPORT.md` — **작성 불필요**; 확인되지 않은 일치도/신뢰도 통계를 신규 생성하지 않음
 8. `08_EVALUATOR_SPECIFICATION.md` — semantic Judge 및 판정 알고리즘
 9. `09_EVALUATOR_QUALIFICATION.md` — evaluator 자체 검증 결과
 10. `10_REPRODUCIBILITY_GUIDE.md` — 외부기관 재실행 절차
@@ -97,7 +97,7 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 
 이 작업은 다음이 모두 충족될 때 완료된 것으로 본다.
 
-- GT가 출처와 전문가 검증을 포함해 freeze됨
+- GT가 연구실 검증 완료 상태로 명시되고 canonical content/hash가 freeze됨
 - GT가 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터임이 문서에 명시됨
 - SUT/evaluator/model/prompt/config가 모두 특정 버전으로 freeze됨
 - 외부기관이 신규 환경에서 시험 전체를 재현할 수 있음
