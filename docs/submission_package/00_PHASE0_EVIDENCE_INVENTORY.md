@@ -52,6 +52,10 @@
 | `EV-EVAL-004` | Judge implementation | `src/kolas_llm_judge/binary_judge.py` | OpenAI Responses `parse`, structured Pydantic output, `store=False` |
 | `EV-EVAL-005` | Evaluator source aggregate hash | `configs/official_runtime_v1.yaml` + validator | expected/actual `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` 일치; `validate_official_runtime(...)` PASS (2026-10-11) |
 | `EV-EVAL-006` | AJQG seed/gate | `configs/ajqg_seed_v1.yaml`, `configs/ajqg_gate_v1.yaml` | official runtime이 SHA로 고정 |
+| `EV-EVAL-007` | AJQG hardening summary | `runs/_qualification/20260914-kolas-v1-hardening/summary.json` | SHA-256 `8ecffc8120381fb612b20b318ce916889a71da2005fde9b643515e6b3ac99309`; 104 controls × 2; 376/376 stability; PASS |
+| `EV-EVAL-008` | AJQG hardening control rows | `runs/_qualification/20260914-kolas-v1-hardening/control_results.csv` | SHA-256 `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58`; 248 expected Boolean rows |
+| `EV-EVAL-009` | AJQG boundary run | `runs/20260909T025259Z-official-live-ca5f3e25/qualification/summary.json` | SHA-256 `958fd53cba792d5e147697cb4b997fa71dbb2219caf49d318b52bb2951fb1a8b`; 375/376 stability; PASS |
+| `EV-EVAL-010` | AJQG boundary control rows | `runs/20260909T025259Z-official-live-ca5f3e25/qualification/control_results.csv` | SHA-256 `2e60e30232b088628fc954d4bf23421bc68527b83186223e19ccea398f24c304`; mitigation_specific 1 decision mismatch |
 
 Judge 호출에서 코드로 명시되는 값:
 

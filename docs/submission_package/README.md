@@ -78,7 +78,7 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 - 문서 등록부: [`DOCUMENT_REGISTER.md`](./DOCUMENT_REGISTER.md)
 - 섹션 작성 템플릿: [`templates/SECTION_TEMPLATE.md`](./templates/SECTION_TEMPLATE.md)
 
-현재 이 repository에는 이미 KOLAS 평가 하네스, `KOLAS_RA_GT v1.0.0`, frozen Boolean Rubric, official runtime, AJQG, live SUT 실행, repeatability, seal/verify 및 시험기관 협의용 문서가 구현되어 있다. 따라서 본 계획은 시스템을 처음 만드는 계획이 아니라 **기존 구현을 canonical evidence로 감사하고, 시험기관의 재현성 요구와 GT 자체의 전문가 검증 요구를 충족하도록 제출자료를 보강하는 계획**이다.
+현재 이 repository에는 이미 KOLAS 평가 하네스, `KOLAS_RA_GT v1.0.0`, frozen Boolean Rubric, official runtime, AJQG, live SUT 실행, repeatability, seal/verify 및 시험기관 협의용 문서가 구현되어 있다. 따라서 본 계획은 시스템을 처음 만드는 계획이 아니라 **기존 구현을 canonical evidence로 감사하고, 시험기관의 재현성 요구를 충족하고, 이미 연구실에서 검증된 GT의 상태와 evaluator 적격성 근거를 제출자료로 정리하는 계획**이다.
 
 기존 대화에서 알려진 수치나 설정은 초안 참고사항일 뿐이며, 공식 제출 문서에는 반드시 이 repository의 코드·manifest·sealed run·원본 데이터와 SUT repository/API 설정을 대조한 값만 기입한다.
 

@@ -44,6 +44,22 @@
 | GT validation status | `validated by research laboratory members` | 기존 검증 완료; 신규 검증 불필요 |
 | additional validation package | `N/A` | 기존 GT 검증 사실만 기록; 별도 신규 검증 패키지 미작성 |
 
+## 2.1 Evaluator / Judge freeze
+
+| 항목 | 값 | 상태 |
+|---|---|---|
+| evaluator source aggregate SHA-256 | `78152ba3c9df69b4dfc837b15380b9e25a2f132ab9d9abc75ba11337b582fbc1` | frozen |
+| official runtime SHA-256 | `bc49cde29d7da64185c6d2f4ea8311e8e4df3e82622ec47c4f80e60d0135ec1e` | 확인 |
+| Judge model | `gpt-5.6-sol` | frozen |
+| reasoning effort | `medium` | frozen |
+| prompt SHA-256 | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` | frozen |
+| rubric SHA-256 | `d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22` | frozen |
+| AJQG seed SHA-256 | `f0f11537d77555e55fe5ae143fa92e92ddc631da1d7a1711fe2f070ad38b8586` | frozen |
+| AJQG gate SHA-256 | `2ee9934e921fa82b10697d6cf9ffca6e72f151a49159ac3aff7a8b7d17421a6b` | frozen |
+| AJQG control suite | `ajqg-controls-v1`, 104 controls, `e0a34a81...e437` | frozen |
+| canonical hardening AJQG | 376/376 repeated decisions, gate PASS | 확인 |
+| current pre-test AJQG | credential 갱신 후 재실행 필요 | PENDING |
+
 ## 3. SUT Source Snapshot
 
 ### 3.1 Core

@@ -87,7 +87,7 @@
 - [ ] source의 라이선스/외부 제공 가능 여부 확인 — register 필드는 정의했으나 실제 source가 미복원되어 미확정
 - [x] source 미확정 항목 처리 규칙 정의 — 증거 없는 `expert-authored` 분류 금지, 현재는 `LEGACY_WORKBOOK_ONLY`
 - [x] GT 변경 이력 생성 — `data/cases/GT_CHANGELOG.md`, content version과 provenance revision 분리
-- [x] freeze candidate 생성 — `KOLAS_RA_GT v1.0.0`, `CONTENT-FROZEN / PROVENANCE-INCOMPLETE / EXPERT-VALIDATION-PENDING`
+- [x] freeze candidate 생성 — `KOLAS_RA_GT v1.0.0`, `CONTENT-FROZEN / LAB-VALIDATED / PROVENANCE-INCOMPLETE`
 - [x] GT 파일 SHA-256 계산 및 deterministic byte-for-byte rebuild 검증
 - [x] `04_GT_SPECIFICATION.md`, `05_GT_SOURCE_PROVENANCE.md` REVIEW 초안 작성
 
@@ -106,19 +106,23 @@
 
 ## Phase 5. Evaluator / LLM Judge 측정시스템 검증
 
-- [ ] evaluator 입력/출력 schema 확정
-- [ ] Judge model identifier와 reasoning 설정 확정
-- [ ] Judge prompt/rubric freeze
-- [ ] Boolean 판정 로직 및 aggregation 로직 freeze
-- [ ] control set 정의와 전문가 정답 확보
-- [ ] evaluator accuracy 측정
-- [ ] 반복 평가 일치도 측정
-- [ ] boundary/disagreement case 분석
-- [ ] provider 비결정성으로 인한 변동 범위 측정
-- [ ] evaluator 변경 시 재qualification 조건 정의
-- [ ] `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md` 작성
+- [x] evaluator 입력/출력 schema 확정 — Match/Quality/Safety Boolean structured schema 확인
+- [x] Judge model identifier와 reasoning 설정 확정 — `gpt-5.6-sol`, `medium`
+- [x] Judge prompt/rubric freeze — official runtime SHA 검증
+- [x] Boolean 판정 로직 및 aggregation 로직 freeze — primary rule + deterministic Python aggregation 확인
+- [x] control set 정의 및 expected decision 확인 — 8 seeds → 104 construction-defined controls, human expert answer set으로 과장하지 않음
+- [x] evaluator constructed-control accuracy 측정 — 완전 qualification 기록 9건 재감사, gate PASS 9/9
+- [x] 반복 평가 일치도 측정 — 376 decisions, 관찰 범위 375/376~376/376
+- [x] boundary/disagreement case 분석 — `electric:mitigation-unsafe / mitigation_specific` 1건 확인
+- [x] provider 비결정성으로 인한 변동 범위 측정 — mitigation 99.21875~100%, decision stability 99.73404~100%
+- [x] evaluator 변경 시 재qualification 조건 정의
+- [x] `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md` 작성
+- [ ] 시험 직전 live AJQG 재실행 — 2026-10-11 현재 `.env` OpenAI credential 인증 실패(401), credential 갱신 후 실행
 
-**완료 조건:** Judge가 왜 측정도구로 사용할 수 있는지 별도 근거가 존재한다.
+**완료 조건:** Judge가 왜 측정도구로 사용할 수 있는지 별도 근거가 존재하고, 시험 직전 동일 frozen gate를 다시 통과한다.
+
+**Phase 5 Drafts:** `08_EVALUATOR_SPECIFICATION.md`, `09_EVALUATOR_QUALIFICATION.md`
+**현재 상태:** evaluator 구조·freeze·과거 적격성·반복안정성 증적은 `REVIEW` 수준으로 정리 완료. 공식 시험 직전 유효 credential로 live AJQG를 다시 실행하는 운영 항목만 남음.
 
 ## Phase 6. 재현 프로그램 패키지화
 
