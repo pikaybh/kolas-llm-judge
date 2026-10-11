@@ -1,7 +1,7 @@
 # Phase 0 Evidence Inventory — 기존 KOLAS 구현·GT·실행 증적 재감사
 
 - 문서 ID: `KOLAS-EVIDENCE-000`
-- 버전: `0.1`
+- 버전: `0.2`
 - 상태: `REVIEW`
 - 감사 기준일: `2026-10-11`
 - Canonical repository: `/home/pikaybh/Sandbox/kolas-llm-judge`
@@ -11,7 +11,7 @@
 
 ## 1. 감사 결론
 
-1. `KOLAS_RA_GT v1.0.0`의 현재 로컬 canonical 원본 및 scenario 파일은 manifest에 고정된 SHA-256과 **일치**한다.
+1. `KOLAS_RA_GT v1.0.0`의 현재 로컬 canonical **processing source** 및 scenario 파일은 manifest에 고정된 SHA-256과 **일치**한다. Legacy 원본 XLSX bytes는 현재 로컬에서 미확보다.
 2. 데이터셋 수량은 **843 raw rows / 425 scenarios / 843 references**로 manifest와 일치한다.
 3. 현재 official runtime의 dataset/prompt/rubric/evaluator source hash 검증은 **PASS**한다.
 4. KOLAS Judge는 `gpt-5.6-sol`, `reasoning_effort=medium`, Structured Output을 명시한다. 반면 `temperature`, `top_p`, `max_output_tokens`, `service_tier`는 현재 요청에서 명시하지 않는다.
@@ -29,11 +29,18 @@
 | Evidence ID | 대상 | 위치 | 식별값/상태 | 제출 관점 판단 |
 |---|---|---|---|---|
 | `EV-GT-001` | Dataset manifest | `data/cases/dataset_manifest.json` | SHA-256 `e7679fabc39f6c6abb7eb53fdc72a9374deb8b0e64add9cdff4e89ec1cfddc2a` | canonical metadata |
-| `EV-GT-002` | Normalized raw GT | `data/raw/kolas_v7_73_test.csv.bz2` | SHA-256 `b3215557f7992b0905b12f7045510516256021097c178229e849fb187c3ed8e9`; 843 rows | proprietary/ignored; 제출 패키지에 별도 포함 필요 |
+| `EV-GT-002` | Normalized raw GT | `data/raw/kolas_v7_73_test.csv.bz2` | SHA-256 `b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a`; 843 rows | proprietary/ignored; 제출 패키지에 별도 포함 필요 |
 | `EV-GT-003` | Scenario GT | `data/cases/scenarios_v1.jsonl` | SHA-256 `2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c`; 425 scenarios / 843 refs | 시험 입력·reference canonical file |
-| `EV-GT-004` | 전송/변환 provenance | `data/raw/PROVENANCE.md` | 원본 XLSX SHA-256 `d5c4017a5ab69ee3f4d189117e0bef8f962cb3c99940af19500371da0978af06` | 파일 계보는 있음; hazard별 근거 출처는 없음 |
+| `EV-GT-004` | 전송/변환 provenance | `data/raw/PROVENANCE.md` | 원본 XLSX 기록 SHA-256 `d12c7d683518b680615e2311f49059ed3f5c439cf6c706afb671b6c7bcafdd4a` | 파일 계보는 있음; 원본 XLSX 바이트는 현재 미발견; hazard별 근거 출처는 없음 |
+| `EV-GT-005` | Reference lineage index | `data/cases/gt_lineage_index_v1.csv` | SHA-256 `55c0aa75f8cc0ca542c1fb6755a06ed563f02b0150605a227f2539d907aefbd6`; 843 entries | reference ↔ source_row ↔ case_id, source rows 2..844 완전 커버 |
+| `EV-GT-006` | Reference provenance register | `data/cases/gt_provenance_register_v1.csv` | SHA-256 `00b52d389e2afc170c4114ac0308075199beb94d33c725a1beed6b370a679f1c`; 843 entries | hazard 원문 없이 `reference_hazard_sha256`로 content binding; authoritative source unresolved |
+| `EV-GT-007` | Provenance audit manifest | `data/cases/gt_provenance_audit_manifest_v1.json` | SHA-256 `4a600e7dc88be21c5a0ade1cb0e3e1ef736448842a81a2292c1471b76160b7b4` | lineage 843/843, authoritative source 0/843, expert validated 0/843 |
+| `EV-GT-008` | Provenance schema | `configs/gt_provenance_schema_v1.yaml` | SHA-256 `58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2` | source taxonomy/locator/license/expert-validation 필드 규격 |
 
-현재 raw GT 컬럼은 `공정`, `세부공정`, `설비`, `물질/자재`, `위험요인 및 잠재적인 사고/결과`, `사고분류`, `상시성`, `사고가능성`, `위험성`, `감소대책`, `관련법규`의 11개다. 별도 `source`, `출처`, `근거문헌` 필드는 존재하지 않는다.
+현재 raw GT 컬럼은 `공정`, `세부공정`, `설비`, `물질`, `유해위험요인`, `사고분류`, `위험 가능성`, `위험 중대성`, `위험성`, `감소대책`, `관련근거(법규)`의 11개다. 별도 `source`, `출처`, `근거문헌` 필드는 존재하지 않는다.
+
+
+> **2026-10-11 Phase 3 정정:** 최초 Phase 0 문서화 과정에서 `EV-GT-002` raw hash와 `EV-GT-004` original-workbook hash 및 raw header 명칭이 잘못 전사되었다. 본 표는 실제 파일 SHA-256 재계산, `data/raw/PROVENANCE.md`, 초기 Git commit `ca16726`, dataset manifest 및 official runtime을 교차검증해 정정했다. Canonical GT 파일 자체가 변경된 것은 아니다.
 
 ### 2.2 Frozen Evaluator / Judge
 

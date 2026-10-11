@@ -36,3 +36,6 @@
 ## 주의사항
 
 이 감사는 기존 파일을 변경하지 않는 read-only 검증을 우선했다. 문서 작성 외에는 GT, run artifact, SUT source에 변경을 가하지 않았다. 실제 secret 값은 출력하거나 문서화하지 않았다.
+## 2026-10-11 Phase 3 재감사 정정
+
+Phase 3 GT provenance 감사에서 Phase 0 Evidence Inventory의 raw GT hash, original workbook 기록 hash 및 raw header 표기가 실제 canonical evidence와 불일치한 전사 오류임을 확인했다. 실제 canonical raw/scenario 파일은 변경되지 않았으며, `PROVENANCE.md`, 초기 commit `ca16726`, dataset manifest 및 official runtime은 올바른 `b76c9efa...` / `d12c7d68...` 계보를 일관되게 유지하고 있었다. Evidence Inventory의 해당 값을 정정하고 본 감사로그에 정정 사실을 남긴다.

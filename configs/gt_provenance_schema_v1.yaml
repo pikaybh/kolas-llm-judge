@@ -1,0 +1,71 @@
+schema_id: kolas-gt-provenance-v1
+dataset_id: KOLAS_RA_GT
+dataset_version: 1.0.0
+reference_count: 843
+status_values:
+  - unresolved
+  - candidate
+  - verified
+  - expert_validated
+source_type_values:
+  - LAW_REGULATION
+  - KOSHA_GUIDE
+  - PUBLIC_AGENCY_GUIDE
+  - SITE_RISK_ASSESSMENT
+  - ACCIDENT_CASE
+  - RESEARCH_LITERATURE
+  - MANUFACTURER_MANUAL
+  - EXPERT_AUTHORED
+  - LEGACY_WORKBOOK_ONLY
+  - OTHER
+license_status_values:
+  - public
+  - redistributable
+  - restricted
+  - unknown
+external_sharing_values:
+  - full
+  - excerpt_only
+  - citation_only
+  - prohibited
+  - unknown
+expert_validation_status_values:
+  - pending
+  - validated
+  - requires_revision
+  - rejected
+  - abstained
+required_fields:
+  - dataset_id
+  - dataset_version
+  - case_id
+  - reference_id
+  - source_row
+  - reference_hazard_sha256
+  - lineage_origin
+  - provenance_status
+  - source_type
+  - source_id
+  - source_title
+  - issuer_author
+  - publication_date
+  - version_revision
+  - locator
+  - source_url
+  - archive_id
+  - source_sha256
+  - evidence_relation
+  - evidence_excerpt_hash
+  - license_status
+  - external_sharing
+  - verified_by
+  - verified_at
+  - expert_validation_status
+  - notes
+rules:
+  - "A legal_basis value in GT is corroborating metadata and MUST NOT automatically establish LAW_REGULATION provenance."
+  - "EXPERT_AUTHORED MUST NOT be assigned unless authorship evidence exists."
+  - "LEGACY_WORKBOOK_ONLY means file lineage is known but authoritative source is unresolved."
+  - "verified requires a source locator sufficient for independent retrieval or controlled review."
+  - "expert_validated requires completion of the approved expert validation protocol."
+  - "reference_hazard_sha256 binds the provenance row to frozen GT content without copying proprietary hazard text."

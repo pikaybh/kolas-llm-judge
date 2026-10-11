@@ -77,21 +77,24 @@
 
 ## Phase 3. GT 정당성·출처·무결성 확립
 
-- [ ] GT canonical 파일 결정
-- [ ] GT schema와 필드 정의
-- [ ] scenario/reference ID를 영구 ID로 고정
-- [ ] duplicate/near-duplicate 점검
-- [ ] 각 reference hazard의 source provenance 연결
-- [ ] 법령/공공기관 자료/가이드/논문/현장자료 등 source type 정의
-- [ ] 원문 인용 범위와 source locator(page/section/URL/document ID) 기록
-- [ ] source의 라이선스/외부 제공 가능 여부 확인
-- [ ] source가 없는 항목은 `expert-authored` 등으로 명시하고 별도 검토 강화
-- [ ] GT 변경 이력 생성
-- [ ] freeze candidate 생성
-- [ ] GT 파일 SHA-256 계산
-- [ ] `04_GT_SPECIFICATION.md`, `05_GT_SOURCE_PROVENANCE.md` 작성
+- [x] GT canonical 파일 결정 — raw `b76c9efa...`, scenarios `2cdc1e8b...`, manifest `e7679fab...`
+- [x] GT schema와 필드 정의 — 실제 11개 raw fields + scenario/reference schema 기록
+- [x] scenario/reference ID를 영구 ID로 고정 — v1.0.0 내 ID 규칙·안정성 범위·migration rule 정의
+- [x] duplicate/near-duplicate 점검 — 완전 중복 row 0; 전역 동일 hazard 문구 24 groups/31 extra rows, 동일 scenario 내 exact/equivalent/near 6쌍을 expert-review 대상으로 유지
+- [ ] 각 reference hazard의 authoritative source provenance 연결 — legacy source-row lineage는 843/843 완료, authoritative safety source는 현재 0/843
+- [x] 법령/공공기관 자료/가이드/논문/현장자료 등 source type 정의 — `kolas-gt-provenance-v1` taxonomy 작성
+- [x] 원문 인용/source locator 기록 규격 정의 — 실제 843건 source locator 채움은 provenance reconstruction에서 수행
+- [ ] source의 라이선스/외부 제공 가능 여부 확인 — register 필드는 정의했으나 실제 source가 미복원되어 미확정
+- [x] source 미확정 항목 처리 규칙 정의 — 증거 없는 `expert-authored` 분류 금지, 현재는 `LEGACY_WORKBOOK_ONLY`
+- [x] GT 변경 이력 생성 — `data/cases/GT_CHANGELOG.md`, content version과 provenance revision 분리
+- [x] freeze candidate 생성 — `KOLAS_RA_GT v1.0.0`, `CONTENT-FROZEN / PROVENANCE-INCOMPLETE / EXPERT-VALIDATION-PENDING`
+- [x] GT 파일 SHA-256 계산 및 deterministic byte-for-byte rebuild 검증
+- [x] `04_GT_SPECIFICATION.md`, `05_GT_SOURCE_PROVENANCE.md` REVIEW 초안 작성
 
 **완료 조건:** 임의의 GT 항목 하나를 선택해도 근거 출처와 생성/수정 이력을 추적할 수 있다.
+
+**Phase 3 Drafts:** `04_GT_SPECIFICATION.md`, `05_GT_SOURCE_PROVENANCE.md`, `data/cases/GT_CHANGELOG.md`, `configs/gt_provenance_schema_v1.yaml`
+**현재 상태:** 파일 계보·schema·ID·hash·변환 무결성은 확인 완료. 다만 843개 reference의 authoritative safety source는 아직 0/843 검증 상태이고 source license도 미확정이므로 Phase 3은 `REVIEW`다.
 
 ## Phase 4. 전문가 3인 이상 독립 검증
 

@@ -1,0 +1,79 @@
+{
+  "audit_id": "kolas-gt-provenance-audit-r1",
+  "audit_date": "2026-10-11",
+  "status": "INCOMPLETE_LEGACY_PROVENANCE",
+  "dataset_id": "KOLAS_RA_GT",
+  "dataset_version": "1.0.0",
+  "schema_version": "kolas-ra-dataset-v1",
+  "reference_count": 843,
+  "original_workbook": {
+    "status": "recorded_hash_only_original_bytes_not_located",
+    "recorded_sha256": "d12c7d683518b680615e2311f49059ed3f5c439cf6c706afb671b6c7bcafdd4a"
+  },
+  "canonical_raw": {
+    "path": "data/raw/kolas_v7_73_test.csv.bz2",
+    "sha256": "b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a",
+    "rows": 843
+  },
+  "canonical_scenarios": {
+    "path": "data/cases/scenarios_v1.jsonl",
+    "sha256": "2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c",
+    "scenarios": 425,
+    "references": 843
+  },
+  "lineage_index": {
+    "path": "data/cases/gt_lineage_index_v1.csv",
+    "sha256": "55c0aa75f8cc0ca542c1fb6755a06ed563f02b0150605a227f2539d907aefbd6",
+    "rows": 843
+  },
+  "provenance_schema": {
+    "path": "configs/gt_provenance_schema_v1.yaml",
+    "sha256": "58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2"
+  },
+  "provenance_register": {
+    "path": "data/cases/gt_provenance_register_v1.csv",
+    "sha256": "00b52d389e2afc170c4114ac0308075199beb94d33c725a1beed6b370a679f1c",
+    "rows": 843,
+    "contains_raw_hazard_text": false,
+    "default_provenance_status": "unresolved",
+    "default_source_type": "LEGACY_WORKBOOK_ONLY"
+  },
+  "coverage": {
+    "file_lineage": {
+      "verified": 843,
+      "total": 843,
+      "ratio": 1.0
+    },
+    "authoritative_source": {
+      "verified": 0,
+      "total": 843,
+      "ratio": 0.0
+    },
+    "expert_validated_source": {
+      "verified": 0,
+      "total": 843,
+      "ratio": 0.0
+    },
+    "unresolved_source": {
+      "count": 843,
+      "total": 843,
+      "ratio": 1.0
+    }
+  },
+  "duplicate_screening": {
+    "exact_full_row_duplicates": 0,
+    "global_exact_hazard_duplicate_groups": 24,
+    "global_exact_hazard_duplicate_rows": 55,
+    "global_extra_rows_beyond_first": 31,
+    "same_scenario_exact_hazard_pairs": 4,
+    "same_scenario_punctuation_equivalent_pairs": 1,
+    "same_scenario_near_duplicate_pairs_ge_0_90": 1,
+    "expert_adjudication_complete": false
+  },
+  "current_default_source_type": "LEGACY_WORKBOOK_ONLY",
+  "limitations": [
+    "The original XLSX bytes were not located during the 2026-10-11 server audit.",
+    "No row-level authoritative safety-evidence source metadata exists in the legacy GT.",
+    "legal_basis is corroborating metadata and is not treated as source provenance."
+  ]
+}

@@ -10,8 +10,8 @@
 | KOLAS-DOC-001 | `01_TEST_METHOD.md` | 시험 범위·지표·판정·계산식 | 붙임 1 | REVIEW | Phase 0 완료; 시험기관 method 승인 대기 |
 | KOLAS-DOC-002 | `02_SYSTEM_UNDER_TEST.md` | SUT 구성·서비스·버전 | 붙임 1 | REVIEW | Phase 2 audit 완료; final deployment freeze 대기 |
 | KOLAS-DOC-003 | `03_INFERENCE_CONFIGURATION.md` | 모델·reasoning·sampling·runtime 설정 | 붙임 2 | REVIEW | Phase 2 audit 완료; model snapshot policy 대기 |
-| KOLAS-DOC-004 | `04_GT_SPECIFICATION.md` | GT 스키마·ID·freeze | 붙임 3 | NOT_STARTED | canonical GT 확인 |
-| KOLAS-DOC-005 | `05_GT_SOURCE_PROVENANCE.md` | GT 근거자료와 traceability | 붙임 3 | NOT_STARTED | source audit |
+| KOLAS-DOC-004 | `04_GT_SPECIFICATION.md` | GT 스키마·ID·freeze | 붙임 3 | REVIEW | Phase 3 integrity/spec audit 완료; expert validation 대기 |
+| KOLAS-DOC-005 | `05_GT_SOURCE_PROVENANCE.md` | GT 근거자료와 traceability | 붙임 3 | REVIEW | file lineage 843/843; authoritative source 0/843로 보강 필요 |
 | KOLAS-DOC-006 | `06_EXPERT_VALIDATION_PROTOCOL.md` | 3인 이상 전문가 검증 절차 | 붙임 3 | NOT_STARTED | 전문가 기준 확정 |
 | KOLAS-DOC-007 | `07_GT_RELIABILITY_REPORT.md` | 일치도·신뢰도·consensus 결과 | 붙임 3 | NOT_STARTED | 전문가 독립평가 완료 |
 | KOLAS-DOC-008 | `08_EVALUATOR_SPECIFICATION.md` | Judge/판정 시스템 명세 | 붙임 4 | NOT_STARTED | evaluator 코드 감사 |
