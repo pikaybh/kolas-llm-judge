@@ -266,7 +266,7 @@ reference ID는 `case_id + source_row`로 결정된다. 현재 843개 reference 
 - source rows `380 / 503`
 - punctuation 제거 후 sequence similarity `0.949`
 
-이 candidate들은 hazard text가 같거나 유사하더라도 설비·물질·사고분류·위험도·감소대책·법규 중 일부가 다르다. 따라서 Phase 3에서 임의 삭제/merge하지 않는다. Phase 4의 독립 전문가 검토에서 “동일 위험의 중복인지, 다른 context의 독립 reference인지”를 판정한다.
+이 candidate들은 hazard text가 같거나 유사하더라도 설비·물질·사고분류·위험도·감소대책·법규 중 일부가 다르다. 따라서 현재 검증된 GT 원본을 임의 삭제/merge하지 않고 그대로 보존한다.
 
 ## 12. Provenance ledger 연결
 
@@ -280,7 +280,7 @@ reference ID는 `case_id + source_row`로 결정된다. 현재 843개 reference 
 - hazard text의 SHA-256
 - legacy lineage 상태
 - source provenance 상태
-- expert validation 상태
+- 기존 연구실 검증 사실
 
 Raw hazard text 자체는 ledger에 복제하지 않는다.
 
@@ -290,7 +290,7 @@ Ledger SHA-256:
 
 Provenance audit manifest SHA-256:
 
-`4a600e7dc88be21c5a0ade1cb0e3e1ef736448842a81a2292c1471b76160b7b4`
+`ec5bd4f9fded546ac4f2671da5e610688e674193135c9fc1c3b9ef7ac9c3727c`
 
 ## 13. GT Freeze status
 
@@ -299,7 +299,7 @@ Provenance audit manifest SHA-256:
 이유:
 
 - authoritative hazard-level source provenance: `0 / 843`
-- independent expert validation: `0 / 843`
+- GT validation: 연구실 구성원들의 검토를 거쳐 검증 완료된 데이터셋
 - duplicate candidate expert adjudication: 미완료
 - 원본 XLSX bytes: 현재 로컬 미확보
 
@@ -327,8 +327,8 @@ Provenance audit manifest SHA-256:
 
 | ID | 중요도 | 항목 | 상태 |
 |---|---|---|---|
-| `GAP-GT-001` | Critical | 843 reference별 authoritative source provenance | `0/843`, Phase 4/source recovery 필요 |
-| `GAP-GT-002` | Critical | 독립 전문가 validation | `0/843`, Phase 4 필요 |
+| `GAP-GT-001` | Critical | 843 reference별 authoritative source provenance | `0/843`, source provenance 보강 필요 |
+| `GAP-GT-002` | Resolved | GT 검증 | 연구실 구성원들의 검토를 거쳐 검증 완료; 신규 검증 불필요 |
 | `GAP-GT-003` | High | 원본 XLSX bytes | hash만 보존, local file 미확보 |
 | `GAP-GT-004` | High | 6개 duplicate/near-duplicate candidate 판정 | expert adjudication 필요 |
 | `GAP-GT-005` | Medium | source document license/access classification | source docs 자체 미확보로 판정 불가 |

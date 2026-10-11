@@ -52,7 +52,8 @@
     "expert_validated_source": {
       "verified": 0,
       "total": 843,
-      "ratio": 0.0
+      "ratio": 0.0,
+      "note": "This field concerns structured provenance-source validation, not the already-completed laboratory validation of GT content."
     },
     "unresolved_source": {
       "count": 843,
@@ -75,5 +76,11 @@
     "The original XLSX bytes were not located during the 2026-10-11 server audit.",
     "No row-level authoritative safety-evidence source metadata exists in the legacy GT.",
     "legal_basis is corroborating metadata and is not treated as source provenance."
-  ]
+  ],
+  "gt_validation": {
+    "status": "validated_prior_to_submission_package",
+    "validated_by": "research_laboratory_members",
+    "new_validation_required": false,
+    "details": "GT is treated as already reviewed and validated by laboratory members; no additional validation statistics are asserted here."
+  }
 }

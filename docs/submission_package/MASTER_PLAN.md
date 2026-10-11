@@ -9,7 +9,7 @@
 ## 현재 재개 지점
 
 > **Phase 0 — 기존 구현과 증적을 제출 기준으로 재감사하는 단계부터 시작한다.**
-> 이 repository에는 이미 `configs/official_runtime_v1.yaml`, `KOLAS_RA_GT v1.0.0`, frozen Rubric/prompt, evaluator 코드, official-live/반복성/seal 관련 산출물이 존재한다. 새로 만드는 것이 아니라 **현재 구현을 evidence ID와 제출문서 항목에 연결하고, GT provenance 및 전문가 3인 이상 검증 등 부족한 부분을 식별·보강**한다.
+> 이 repository에는 이미 `configs/official_runtime_v1.yaml`, `KOLAS_RA_GT v1.0.0`, frozen Rubric/prompt, evaluator 코드, official-live/반복성/seal 관련 산출물이 존재한다. 새로 만드는 것이 아니라 **현재 구현을 evidence ID와 제출문서 항목에 연결하고, GT provenance 등 제출에 필요한 추적정보를 정리**한다. GT 자체는 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터로 취급한다.
 
 ## Phase 0. 기존 자료 및 구현 재감사 / Evidence Inventory
 
@@ -94,28 +94,15 @@
 **완료 조건:** 임의의 GT 항목 하나를 선택해도 근거 출처와 생성/수정 이력을 추적할 수 있다.
 
 **Phase 3 Drafts:** `04_GT_SPECIFICATION.md`, `05_GT_SOURCE_PROVENANCE.md`, `data/cases/GT_CHANGELOG.md`, `configs/gt_provenance_schema_v1.yaml`
-**현재 상태:** 파일 계보·schema·ID·hash·변환 무결성은 확인 완료. 다만 843개 reference의 authoritative safety source는 아직 0/843 검증 상태이고 source license도 미확정이므로 Phase 3은 `REVIEW`다.
+**현재 상태:** 파일 계보·schema·ID·hash·변환 무결성은 확인 완료. 843개 reference의 원작성 source provenance와 source license는 별도 문제로 남아 있으나, GT 자체는 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터로 취급한다. 따라서 추가 GT 검증을 새로 수행하는 것은 범위에 포함하지 않는다.
 
-## Phase 4. 전문가 3인 이상 독립 검증
+## Phase 4. 기존 GT 검증 사실 기록
 
-- [ ] 전문가 자격 기준 정의(연구/실무 경력, 전공, 이해상충 등)
-- [ ] 최소 3인 검토자 확정
-- [ ] 전문가별 소속/전문분야/경력 증빙 확보 방식 정의
-- [ ] 독립평가용 blind form 제작
-- [ ] 평가 문항과 척도 확정
-- [ ] GT마다 `적합성`, `hazard mechanism 명확성`, `공정 맥락 적합성`, `중복 여부` 등 필요한 항목 정의
-- [ ] 검토자 간 사전 상의 없이 1차 독립평가 실시
-- [ ] missing/abstain 처리 규칙 정의
-- [ ] 평가척도에 맞는 inter-rater reliability 통계 선택
-- [ ] 단순 평균/일치율과 함께 Fleiss' κ, Krippendorff's α 등 적용 가능성 검토
-- [ ] 신뢰구간 또는 불확실성 표현 방식 결정
-- [ ] disagreement case 목록 생성
-- [ ] consensus 회의 절차와 수정권한 정의
-- [ ] consensus 전/후 결과 모두 보존
-- [ ] 전문가 서명/확인서 확보
-- [ ] `06_EXPERT_VALIDATION_PROTOCOL.md`, `07_GT_RELIABILITY_REPORT.md` 작성
+- [x] `KOLAS_RA_GT v1.0.0`은 연구실 구성원들이 이미 검토·검증한 데이터셋임을 명시
+- [x] 본 제출 준비 과정에서 별도의 신규 전문가 검증 절차를 요구하지 않음
+- [x] 기존 검증의 세부 인원수·방법·일치도 통계는 확인된 근거 없이 임의 작성하지 않음
 
-**완료 조건:** `전문가가 검토했다`가 아니라 누가, 어떤 기준으로, 얼마나 일치했고, 불일치를 어떻게 해결했는지를 수치와 기록으로 제시할 수 있다.
+**현재 상태:** GT는 연구실 내부 검토를 거쳐 검증된 데이터로 사용한다. 본 단계의 목적은 새로운 검증 수행이 아니라 그 사실을 제출문서에 정확히 기록하는 것이다.
 
 ## Phase 5. Evaluator / LLM Judge 측정시스템 검증
 

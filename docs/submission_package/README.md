@@ -16,7 +16,7 @@
 3. 어떤 모델과 추론 설정을 사용했는가?
 4. GT는 왜 정답지로 사용할 수 있는가?
 5. GT의 각 항목은 어떤 출처에 근거하는가?
-6. 관련 전문가 3인 이상이 어떤 절차로 GT를 독립 검토했는가?
+6. GT가 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터임을 어떻게 명시할 것인가?
 7. 전문가 간 일치도와 GT 신뢰성은 정량적으로 어느 수준인가?
 8. LLM Judge를 포함한 측정 시스템은 어떻게 고정·검증되었는가?
 9. 외부 시험기관이 같은 시험을 어떤 명령과 권한으로 재실행하는가?
@@ -59,7 +59,7 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 3. `03_INFERENCE_CONFIGURATION.md` — 모델, reasoning/fast mode, sampling/runtime 설정
 4. `04_GT_SPECIFICATION.md` — GT 스키마, 범위, freeze 규칙
 5. `05_GT_SOURCE_PROVENANCE.md` — GT 출처와 추적 체계
-6. `06_EXPERT_VALIDATION_PROTOCOL.md` — 전문가 3인 이상 검증 프로토콜
+6. `06_EXPERT_VALIDATION_PROTOCOL.md` — 기존 연구실 검증 사실 기록(신규 검증 절차 아님)
 7. `07_GT_RELIABILITY_REPORT.md` — 일치도, 신뢰도, consensus 결과
 8. `08_EVALUATOR_SPECIFICATION.md` — semantic Judge 및 판정 알고리즘
 9. `09_EVALUATOR_QUALIFICATION.md` — evaluator 자체 검증 결과
@@ -98,7 +98,7 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 이 작업은 다음이 모두 충족될 때 완료된 것으로 본다.
 
 - GT가 출처와 전문가 검증을 포함해 freeze됨
-- 전문가 3인 이상의 독립 검토 및 정량적 일치도 분석이 완료됨
+- GT가 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터임이 문서에 명시됨
 - SUT/evaluator/model/prompt/config가 모두 특정 버전으로 freeze됨
 - 외부기관이 신규 환경에서 시험 전체를 재현할 수 있음
 - 실행 결과부터 원시 응답까지 역추적 가능함

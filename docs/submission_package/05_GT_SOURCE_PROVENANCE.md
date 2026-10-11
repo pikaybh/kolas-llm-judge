@@ -8,9 +8,9 @@
 - Dataset version: `1.0.0`
 - Provenance schema: `kolas-gt-provenance-v1`
 - 관련 GT 명세: `04_GT_SPECIFICATION.md`
-- 관련 전문가 검증: Phase 4 문서 예정
+- GT 검증 상태: 연구실 구성원 검토를 거쳐 이미 검증 완료
 
-> 결론: 현재 `KOLAS_RA_GT v1.0.0`은 **파일 lineage는 843/843 추적 가능하지만, 각 위험요인의 공신력 있는 안전자료 출처는 0/843이 검증되어 있다.** 이 문서는 이 한계를 숨기지 않고 reference-level ledger에 고정하며, 향후 source recovery와 독립 전문가 검증이 채워야 할 필드를 정의한다.
+> 결론: `KOLAS_RA_GT v1.0.0`은 **연구실 구성원들의 검토를 거쳐 이미 검증된 데이터셋**이다. 별도로, 현재 파일 lineage는 843/843 추적 가능하지만 각 위험요인의 원작성 safety-source provenance는 구조화되어 있지 않다. 본 문서는 GT의 유효성을 다시 검증하기 위한 문서가 아니라 출처 추적성과 무결성을 정리하기 위한 문서다.
 
 ## 1. Provenance의 세 층
 
@@ -26,15 +26,13 @@
 
 “그 legacy row의 위험요인이 어떤 법령, 공공기관 가이드, 기술기준, 논문, 현장기록 등 안전지식 근거에서 작성되었는가?”
 
-현재 상태: **0/843 확인**
+현재 상태: **reference-level 원작성 source 정보가 별도 구조화되어 있지 않음**
 
-### Layer C — Independent expert validation
+### Layer C — Existing laboratory validation
 
-“출처가 있든 없든, 관련 전문가들이 해당 hazard가 그 작업 context의 정당한 GT인지 독립적으로 검토했는가?”
+GT 자체는 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터로 사용한다. 본 제출 준비에서는 동일 GT를 대상으로 별도의 신규 전문가 검증 절차를 다시 수행하지 않는다.
 
-현재 상태: **0/843 완료**, Phase 4 예정
-
-이 세 층을 혼동하지 않는다. Layer A가 완전하다고 해서 Layer B/C가 자동으로 충족되는 것은 아니다.
+파일 lineage와 원작성 source provenance는 이 기존 GT 검증 사실과 별개의 추적성 문제로 관리한다.
 
 ## 2. 확인된 legacy lineage
 
@@ -122,7 +120,7 @@ Ledger는 843개의 모든 reference에 한 행씩 존재하며 raw hazard text 
 
 SHA-256:
 
-`4a600e7dc88be21c5a0ade1cb0e3e1ef736448842a81a2292c1471b76160b7b4`
+`ec5bd4f9fded546ac4f2671da5e610688e674193135c9fc1c3b9ef7ac9c3727c`
 
 Current coverage:
 
@@ -130,9 +128,9 @@ Current coverage:
 |---|---:|---:|
 | Reference rows | 843 | 100% |
 | Row lineage covered | 843 | 100% |
-| Authoritative source covered | 0 | 0% |
+| Original-source provenance structured | 0 | 별도 구조화 없음 |
 | Unresolved source | 843 | 100% |
-| Expert validated | 0 | 0% |
+| GT validation | 연구실 구성원 검토 완료 | 완료 |
 
 Manifest status:
 
@@ -214,10 +212,9 @@ Legacy origin을 끝내 복원할 수 없는 reference는 두 가지 중 하나�
 
 ### A. 전문가가 현재 GT를 독립적으로 승인
 
-- 최소 Phase 4 protocol에 따라 3인 이상 독립평가
-- reference 자체의 작업맥락/위험메커니즘 적합성 판정
-- 가능하면 전문가가 현재의 공신력 있는 source를 새로 연결
-- consensus/adjudication 결과 보존
+- 기존 검증된 GT 내용은 그대로 유지
+- 원작성 source가 필요할 경우 별도로 source provenance만 보강
+- GT 내용을 변경해야 하는 경우에만 별도 변경통제 절차 적용
 
 이 경우 legacy “원출처”를 복원했다고 표현하지 않는다. 대신 `legacy origin unresolved; independently expert-validated`로 구분한다.
 
@@ -271,23 +268,11 @@ Provenance ledger는 raw hazard text를 담지 않지만 `reference_hazard_sha25
 
 향후 provenance row를 보강할 때 GT hazard 내용이 변경되지 않았다면 `reference_hazard_sha256`는 유지되어야 한다.
 
-## 14. Phase 4 전달 계약
+## 14. GT 검증 상태 기록
 
-Phase 4 전문가 검증의 기본 대상 목록은 이 ledger의 843 `reference_id`다.
+`KOLAS_RA_GT v1.0.0`은 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터셋이다.
 
-전문가 결과는 최소 다음과 연결되어야 한다.
-
-- reviewer pseudonymous/controlled ID
-- reference_id
-- source evidence 확인 여부
-- 작업맥락 적합성
-- hazard mechanism 명확성/적합성
-- duplicate 여부
-- retain/revise/remove recommendation
-- abstain/reason
-- timestamp
-
-전문가 실명·소속·자격 증빙은 별도 개인정보/승인 문서로 관리할 수 있다.
+본 제출 준비에서는 별도의 신규 전문가 검증, 신규 합의도 통계 산출, 추가 reviewer 모집을 요구하지 않는다. 기존 검증의 세부 인원수·절차·통계값은 확인된 기록이 없는 한 임의로 작성하지 않는다.
 
 ## 15. 현재 Gap과 완료 기준
 
@@ -300,7 +285,7 @@ Phase 3가 최종 완료되려면 원칙적으로 임의 reference를 선택했�
 - [ ] original source provenance 복구 또는 대체 근거 수집
 - [ ] 843 reference에 source document + locator 연결
 - [ ] source license/access classification
-- [ ] Phase 4 3인 이상 독립 validation
+- [x] GT는 연구실 구성원 검토를 거쳐 검증 완료된 데이터로 사용
 - [ ] duplicate/near-duplicate candidate adjudication
 - [ ] 최종 accreditation GT freeze 및 integrity seal
 
@@ -310,7 +295,7 @@ Phase 3가 최종 완료되려면 원칙적으로 임의 reference를 선택했�
 
 1. **확인된 계보:** legacy workbook hash → processing source → scenario/reference
 2. **미확인 계보:** 각 hazard의 원 안전자료 출처
-3. **보완 절차:** source recovery + independent expert validation
-4. **정량 coverage:** 843/843 row lineage, 0/843 authoritative source, 0/843 expert validation (현재 시점)
+3. **보완 절차:** 필요 시 source provenance 보강
+4. **정량 coverage:** 843/843 row lineage; GT 자체는 연구실 검증 완료
 
 출처가 없는 legacy dataset을 마치 공공기관 자료로부터 직접 구축한 것처럼 서술하지 않는다.

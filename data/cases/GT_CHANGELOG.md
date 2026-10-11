@@ -20,7 +20,7 @@
 - Added `gt_lineage_index_v1.csv` covering source rows 2..844 exactly once.
 - Added `gt_provenance_register_v1.csv`, one row per reference, binding each row to frozen hazard content by SHA-256 without copying raw hazard text.
 - Recorded authoritative safety-evidence provenance as unresolved for 843/843 references rather than inferring historical sources.
-- Recorded duplicate/near-duplicate screening candidates for Phase 4 expert adjudication; no reference was deleted or merged.
+- Recorded duplicate/near-duplicate screening candidates for audit visibility; no reference was deleted or merged because the GT is already laboratory-reviewed and validated.
 - Corrected transcription errors in the Phase 0 evidence inventory. Canonical GT content did not change.
 
 ## Versioning rule

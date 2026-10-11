@@ -38,11 +38,11 @@
 | scenarios SHA-256 | `2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c` | 확인 |
 | lineage index SHA-256 | `55c0aa75f8cc0ca542c1fb6755a06ed563f02b0150605a227f2539d907aefbd6` | 843/843 source-row lineage 확인 |
 | provenance register SHA-256 | `00b52d389e2afc170c4114ac0308075199beb94d33c725a1beed6b370a679f1c` | 843 entries, raw hazard text 미포함 |
-| provenance audit manifest SHA-256 | `4a600e7dc88be21c5a0ade1cb0e3e1ef736448842a81a2292c1471b76160b7b4` | Phase 3 audit |
+| provenance audit manifest SHA-256 | `ec5bd4f9fded546ac4f2671da5e610688e674193135c9fc1c3b9ef7ac9c3727c` | Phase 3 audit |
 | provenance schema SHA-256 | `58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2` | schema 작성 |
-| authoritative source coverage | `0 / 843` | PENDING source reconstruction |
-| expert validation coverage | `0 / 843` | Phase 4 PENDING |
-| expert validation package | `{{GT_EXPERT_VALIDATION_SHA256}}` | PENDING — Phase 4 |
+| original-source provenance | `not structured at reference level` | GT 검증 상태와 별개 |
+| GT validation status | `validated by research laboratory members` | 기존 검증 완료; 신규 검증 불필요 |
+| additional validation package | `N/A` | 기존 GT 검증 사실만 기록; 별도 신규 검증 패키지 미작성 |
 
 ## 3. SUT Source Snapshot
 

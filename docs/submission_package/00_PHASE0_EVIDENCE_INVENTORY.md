@@ -20,7 +20,7 @@
 7. 위 425-case run의 seal은 1,695 artifacts에 대해 검증되었으므로, 해당 run 내부 산출물의 **사후 무결성 증적**으로는 사용할 수 있다.
 8. 당시 SUT source는 run 중에는 stable했지만 Core와 Agents 모두 relevant working tree가 dirty였다. 따라서 당시 SUT를 Git commit만으로 완전 복원할 수 없다. 향후 시험기관 제출용 SUT는 **clean commit/tag로 새 freeze**해야 한다.
 9. 현재 GT provenance는 원본 XLSX→CSV 전송/변환 계보까지만 증명한다. **843 reference hazard 각각의 안전 근거 출처(source provenance)는 존재하지 않는다.** 이번 제출 준비의 가장 큰 GT gap이다.
-10. 현재 Judge의 human calibration은 Judge 자체 검증 경로이며, 사용자가 요구한 **GT 자체의 관련 전문가 3인 이상 독립 검증**과는 별개다. 후자는 새로 수행해야 한다.
+10. GT 자체는 연구실 구성원들이 이미 검토·검증한 데이터셋이다. Judge의 human calibration은 이 GT 검증과 별개의 evaluator 검증 경로다.
 
 ## 2. Evidence Register
 
@@ -34,7 +34,7 @@
 | `EV-GT-004` | 전송/변환 provenance | `data/raw/PROVENANCE.md` | 원본 XLSX 기록 SHA-256 `d12c7d683518b680615e2311f49059ed3f5c439cf6c706afb671b6c7bcafdd4a` | 파일 계보는 있음; 원본 XLSX 바이트는 현재 미발견; hazard별 근거 출처는 없음 |
 | `EV-GT-005` | Reference lineage index | `data/cases/gt_lineage_index_v1.csv` | SHA-256 `55c0aa75f8cc0ca542c1fb6755a06ed563f02b0150605a227f2539d907aefbd6`; 843 entries | reference ↔ source_row ↔ case_id, source rows 2..844 완전 커버 |
 | `EV-GT-006` | Reference provenance register | `data/cases/gt_provenance_register_v1.csv` | SHA-256 `00b52d389e2afc170c4114ac0308075199beb94d33c725a1beed6b370a679f1c`; 843 entries | hazard 원문 없이 `reference_hazard_sha256`로 content binding; authoritative source unresolved |
-| `EV-GT-007` | Provenance audit manifest | `data/cases/gt_provenance_audit_manifest_v1.json` | SHA-256 `4a600e7dc88be21c5a0ade1cb0e3e1ef736448842a81a2292c1471b76160b7b4` | lineage 843/843, authoritative source 0/843, expert validated 0/843 |
+| `EV-GT-007` | Provenance audit manifest | `data/cases/gt_provenance_audit_manifest_v1.json` | SHA-256 `ec5bd4f9fded546ac4f2671da5e610688e674193135c9fc1c3b9ef7ac9c3727c` | lineage 843/843; GT 자체는 연구실 구성원 검토를 거쳐 검증 완료; 원작성 source provenance는 별도 추적정보 |
 | `EV-GT-008` | Provenance schema | `configs/gt_provenance_schema_v1.yaml` | SHA-256 `58d9ad6b9566b17bc114786b037e0efcd901ba9de316a5241f72fd4c06c03fe2` | source taxonomy/locator/license/expert-validation 필드 규격 |
 
 현재 raw GT 컬럼은 `공정`, `세부공정`, `설비`, `물질`, `유해위험요인`, `사고분류`, `위험 가능성`, `위험 중대성`, `위험성`, `감소대책`, `관련근거(법규)`의 11개다. 별도 `source`, `출처`, `근거문헌` 필드는 존재하지 않는다.
@@ -158,7 +158,7 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 | Gap ID | 중요도 | 발견사항 | 후속 단계 |
 |---|---|---|---|
 | `GAP-GT-001` | Critical | 843 reference hazard별 근거 source provenance가 없음 | Phase 3 |
-| `GAP-GT-002` | Critical | GT 자체에 대한 관련 전문가 3인 이상 독립 검증·합의·신뢰도 통계가 없음 | Phase 4 |
+| `GAP-GT-002` | Resolved | GT는 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터셋임 | 신규 검증 불필요 |
 | `GAP-SUT-001` | Critical | 과거 425-case run의 SUT가 dirty working tree여서 commit만으로 완전 재현 불가 | Phase 2/9에서 clean release 새 freeze |
 | `GAP-RUN-001` | Critical | 2026-09-09 425-case run은 `procedure_valid=false` | 승인된 freeze 후 새 full run 필요 |
 | `GAP-EVAL-001` | High | Judge가 `temperature`, `top_p`, `max_output_tokens`, `service_tier`를 명시하지 않음 | Phase 2/5에서 명시 또는 provider-default/effective 값 기록 정책 확정 |
