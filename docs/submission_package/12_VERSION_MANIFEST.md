@@ -95,7 +95,7 @@
 - Candidate ID: `SEEXR-RA-SUT-RC-2026.10.11.2`
 - Human-readable: `docs/submission_package/SUT_FREEZE_CANDIDATE.md`
 - Machine-readable: `data/submission/evidence/sut_freeze_20261011/candidate.json`
-- Candidate JSON SHA-256: `e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def`
+- Candidate JSON SHA-256: `172668ec893ad15bc112fd6e5e06b881252d339499afe9c0fa21ad9ec49e506a`
 - 상태: `PRE_FREEZE`
 
 이 candidate는 현재 Core/Agents/RA/Law commit, Core/Agents relevant source fingerprint, dated model snapshot env, RA embedding coverage, Law row counts 및 runtime version을 묶는다. final tag/base URL/dedicated account/RA·Law full snapshot hash가 채워지기 전에는 `FROZEN`으로 승격하지 않는다.
@@ -137,6 +137,8 @@ Critical source hashes:
 - final tag/commit: `{{AGENTS_FINAL_COMMIT}}` — PENDING
 - `quickFastRiskAssessmentWorkflow.ts` SHA-256: `530a03c2858da98a1c033b378ab349364e477ae7104ac224873e47b8b6b9b464`
 
+Stateful DB content-fingerprint evidence: `data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json`. 이 hash는 DB 내용 identity이며 restore backup file hash와 구분한다.
+
 ### 3.3 RA Search API
 
 - repository path: `/srv/green-server/agent-api-ra`
@@ -158,8 +160,8 @@ RA stateful data audit:
 | embedding dimensions candidate | `1536` | source/runtime contract |
 | embedding coverage | `6,443 / 6,443` | live DB 확인 |
 | embedding version | `risk-search-v1` | live DB 전 행 동일 |
-| embedding-vector-inclusive snapshot hash | `{{RA_DB_FULL_SNAPSHOT_SHA256}}` | PENDING |
-| DB snapshot timestamp | `{{RA_DB_SNAPSHOT_AT}}` | PENDING |
+| embedding-vector-inclusive content root SHA-256 | `67f28e5dcc57b8de983852601c2cd0d4ae7ac89a53140447522a01d806c8f340` | deterministic row-content fingerprint |
+| content fingerprint timestamp | `2026-10-11T05:24:39.876Z` | PRE_FREEZE; final recapture required |
 
 ### 3.4 Law API
 
@@ -171,8 +173,8 @@ RA stateful data audit:
 - package-lock SHA-256: `693784dc44ca3746e56e865117c0067f8b6880b24b7f64a3ca42c9f8261c5cd2`
 - final tag/commit: `{{LAW_FINAL_COMMIT}}` — PENDING
 - live DB content counts: `laws=17`, `law_articles=2861`, `law_files=323` — 확인
-- law DB full snapshot SHA-256: `{{LAW_DB_SNAPSHOT_SHA256}}` — PENDING
-- law DB snapshot timestamp: `{{LAW_DB_SNAPSHOT_AT}}` — PENDING
+- law DB content root SHA-256: `5116d414d9d3c9cdb90a09bee6bd948434b019ca54328a3511e7a9c1bc641f57` — deterministic content fingerprint
+- law DB content fingerprint timestamp: `2026-10-11T05:24:50.145Z` — PRE_FREEZE; final recapture required
 
 ## 4. SUT API / Execution Configuration
 

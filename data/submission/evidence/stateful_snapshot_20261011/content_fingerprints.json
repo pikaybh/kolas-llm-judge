@@ -1,0 +1,51 @@
+{
+  "evidence_version": "sut-stateful-content-fingerprint-v1",
+  "status": "PRE_FREEZE",
+  "secrets_recorded": false,
+  "raw_row_content_recorded": false,
+  "hash_algorithm": "SHA-256",
+  "method": "Inside PostgreSQL, each selected row is canonicalized as to_jsonb(row)::text and hashed with built-in sha256(convert_to(...,'UTF8')). Only primary-key plus row SHA-256 leaves the database. The client computes an aggregate SHA-256 over ordered primary-key/hash records. Law content root additionally hashes ordered table/count/table-root records.",
+  "ra": {
+    "captured_at_utc": "2026-10-11T05:24:39.876Z",
+    "transaction_snapshot": "843:843:",
+    "postgresql_server_version": "16.14 (Debian 16.14-1.pgdg12+1)",
+    "table": "risk_assessments",
+    "rows": 6443,
+    "embedded_rows": 6443,
+    "id_range": [1, 6443],
+    "embedding_model": "text-embedding-3-large",
+    "embedding_version": "risk-search-v1",
+    "storage_root_sha256": "67f28e5dcc57b8de983852601c2cd0d4ae7ac89a53140447522a01d806c8f340",
+    "behavioral_root_sha256": "b681fac625e154b02443bacff72ba4ae6fb4d3c8d5609c68da58b30da20ce5db",
+    "behavioral_excluded_columns": ["source_key", "source_fingerprint", "embedded_at"],
+    "includes_embedding_in_storage_root": true
+  },
+  "law": {
+    "captured_at_utc": "2026-10-11T05:24:50.145Z",
+    "transaction_snapshot": "883:883:",
+    "postgresql_server_version": "16.15",
+    "tables": [
+      {
+        "table": "laws",
+        "rows": 17,
+        "storage_root_sha256": "36338f124058becc4e181baf687a153847b0c9cc572f3f5b7f161c32835c8b73"
+      },
+      {
+        "table": "law_articles",
+        "rows": 2861,
+        "storage_root_sha256": "7169de152b83d90e5b4e7ed72f1496a0cb2ec400792eb41b2f75d8c52fa9d607"
+      },
+      {
+        "table": "law_files",
+        "rows": 323,
+        "storage_root_sha256": "6cdfad76e54f8f794d1187ba9d4208348d83c574f2b54041abdbba0ca47ce402"
+      }
+    ],
+    "content_root_sha256": "5116d414d9d3c9cdb90a09bee6bd948434b019ca54328a3511e7a9c1bc641f57"
+  },
+  "interpretation": {
+    "content_identity": "These hashes deterministically identify the selected database contents at capture time.",
+    "not_a_backup_file": true,
+    "restore_artifact_required_if": "The testing laboratory requires local restoration of RA/Law databases instead of exercising the frozen remote SUT."
+  }
+}

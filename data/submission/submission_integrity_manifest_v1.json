@@ -1,11 +1,11 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-11T05:21:57.604636+00:00",
-  "repository_base_head_at_generation": "19bd8a98c6a7b483aacda9718a785c717ffa2946",
+  "generated_at_utc": "2026-10-11T05:26:02.363314+00:00",
+  "repository_base_head_at_generation": "182c9aa27f1e9712a0a935c3afa776d9af68f7d2",
   "generator": {
     "path": "tools/build_submission_manifest.py",
-    "sha256": "1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326"
+    "sha256": "4114c1efbbb954cffd96e1104d197bb04cfe25b53eceebeda53b9dce87bfab8b"
   },
   "scope": {
     "includes_secret_values": false,
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 83,
-  "artifact_root_sha256": "000bfe35d3b8a566f86f7d4ea803735cc7ff1ca0a34c0ee5502b9faec17d114d",
+  "artifact_count": 84,
+  "artifact_root_sha256": "21b2c5af538f7a7779162a1e09d0b3909da276caf6b8f25617fd0a16ccf6cdcf",
   "artifacts": [
     {
       "path": ".env.example",
@@ -117,9 +117,14 @@
       "sha256": "5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623"
     },
     {
+      "path": "data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json",
+      "size": 2334,
+      "sha256": "0309bc33b89de41fa78b3666ca3a88788765e302f1f7c131bf5e9ad6c779f79f"
+    },
+    {
       "path": "data/submission/evidence/sut_freeze_20261011/candidate.json",
-      "size": 3993,
-      "sha256": "e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def"
+      "size": 4912,
+      "sha256": "172668ec893ad15bc112fd6e5e06b881252d339499afe9c0fa21ad9ec49e506a"
     },
     {
       "path": "docs/automated_kolas_protocol_v1.md",
@@ -143,8 +148,8 @@
     },
     {
       "path": "docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md",
-      "size": 20276,
-      "sha256": "7d40a1e281733457070af977ade2defbf74bfd8f9518197f41bebbcc8cd63710"
+      "size": 20665,
+      "sha256": "22ae470a19aa79ec8f1f2780e3c31e1a187a5be7ab01b423574cbc6bffa9ae24"
     },
     {
       "path": "docs/submission_package/01_TEST_METHOD.md",
@@ -153,8 +158,8 @@
     },
     {
       "path": "docs/submission_package/02_SYSTEM_UNDER_TEST.md",
-      "size": 14932,
-      "sha256": "f5d6d6dfa6186d477105c63b4f874d7857b8a44b1f83f215520d54f6f17c3f8e"
+      "size": 15174,
+      "sha256": "541d7e894184236c41dc69a8b7ea460c4cef8a44504322ad482e1a982df51f85"
     },
     {
       "path": "docs/submission_package/03_INFERENCE_CONFIGURATION.md",
@@ -193,8 +198,8 @@
     },
     {
       "path": "docs/submission_package/12_VERSION_MANIFEST.md",
-      "size": 15575,
-      "sha256": "7454c37785efdfce75fcb93abe98c7b69088dd2f9ff59b0ef65f9370ff1beea4"
+      "size": 15994,
+      "sha256": "445bc954191dd4a47b982c477c613d800a1da976904c5d6156f4f07cdbe85f6b"
     },
     {
       "path": "docs/submission_package/14_CHANGE_CONTROL.md",
@@ -208,8 +213,8 @@
     },
     {
       "path": "docs/submission_package/DOCUMENT_REGISTER.md",
-      "size": 4736,
-      "sha256": "f0c404292075fdbaea7430d34cd80ed096ec394960f43cde5472d989f3030cd6"
+      "size": 4940,
+      "sha256": "a5f82142cfe4281f97e4c18dcd4a2e7e9835fb6c3970c2e098d3a5d816865ff2"
     },
     {
       "path": "docs/submission_package/HWP_HANDOFF_SPEC.md",
@@ -223,8 +228,8 @@
     },
     {
       "path": "docs/submission_package/MASTER_PLAN.md",
-      "size": 21953,
-      "sha256": "81abf057d513d404f64248863b94ec81760058722c12254e407776841d7ba3fe"
+      "size": 22196,
+      "sha256": "5139924ba37686b8791ceb0979ecb91c89518dcb56de345dda717e3ac741fcc7"
     },
     {
       "path": "docs/submission_package/README.md",
@@ -233,8 +238,8 @@
     },
     {
       "path": "docs/submission_package/SUT_FREEZE_CANDIDATE.md",
-      "size": 4604,
-      "sha256": "85186b437d63963f8cb0a1a81fe290555c59235853410edeed018be1fa593773"
+      "size": 5682,
+      "sha256": "41c36f2c638f87fb35a68f075718480214fe3e12cbb785bf1f8bcf4f65c228e5"
     },
     {
       "path": "docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv",
@@ -418,8 +423,8 @@
     },
     {
       "path": "tools/build_submission_manifest.py",
-      "size": 10027,
-      "sha256": "1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326"
+      "size": 10112,
+      "sha256": "4114c1efbbb954cffd96e1104d197bb04cfe25b53eceebeda53b9dce87bfab8b"
     },
     {
       "path": "tools/gt_provenance.py",

@@ -44,16 +44,21 @@ SEEXR_RISK_GPT4O_MODEL=openai/gpt-4o-2024-11-20
 - embedded rows: `6,443 / 6,443`
 - embedding model: `text-embedding-3-large`
 - embedding version: `risk-search-v1`
-- full content + vector snapshot SHA-256: `PENDING`
+- full content + vector storage root SHA-256: `67f28e5dcc57b8de983852601c2cd0d4ae7ac89a53140447522a01d806c8f340`
+- behavioral content root SHA-256 (source metadata/embedded_at 제외): `b681fac625e154b02443bacff72ba4ae6fb4d3c8d5609c68da58b30da20ce5db`
+- captured: `2026-10-11T05:24:39.876Z`
 
 ### Law
 
 - laws: `17`
 - law articles: `2,861`
 - law files: `323`
-- full content snapshot SHA-256: `PENDING`
+- full content root SHA-256: `5116d414d9d3c9cdb90a09bee6bd948434b019ca54328a3511e7a9c1bc641f57`
+- captured: `2026-10-11T05:24:50.145Z`
 
-현재 도구 보안경계에서는 row/vector 원문을 모델 프로세스로 반출하지 않고 full-content hash를 만드는 절차를 완료하지 않았다. 최종 snapshot은 DB 운영자 측에서 hash-only 방식으로 생성해야 한다.
+두 fingerprint는 PostgreSQL 내부에서 각 row의 `to_jsonb(row)::text`를 SHA-256한 뒤, 외부에는 primary key와 row hash만 전달하여 다시 SHA-256 root로 묶었다. **원문과 embedding vector 자체는 증적 생성 프로세스 출력에 포함하지 않았다.** 세부 방법과 table별 hash는 `data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json`에 기록한다.
+
+이 값은 DB **내용 identity**이며 백업파일 자체가 아니다. 시험기관이 frozen remote SUT를 호출하는 현재 시험방식에는 content fingerprint로 변경탐지가 가능하다. 기관이 RA/Law DB를 자체 환경에 복원해야 한다고 요구하는 경우에만 별도 restore-capable backup artifact를 secure channel로 준비한다.
 
 ## 4. Execution candidate
 
@@ -97,8 +102,10 @@ SEEXR_RISK_GPT4O_MODEL=openai/gpt-4o-2024-11-20
 - [ ] Core/Agents/RA/Law final commit/tag 확정
 - [ ] SUT 네 repository full clean 또는 승인된 immutable build provenance
 - [ ] final deployment에서 dated model env effective value 확인
-- [ ] RA full content+vector snapshot hash 생성
-- [ ] Law full content snapshot hash 생성
+- [x] RA full content+vector deterministic fingerprint 생성
+- [x] Law content deterministic fingerprint 생성
+- [ ] final freeze 직전 RA/Law fingerprint 재캡처 및 candidate와 동일성 확인
+- [ ] 시험기관이 로컬 DB 복원을 요구하는 경우 restore-capable backup artifact 별도 준비
 - [ ] dedicated empty-instruction 시험계정 provisioning
 - [ ] `doctor --live --official --require-ready` PASS
 - [ ] 동일 frozen source/runtime으로 시험 직전 AJQG PASS

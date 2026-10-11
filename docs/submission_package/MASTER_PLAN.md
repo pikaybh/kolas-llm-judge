@@ -69,14 +69,16 @@
 - [x] tool/function/schema 설정 기록 — RA hybrid retrieval, structured-output schemas, conditional branches 정리
 - [x] dependency/runtime 버전 기록 — Node/npm/package-lock 및 주요 resolved package 기록
 - [x] SUT Freeze Candidate machine evidence 작성 — `SUT_FREEZE_CANDIDATE.md` + `data/submission/evidence/sut_freeze_20261011/candidate.json`; `PRE_FREEZE`로 source/model/runtime/stateful DB 상태 고정
-- [ ] DB/schema/migration 최종 상태 기록 — RA 6,443/6,443 embedding coverage(`text-embedding-3-large`, `risk-search-v1`) 및 Law `17/2861/323` row counts 확인; full content/vector snapshot hash는 operator-side PENDING
+- [x] DB content identity 기록 — RA 6,443/6,443 embedding 포함 storage root `67f28e5d...8f340`, behavioral root `b681fac6...ce5db`; Law content root `5116d414...41f57`; row 원문/embedding 미출력 hash-only 방식
+- [ ] final freeze 직전 RA/Law content fingerprint 재캡처 및 동일성 확인
+- [ ] 시험기관이 로컬 DB restore를 요구할 경우에만 secure backup artifact 준비
 - [x] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화 — secret 제외 whitelist + Agents `86b7f1b` model snapshot override 경로 구현
 - [x] `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md` REVIEW 초안 작성
 
 **완료 조건:** 시험기관이 어떤 버전/모델/설정으로 호출해야 하는지 모호성이 없다.
 
 **Phase 2 Drafts:** `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md`
-**현재 상태:** model snapshot 정책은 **resolved/implemented**(KOLAS 전용 dated snapshot pinning, 일반 Green 기본 alias 불변). current internal rehearsal account는 Saved Instruction NON_EMPTY라 official preflight가 자동 차단한다. final immutable deployment, dedicated empty-instruction account, RA/Law full snapshot hash가 남아 있어 Phase 2는 `REVIEW`다.
+**현재 상태:** model snapshot 정책은 **resolved/implemented**(KOLAS 전용 dated snapshot pinning, 일반 Green 기본 alias 불변). current internal rehearsal account는 Saved Instruction NON_EMPTY라 official preflight가 자동 차단한다. final immutable deployment와 dedicated empty-instruction account가 남아 있어 Phase 2는 `REVIEW`다. RA/Law deterministic content identity는 확보했으며 final freeze 직전 재캡처한다.
 
 ## Phase 3. GT 정당성·출처·무결성 확립
 

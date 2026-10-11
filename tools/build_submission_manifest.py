@@ -54,6 +54,7 @@ SUBMISSION_EVIDENCE = [
     "data/submission/evidence/ajqg_20261011/summary.json",
     "data/submission/evidence/ajqg_20261011/control_results.csv",
     "data/submission/evidence/sut_freeze_20261011/candidate.json",
+    "data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json",
 ]
 
 PACKAGE_METADATA = [

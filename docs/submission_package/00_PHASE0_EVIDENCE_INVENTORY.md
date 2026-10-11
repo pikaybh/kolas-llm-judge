@@ -121,6 +121,8 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 | `EV-SUT-006` | Current Agents relevant source | Agents HEAD `86b7f1bfdefad8bac5eeee68e685277cd955f37c` | fingerprint `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b`; model snapshot override path 포함 |
 | `EV-SUT-007` | RA live embedding coverage | `agent-api-ra` DB audit | 6,443/6,443 embedded; model `text-embedding-3-large`; version `risk-search-v1` |
 | `EV-SUT-008` | Law live content counts | `seexr-api-law` DB audit | `laws=17`, `law_articles=2861`, `law_files=323` |
+| `EV-SUT-009` | RA deterministic DB content fingerprint | `data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json` | storage+vector root `67f28e5d...8f340`; behavioral root `b681fac6...ce5db`; 6,443/6,443 embeddings |
+| `EV-SUT-010` | Law deterministic DB content fingerprint | same evidence | content root `5116d414...41f57`; table roots for laws/articles/files |
 | `EV-API-009` | Current rehearsal account readiness | authenticated API, secret/content 미기록 | Saved Instruction **NON_EMPTY** (SHA-256 `cdbc9181ebaa959ae0b2e237b8b4fd1163a09ff542fdd546ee69a2ad5a7c0bad`) → official preflight FAIL; `tokens_limit=null`, used `96320` → allowance PASS |
 
 **용어 구분:** `SEEXR modelMode=fast`는 제품 내부 workflow 선택값이다. OpenAI API의 `service_tier=fast`와 동일하지 않다.

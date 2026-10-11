@@ -45,7 +45,8 @@ Evidence IDs:
 
 | Evidence ID | 파일 | 상태 | 비고 |
 |---|---|---|---|
-| `EV-SUT-FREEZE-20261011` | `SUT_FREEZE_CANDIDATE.md` + `data/submission/evidence/sut_freeze_20261011/candidate.json` | PRE_FREEZE | 현재 source/model/DB-state candidate; final tag/base URL/account/DB full hash 대기 |
+| `EV-SUT-FREEZE-20261011` | `SUT_FREEZE_CANDIDATE.md` + `data/submission/evidence/sut_freeze_20261011/candidate.json` | PRE_FREEZE | 현재 source/model/DB-state candidate; final tag/base URL/account 대기 |
+| `EV-SUT-STATEFUL-20261011` | `data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json` | PRE_FREEZE | RA embedding 포함 content root + Law content root; 원문 미반출 hash-only evidence |
 | `METHOD-DECISION-REGISTER-20261011` | `LAB_METHOD_DECISION_REGISTER.md` | PROPOSAL | 시험기관이 승인/수정할 9개 method decision과 SEEXR 권고안 |
 
 ### Evaluator qualification evidence

@@ -61,16 +61,22 @@
       "embedded_rows": 6443,
       "embedding_model": "text-embedding-3-large",
       "embedding_version": "risk-search-v1",
-      "full_content_vector_snapshot_sha256": null,
-      "snapshot_at_utc": null
+      "full_content_vector_snapshot_sha256": "67f28e5dcc57b8de983852601c2cd0d4ae7ac89a53140447522a01d806c8f340",
+      "snapshot_at_utc": "2026-10-11T05:24:39.876Z",
+      "behavioral_content_sha256": "b681fac625e154b02443bacff72ba4ae6fb4d3c8d5609c68da58b30da20ce5db",
+      "fingerprint_method": "PostgreSQL built-in SHA-256 over to_jsonb(row)::text per row; aggregate SHA-256 ordered by id",
+      "restore_backup_artifact": null
     },
     "law": {
       "laws": 17,
       "law_articles": 2861,
       "law_files": 323,
-      "full_content_snapshot_sha256": null,
-      "snapshot_at_utc": null
-    }
+      "full_content_snapshot_sha256": "5116d414d9d3c9cdb90a09bee6bd948434b019ca54328a3511e7a9c1bc641f57",
+      "snapshot_at_utc": "2026-10-11T05:24:50.145Z",
+      "fingerprint_method": "PostgreSQL built-in SHA-256 over to_jsonb(row)::text per row; per-table roots aggregated into one content root",
+      "restore_backup_artifact": null
+    },
+    "content_fingerprint_evidence": "data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json"
   },
   "runtime": {
     "os_kernel": "Linux 7.0.0-30-generic x86_64 GNU/Linux",
@@ -94,11 +100,12 @@
     "Core/Agents/RA/Law final commits/tags recorded",
     "all four SUT repositories fully clean or approved immutable build provenance supplied",
     "dated model snapshot env verified on final deployment",
-    "RA full content+vector snapshot hash recorded",
-    "Law full content snapshot hash recorded",
+    "RA content+vector fingerprint recaptured on final freeze and equals approved value",
+    "Law content fingerprint recaptured on final freeze and equals approved value",
     "dedicated non-admin account provisioned with empty Saved Instruction and sufficient allowance",
     "doctor --live --official --require-ready PASS",
     "fresh frozen AJQG PASS",
-    "clean-room sample and full run completed"
+    "clean-room sample and full run completed",
+    "restore-capable RA/Law backup artifact prepared only if testing laboratory requires local DB restoration"
   ]
 }

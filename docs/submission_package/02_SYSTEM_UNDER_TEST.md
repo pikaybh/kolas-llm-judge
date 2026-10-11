@@ -206,6 +206,9 @@ quick-fast는 `riskAssessmentDbTool`을 통해 다음 API에 후보를 요청한
 - embedding populated: `6,443 / 6,443`
 - embedding model: `text-embedding-3-large`
 - embedding version: `risk-search-v1`
+- full storage content+vector root SHA-256: `67f28e5dcc57b8de983852601c2cd0d4ae7ac89a53140447522a01d806c8f340`
+- behavioral root SHA-256: `b681fac625e154b02443bacff72ba4ae6fb4d3c8d5609c68da58b30da20ce5db`
+- captured: `2026-10-11T05:24:39.876Z`
 - visible canonical row SHA-256: `8d25e2b57701bc97aa61331f55f170655ec52950c555563ebfc8dba3f6f1a493`
 
 위 hash는 API가 반환하는 다음 필드를 ID 순으로 canonical JSON화해 계산한 audit fingerprint다.
@@ -229,7 +232,7 @@ quick-fast의 legal-basis verification은 Agents에서 Core의 `/api/law/search`
 - canonical content hash 또는 read-only snapshot hash
 - 시험기간 자동 scraping/update 중지 여부
 
-2026-10-11 live DB에서 `laws=17`, `law_articles=2,861`, `law_files=323`을 확인했다. 다만 row 전체 content를 포함한 canonical snapshot hash는 현재 도구 보안경계에서 직접 추출하지 않았으므로 최종 운영자-side snapshot 단계로 `PENDING`이다.
+2026-10-11 live DB에서 `laws=17`, `law_articles=2,861`, `law_files=323`을 확인했고, 세 content table을 row-level SHA-256으로 묶은 deterministic content root `5116d414d9d3c9cdb90a09bee6bd948434b019ca54328a3511e7a9c1bc641f57`를 생성했다(`2026-10-11T05:24:50.145Z`).
 
 ## 9. API schema/versioning
 
