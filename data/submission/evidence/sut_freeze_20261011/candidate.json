@@ -1,0 +1,104 @@
+{
+  "freeze_candidate_version": "sut-freeze-candidate-v1",
+  "status": "PRE_FREEZE",
+  "captured_at_utc": "2026-10-11T05:20:30.312237+00:00",
+  "candidate_id": "SEEXR-RA-SUT-RC-2026.10.11.2",
+  "sut_endpoint": {
+    "current_engineering_base_url": "https://api.seexr.dev/api",
+    "final_accredited_base_url": null,
+    "agent_id": "risk-assessment",
+    "agent_protocol": "v2",
+    "execution_profile": "quick-fast-v1.0.0",
+    "model_mode": "fast",
+    "reasoning_style": "balanced",
+    "risk_assessment_method": "빈도강도법 5x4"
+  },
+  "repositories": {
+    "core": {
+      "head": "279bc052830bca596183ecbe8378dd69d6722f15",
+      "tree": "91de2c76fa7cb96dc301ebf2e85abc8a560051d9",
+      "relevant_source_fingerprint_sha256": "df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5",
+      "relevant_dirty": false,
+      "full_repo_dirty": true,
+      "full_repo_dirty_reason": "untracked apple-root-certs/; must be resolved or explicitly excluded before final freeze",
+      "final_tag": null
+    },
+    "agents": {
+      "head": "86b7f1bfdefad8bac5eeee68e685277cd955f37c",
+      "tree": "62f1f1430a258adfed036bc4a815ca94f00e2f87",
+      "relevant_source_fingerprint_sha256": "3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b",
+      "relevant_dirty": false,
+      "full_repo_dirty": false,
+      "model_snapshot_override_commit": "86b7f1b",
+      "final_tag": null
+    },
+    "ra": {
+      "head": "b400f87ffc483764e8a8857e12c188867425c2b2",
+      "tree": "db2089af3f6b50eff83ee19baf41d8f8949c893a",
+      "full_repo_dirty": false,
+      "final_tag": null
+    },
+    "law": {
+      "head": "ddb8a25f2f4526f2625cac57849593e7166ef667",
+      "tree": "da66acf84c366b491c7adb26e63a4a712b0771a0",
+      "full_repo_dirty": false,
+      "final_tag": null
+    }
+  },
+  "model_freeze": {
+    "policy": "dated_snapshot_pinning_for_dedicated_kolas_deployment",
+    "normal_green_defaults_unchanged": true,
+    "SEEXR_RISK_GPT41_MODEL": "openai/gpt-4.1-2025-04-14",
+    "SEEXR_RISK_GPT41_MINI_MODEL": "openai/gpt-4.1-mini-2025-04-14",
+    "SEEXR_RISK_GPT4O_MODEL": "openai/gpt-4o-2024-11-20",
+    "mastra_construction_smoke": "PASS_3_OF_3",
+    "provider_call_smoke": "PASS_3_OF_3",
+    "final_deployment_effective_env_verified": false
+  },
+  "stateful_dependencies": {
+    "ra": {
+      "rows": 6443,
+      "embedded_rows": 6443,
+      "embedding_model": "text-embedding-3-large",
+      "embedding_version": "risk-search-v1",
+      "full_content_vector_snapshot_sha256": null,
+      "snapshot_at_utc": null
+    },
+    "law": {
+      "laws": 17,
+      "law_articles": 2861,
+      "law_files": 323,
+      "full_content_snapshot_sha256": null,
+      "snapshot_at_utc": null
+    }
+  },
+  "runtime": {
+    "os_kernel": "Linux 7.0.0-30-generic x86_64 GNU/Linux",
+    "node": "v23.11.1",
+    "npm": "11.10.1",
+    "python": "3.12.3",
+    "uv": "0.8.5",
+    "final_deployment_image_or_os_id": null
+  },
+  "evaluation_account": {
+    "required_role": "user",
+    "required_saved_instruction_empty": true,
+    "required_saved_instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "required_ai_allowance_available": true,
+    "final_account_id_hash": null,
+    "current_internal_rehearsal_account_eligible": false,
+    "current_internal_rehearsal_account_blocker": "Saved Instruction NON_EMPTY; plaintext not recorded"
+  },
+  "final_freeze_gates": [
+    "final accredited base URL selected",
+    "Core/Agents/RA/Law final commits/tags recorded",
+    "all four SUT repositories fully clean or approved immutable build provenance supplied",
+    "dated model snapshot env verified on final deployment",
+    "RA full content+vector snapshot hash recorded",
+    "Law full content snapshot hash recorded",
+    "dedicated non-admin account provisioned with empty Saved Instruction and sufficient allowance",
+    "doctor --live --official --require-ready PASS",
+    "fresh frozen AJQG PASS",
+    "clean-room sample and full run completed"
+  ]
+}

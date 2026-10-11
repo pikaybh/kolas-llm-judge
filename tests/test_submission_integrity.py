@@ -31,6 +31,9 @@ def test_candidate_scope_has_no_self_reference_or_secrets() -> None:
     assert "data/submission/evidence/ajqg_20261011/binding.json" in values
     assert "data/submission/evidence/ajqg_20261011/summary.json" in values
     assert "data/submission/evidence/ajqg_20261011/control_results.csv" in values
+    assert "data/submission/evidence/sut_freeze_20261011/candidate.json" in values
+    assert "docs/submission_package/SUT_FREEZE_CANDIDATE.md" in values
+    assert "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md" in values
 
 
 def test_candidate_paths_all_exist() -> None:

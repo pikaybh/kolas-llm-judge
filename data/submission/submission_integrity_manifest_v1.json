@@ -1,11 +1,11 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-11T04:51:43.725816+00:00",
-  "repository_base_head_at_generation": "1d720d1d3dbe3526377257d6fc2287a0353905cb",
+  "generated_at_utc": "2026-10-11T05:21:57.604636+00:00",
+  "repository_base_head_at_generation": "19bd8a98c6a7b483aacda9718a785c717ffa2946",
   "generator": {
     "path": "tools/build_submission_manifest.py",
-    "sha256": "a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175"
+    "sha256": "1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326"
   },
   "scope": {
     "includes_secret_values": false,
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 80,
-  "artifact_root_sha256": "08569120520fc4033325fb45b1ca0b9d8d9773637aa87f433a22e3aa9430a3dc",
+  "artifact_count": 83,
+  "artifact_root_sha256": "000bfe35d3b8a566f86f7d4ea803735cc7ff1ca0a34c0ee5502b9faec17d114d",
   "artifacts": [
     {
       "path": ".env.example",
@@ -117,6 +117,11 @@
       "sha256": "5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623"
     },
     {
+      "path": "data/submission/evidence/sut_freeze_20261011/candidate.json",
+      "size": 3993,
+      "sha256": "e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def"
+    },
+    {
       "path": "docs/automated_kolas_protocol_v1.md",
       "size": 14146,
       "sha256": "848d621444721b7d8fc3f650f9dcbb53498c92702e5778bdce29f8153cf5a93b"
@@ -188,8 +193,8 @@
     },
     {
       "path": "docs/submission_package/12_VERSION_MANIFEST.md",
-      "size": 14903,
-      "sha256": "99e7ab33d498ff2cb47bd930ce329e962132a0e612c9a89f5fb7f1ddc7009cd1"
+      "size": 15575,
+      "sha256": "7454c37785efdfce75fcb93abe98c7b69088dd2f9ff59b0ef65f9370ff1beea4"
     },
     {
       "path": "docs/submission_package/14_CHANGE_CONTROL.md",
@@ -203,8 +208,8 @@
     },
     {
       "path": "docs/submission_package/DOCUMENT_REGISTER.md",
-      "size": 4238,
-      "sha256": "c2378558083b6c90479d5fbe40b1da538b7815a8145c349e0a257848e1fedb0b"
+      "size": 4736,
+      "sha256": "f0c404292075fdbaea7430d34cd80ed096ec394960f43cde5472d989f3030cd6"
     },
     {
       "path": "docs/submission_package/HWP_HANDOFF_SPEC.md",
@@ -212,14 +217,24 @@
       "sha256": "b336e549febab035a2aeabbe59d3721ab7b1ddc3823e5eeff7b1ea5ee75628a7"
     },
     {
+      "path": "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md",
+      "size": 9573,
+      "sha256": "9018f69e6611b2c50fed52b34d14e304174c1d7ebc44bf2548835b16f2d5ee17"
+    },
+    {
       "path": "docs/submission_package/MASTER_PLAN.md",
-      "size": 21445,
-      "sha256": "9242062a85a413be5dec6e563ae4296e10f970d52c9db35e368effaee7f3e393"
+      "size": 21953,
+      "sha256": "81abf057d513d404f64248863b94ec81760058722c12254e407776841d7ba3fe"
     },
     {
       "path": "docs/submission_package/README.md",
-      "size": 7762,
-      "sha256": "7a3b979f77db90848f070213979b1c1bb012ceb9d3feab8aac7f4956d003bd7b"
+      "size": 7953,
+      "sha256": "875eef31471daf3701d183ae86c035bd983f8d6f0787b598610d3d216895af3b"
+    },
+    {
+      "path": "docs/submission_package/SUT_FREEZE_CANDIDATE.md",
+      "size": 4604,
+      "sha256": "85186b437d63963f8cb0a1a81fe290555c59235853410edeed018be1fa593773"
     },
     {
       "path": "docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv",
@@ -403,8 +418,8 @@
     },
     {
       "path": "tools/build_submission_manifest.py",
-      "size": 9842,
-      "sha256": "a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175"
+      "size": 10027,
+      "sha256": "1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326"
     },
     {
       "path": "tools/gt_provenance.py",

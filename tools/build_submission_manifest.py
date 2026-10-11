@@ -31,6 +31,8 @@ SUBMISSION_DOCS = [
     "docs/submission_package/11_API_ACCESS_GUIDE.md",
     "docs/submission_package/12_VERSION_MANIFEST.md",
     "docs/submission_package/14_CHANGE_CONTROL.md",
+    "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md",
+    "docs/submission_package/SUT_FREEZE_CANDIDATE.md",
     "docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md",
     "docs/submission_package/templates/SECTION_TEMPLATE.md",
     "docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv",
@@ -51,6 +53,7 @@ SUBMISSION_EVIDENCE = [
     "data/submission/evidence/ajqg_20261011/binding.json",
     "data/submission/evidence/ajqg_20261011/summary.json",
     "data/submission/evidence/ajqg_20261011/control_results.csv",
+    "data/submission/evidence/sut_freeze_20261011/candidate.json",
 ]
 
 PACKAGE_METADATA = [

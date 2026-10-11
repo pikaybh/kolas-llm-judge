@@ -1,26 +1,26 @@
 # KOLAS 제출자료 무결성 Manifest
 
 - 문서 ID: `KOLAS-DOC-013`
-- 버전: `0.6-review`
+- 버전: `0.7-review`
 - 상태: `REVIEW`
 - 기준일: `2026-10-11`
 - Machine manifest: `data/submission/submission_integrity_manifest_v1.json`
 - Manifest schema: `submission-integrity-v1`
 - 상태: `CANDIDATE`
 
-> current-source fresh AJQG 제출증적과 제출용 CSV line-ending normalization까지 반영한 최신 제출후보 무결성 요약이다. 최종 공인 제출 checksum은 아니다.
+> current-source AJQG, SUT freeze candidate, 시험기관 Method Decision Register까지 반영한 최신 제출후보 무결성 요약이다. 최종 공인 제출 checksum은 아니다.
 
 ## 1. Candidate integrity identity
 
 | 항목 | 값 |
 |---|---|
-| artifact count | `80` |
-| artifact root SHA-256 | `08569120520fc4033325fb45b1ca0b9d8d9773637aa87f433a22e3aa9430a3dc` |
-| machine manifest SHA-256 | `fa0ee1f77f5d469a69fce7aade2cf016b3f21702be9f20cecdc9473ae4444f08` |
-| generated at UTC | `2026-10-11T04:51:43.725816+00:00` |
-| repository committed base at generation | `1d720d1d3dbe3526377257d6fc2287a0353905cb` |
+| artifact count | `83` |
+| artifact root SHA-256 | `000bfe35d3b8a566f86f7d4ea803735cc7ff1ca0a34c0ee5502b9faec17d114d` |
+| machine manifest SHA-256 | `f5f41388fbd2e06584ced14ffde3c9c34f05e244c7d1529a5f86ce37b5e1d305` |
+| generated at UTC | `2026-10-11T05:21:57.604636+00:00` |
+| repository committed base at generation | `19bd8a98c6a7b483aacda9718a785c717ffa2946` |
 | generator | `tools/build_submission_manifest.py` |
-| generator SHA-256 | `a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175` |
+| generator SHA-256 | `1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326` |
 | hash algorithm | `SHA-256` |
 | root record encoding | sorted `path\0sha256\0size\n` |
 
@@ -34,20 +34,18 @@ internal_root_valid = true
 current_root_matches = true
 ```
 
-## 3. Fresh AJQG evidence binding
+## 3. 주요 bound evidence
 
-| 항목 | SHA-256 / 값 |
+| Evidence | Identity |
 |---|---|
-| summary submission copy | `5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623` |
-| control results raw run artifact | `f362861e34544dce100d600218ce23f0953e4cb87aa915f980a830e53d3fbf58` |
-| control results submission copy | `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6` |
-| binding | `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb` |
-
-제출용 control CSV는 **CRLF→LF만 정규화**했고 UTF-8 BOM과 CSV field content는 유지했다. 원본 `runs/` artifact는 변경하지 않았다.
+| fresh AJQG binding | `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb` |
+| SUT freeze candidate JSON | `e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def` |
+| SUT freeze candidate ID | `SEEXR-RA-SUT-RC-2026.10.11.2` / `PRE_FREEZE` |
+| Method Decision Register | `METHOD-DECISION-REGISTER-20261011` / `PROPOSAL` |
 
 ## 4. 범위
 
-포함: 제출 Markdown/템플릿(본 문서 제외), evaluator source/config/prompt, canonical GT/provenance, fresh AJQG evidence, dependency lock, 기술문서와 생성도구.
+포함: 제출 Markdown/템플릿(본 문서 제외), evaluator source/config/prompt, canonical GT/provenance, fresh AJQG evidence, SUT freeze candidate, method decision register, dependency lock, 기술문서와 생성도구.
 
 제외: 실제 `.env`/secret, `runs/`, `derived/`, untracked `docs/lab_handoff/`, 본 `13_INTEGRITY_MANIFEST.md`, 아직 생성되지 않은 최종 HWP/HWPX/PDF.
 
@@ -57,10 +55,11 @@ current_root_matches = true
 
 | 범주 | 파일 수 |
 |---|---:|
-| 제출 Markdown/템플릿 | 20 |
+| 제출 Markdown/템플릿 | 22 |
 | Evaluator source | 30 |
 | Config/Prompt | 9 |
-| Qualification evidence | 3 |
+| AJQG evidence | 3 |
+| SUT freeze evidence | 1 |
 | GT/Provenance data | 8 |
 | Package/기술문서/도구 | 10 |
 
@@ -88,66 +87,69 @@ current_root_matches = true
 | 18 | `data/submission/evidence/ajqg_20261011/binding.json` | 1463 | `abac8aeefc86112e02e230247c42b3292c780d859c29c6d12b61a09db12354cb` |
 | 19 | `data/submission/evidence/ajqg_20261011/control_results.csv` | 27346 | `d58600def63198640101bb740ed3406efe53f06c7203d7a69d41e048b070caf6` |
 | 20 | `data/submission/evidence/ajqg_20261011/summary.json` | 6374 | `5ad49cbda247ceab93edaf60942ed86f31d32f557fe3403455c99c24aac6b623` |
-| 21 | `docs/automated_kolas_protocol_v1.md` | 14146 | `848d621444721b7d8fc3f650f9dcbb53498c92702e5778bdce29f8153cf5a93b` |
-| 22 | `docs/evaluation_spec.md` | 17541 | `ad821fa9c1037b7565943d4bd0d7baaac0b785ee3fed8a21dea5f1f2060e46d2` |
-| 23 | `docs/kolas_compliance_plan_v1.md` | 7580 | `1cd45a71306ca1acd086bf5736930c100234cac8b38533224069a5c6de67d149` |
-| 24 | `docs/submission_package/00_PHASE0_AUDIT_LOG.md` | 2513 | `0ccf2ec50e5045f8b7821fc3bc2c16d1b059a13cdea3a3ce2c2da143ce8c1847` |
-| 25 | `docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md` | 20276 | `7d40a1e281733457070af977ade2defbf74bfd8f9518197f41bebbcc8cd63710` |
-| 26 | `docs/submission_package/01_TEST_METHOD.md` | 13340 | `63baa7bd96e5e6a427be1bfd0c8c9640b4ce0d38da9ae4ca5bd07a12b5dcb6ad` |
-| 27 | `docs/submission_package/02_SYSTEM_UNDER_TEST.md` | 14932 | `f5d6d6dfa6186d477105c63b4f874d7857b8a44b1f83f215520d54f6f17c3f8e` |
-| 28 | `docs/submission_package/03_INFERENCE_CONFIGURATION.md` | 13140 | `df1079db7fa3e4ada3420d66488efdea74f344b58f995dba6c47707306722d12` |
-| 29 | `docs/submission_package/04_GT_SPECIFICATION.md` | 13092 | `786b127ef77d84cff79836218cdaa621a9805b46271d6d0bee80c537d1717422` |
-| 30 | `docs/submission_package/05_GT_SOURCE_PROVENANCE.md` | 12814 | `bf573130778e622479345959a5e6a176856eee0b1c5afd4e43ba8a081caf7fc8` |
-| 31 | `docs/submission_package/08_EVALUATOR_SPECIFICATION.md` | 8279 | `abab06f03b45b132eb135a689727f25f986c2f971e14ce60925d90d5ccd040e1` |
-| 32 | `docs/submission_package/09_EVALUATOR_QUALIFICATION.md` | 9356 | `e2e9ff4ec84957db97cfe8955da6f51893b7f7ac19d1145deb645328b7a4e778` |
-| 33 | `docs/submission_package/10_REPRODUCIBILITY_GUIDE.md` | 13229 | `f1787cd1be36cdbdda040cbba4a6f4e33d5490c037c4a34f945ca91574d93c33` |
-| 34 | `docs/submission_package/11_API_ACCESS_GUIDE.md` | 14028 | `ca0b628d263ff528baa48f06e0b101bd8f41b83b078faf4890000dc037f60436` |
-| 35 | `docs/submission_package/12_VERSION_MANIFEST.md` | 14903 | `99e7ab33d498ff2cb47bd930ce329e962132a0e612c9a89f5fb7f1ddc7009cd1` |
-| 36 | `docs/submission_package/14_CHANGE_CONTROL.md` | 9563 | `d66c3ad06a43f4f6119d01f8fa3330c155909812dbc2a7334a09f518cd9a1f89` |
-| 37 | `docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md` | 9297 | `42a41103dd9b51a20ac389d51aebd45084f2c69d857e9fa31e977dbd614396f4` |
-| 38 | `docs/submission_package/DOCUMENT_REGISTER.md` | 4238 | `c2378558083b6c90479d5fbe40b1da538b7815a8145c349e0a257848e1fedb0b` |
-| 39 | `docs/submission_package/HWP_HANDOFF_SPEC.md` | 7415 | `b336e549febab035a2aeabbe59d3721ab7b1ddc3823e5eeff7b1ea5ee75628a7` |
-| 40 | `docs/submission_package/MASTER_PLAN.md` | 21445 | `9242062a85a413be5dec6e563ae4296e10f970d52c9db35e368effaee7f3e393` |
-| 41 | `docs/submission_package/README.md` | 7762 | `7a3b979f77db90848f070213979b1c1bb012ceb9d3feab8aac7f4956d003bd7b` |
-| 42 | `docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv` | 370 | `7774b5985c0b9055c219119a30bfd8cfdb00f19635c6978fc0afce87b50c1a36` |
-| 43 | `docs/submission_package/templates/SECTION_TEMPLATE.md` | 907 | `165f7bcc895d3e8f5d71dafec58fa0a983ed611f397b8fac7bd4f7a4724140fe` |
-| 44 | `docs/testing_lab_method_and_rubric_v1.md` | 9514 | `86d37134e19b853ae586dd44f066184ac16ac17322884262289274e04a34dd16` |
-| 45 | `prompts/judge_binary_v1.md` | 2255 | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` |
-| 46 | `prompts/judge_v1.md` | 751 | `3bbe73a96c0c0bacf6a383c40de2047d78760abdc5a6fd233454597fe9a035b9` |
-| 47 | `pyproject.toml` | 726 | `f826d884f7e0c0dbe0c1fc156c3e9030ac13e98b63e6579a74cf24b18aab39d5` |
-| 48 | `src/kolas_llm_judge/__init__.py` | 42 | `a0ab02a688904925f1e7b0c6b3655f63378ed6e9094317469d5fb6842dc12343` |
-| 49 | `src/kolas_llm_judge/automated_manifest.py` | 6754 | `190c9f63e07ca83a18b5c43f8f52f424bfed0916539dd09592c94dd416fa849b` |
-| 50 | `src/kolas_llm_judge/automated_report.py` | 12625 | `d089edb2f059103a5492764ec899eb1e54f72ff5ccc54aaedb563c8bd10c7ac7` |
-| 51 | `src/kolas_llm_judge/binary_evaluation.py` | 14207 | `92ecedad4d246f9e91c0b5e3baf68628f4de728a0df96df2e105da9bd1dc3adb` |
-| 52 | `src/kolas_llm_judge/binary_human_calibration.py` | 29612 | `59b500189eb4267d514172ac08c988da2f19b3af0184aca55c19312b229e7572` |
-| 53 | `src/kolas_llm_judge/binary_judge.py` | 11979 | `6523cd65eeee33e618cefecbb68a6cb1ec394e85ca40898b88d49e53b7470cef` |
-| 54 | `src/kolas_llm_judge/calibration.py` | 42624 | `260372e85bea70db602117cbe5be48bd9656c718977843e0857e86da177f963c` |
-| 55 | `src/kolas_llm_judge/cli.py` | 24580 | `7648eac69d1feb5e25ab4595edc0cee0da7b7ab92edccc52f6c9e3c00400cea7` |
-| 56 | `src/kolas_llm_judge/dataset.py` | 6033 | `bcbf5d6b29b1b89e1c56502c0918719c5fc836d23b4bbab87f84f209434599cd` |
-| 57 | `src/kolas_llm_judge/derived_analysis.py` | 8426 | `ddffe60865815b8bcffe00380e08e6bf88581160ec0bc25cb056d702a85574e4` |
-| 58 | `src/kolas_llm_judge/deterministic.py` | 10162 | `72e8d073d72988d262aeddd907e3f469bc892d59a5c2b289dfe2a3d707e86d77` |
-| 59 | `src/kolas_llm_judge/doctor.py` | 13442 | `7e2cf0c89f0e58f2ddcc3f1f43d1a6c4cfe6262d6fb1db2fde3ecf93c294b082` |
-| 60 | `src/kolas_llm_judge/identification.py` | 3415 | `4f62b70e26cb37fa983f487d75a7ac9cffad1026dd202b7618574b1a136be71b` |
-| 61 | `src/kolas_llm_judge/io_utils.py` | 1565 | `ccf901ad293af1ae7a16245540847e08a7c052a7a9433a5227429ae102ab00b8` |
-| 62 | `src/kolas_llm_judge/judge.py` | 25729 | `6e37b29d184b658e66d6a853eeb0875b2bcef54b82edadd563e7e4f0dca334d4` |
-| 63 | `src/kolas_llm_judge/manifest.py` | 14910 | `b9a2c03eee5a4490979eab3692d2f730365a34e2baf9df53054af2a90a8d3210` |
-| 64 | `src/kolas_llm_judge/matching.py` | 4261 | `3ca23ee4cffc8d5333b29946c497f713d88cb26b02c86255ca10b069fa84d943` |
-| 65 | `src/kolas_llm_judge/metrics.py` | 2576 | `062306281e7f3884c86ee4dd36858565db2af77138d39778c7cab19893f864f7` |
-| 66 | `src/kolas_llm_judge/models.py` | 5486 | `786253ae6f453d5a01b992073f02577abf7ed9adab2c0791b22721136cde821c` |
-| 67 | `src/kolas_llm_judge/official_live.py` | 11919 | `845a86cebc156c6844d31225650226292521f60bbe6352ddf5fa44d00e58064e` |
-| 68 | `src/kolas_llm_judge/official_runtime.py` | 13195 | `0f012a4ffa35b9b2fb8794fa5eb599846b7d6ee89cd59e3d88c54a04b5f572f0` |
-| 69 | `src/kolas_llm_judge/parallel_runner.py` | 14248 | `5e61273b1568da53c92be89a3de26a97437cbe2e34aba285a8b482080a316019` |
-| 70 | `src/kolas_llm_judge/parser.py` | 5143 | `8f57878b18a2526c0df251026d70af9baf6a8399e071ecbd1ccc4a8642db3e45` |
-| 71 | `src/kolas_llm_judge/qualification.py` | 10105 | `6d6cfe505f03cafada91fe5e571a6bdc1109a92d88003041a444d1c4d6c7ba20` |
-| 72 | `src/kolas_llm_judge/qualification_controls.py` | 11084 | `be759e962a2625bc4515768096895bd8078557a3a752b12c6be1c8326d3fa5d5` |
-| 73 | `src/kolas_llm_judge/repeatability.py` | 5964 | `6e39c3d345c165ab78f224b0521e821e9e73f09ef65456eb38074468bb069bc4` |
-| 74 | `src/kolas_llm_judge/report.py` | 25280 | `b6b0028aba22e1eedcc5ea08ea7545afeb92f306cd8f9b1c1738e0a914978543` |
-| 75 | `src/kolas_llm_judge/runner.py` | 22241 | `1a53a4ac32956c920183881e6d0b2ab015569f5daf1501e16bbc3fb3213c528f` |
-| 76 | `src/kolas_llm_judge/seal.py` | 6908 | `c6b82efbb42bf7d425f7452cf764ed3c139b3c5304c958d73c70d8fe4e91014b` |
-| 77 | `src/kolas_llm_judge/sut_client.py` | 27828 | `45cbc9a94f1f4e7497d4bd55826eaf5a032ab03f33e86494d82126cab4d42e1d` |
-| 78 | `tools/build_submission_manifest.py` | 9842 | `a52f4a5d972e3d7a0bfc733c4b632ee66e7b4037956c441da52b8a05aa7f9175` |
-| 79 | `tools/gt_provenance.py` | 3714 | `a52d7e7c35ed87233d0f9e5555233e6cb744fbdff53313d654d95e70206cdf4f` |
-| 80 | `uv.lock` | 173838 | `59502e93ca708512472ab858e78d22e3e4f06f5a8de63ddf9e51c8d3475c5c6f` |
+| 21 | `data/submission/evidence/sut_freeze_20261011/candidate.json` | 3993 | `e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def` |
+| 22 | `docs/automated_kolas_protocol_v1.md` | 14146 | `848d621444721b7d8fc3f650f9dcbb53498c92702e5778bdce29f8153cf5a93b` |
+| 23 | `docs/evaluation_spec.md` | 17541 | `ad821fa9c1037b7565943d4bd0d7baaac0b785ee3fed8a21dea5f1f2060e46d2` |
+| 24 | `docs/kolas_compliance_plan_v1.md` | 7580 | `1cd45a71306ca1acd086bf5736930c100234cac8b38533224069a5c6de67d149` |
+| 25 | `docs/submission_package/00_PHASE0_AUDIT_LOG.md` | 2513 | `0ccf2ec50e5045f8b7821fc3bc2c16d1b059a13cdea3a3ce2c2da143ce8c1847` |
+| 26 | `docs/submission_package/00_PHASE0_EVIDENCE_INVENTORY.md` | 20276 | `7d40a1e281733457070af977ade2defbf74bfd8f9518197f41bebbcc8cd63710` |
+| 27 | `docs/submission_package/01_TEST_METHOD.md` | 13340 | `63baa7bd96e5e6a427be1bfd0c8c9640b4ce0d38da9ae4ca5bd07a12b5dcb6ad` |
+| 28 | `docs/submission_package/02_SYSTEM_UNDER_TEST.md` | 14932 | `f5d6d6dfa6186d477105c63b4f874d7857b8a44b1f83f215520d54f6f17c3f8e` |
+| 29 | `docs/submission_package/03_INFERENCE_CONFIGURATION.md` | 13140 | `df1079db7fa3e4ada3420d66488efdea74f344b58f995dba6c47707306722d12` |
+| 30 | `docs/submission_package/04_GT_SPECIFICATION.md` | 13092 | `786b127ef77d84cff79836218cdaa621a9805b46271d6d0bee80c537d1717422` |
+| 31 | `docs/submission_package/05_GT_SOURCE_PROVENANCE.md` | 12814 | `bf573130778e622479345959a5e6a176856eee0b1c5afd4e43ba8a081caf7fc8` |
+| 32 | `docs/submission_package/08_EVALUATOR_SPECIFICATION.md` | 8279 | `abab06f03b45b132eb135a689727f25f986c2f971e14ce60925d90d5ccd040e1` |
+| 33 | `docs/submission_package/09_EVALUATOR_QUALIFICATION.md` | 9356 | `e2e9ff4ec84957db97cfe8955da6f51893b7f7ac19d1145deb645328b7a4e778` |
+| 34 | `docs/submission_package/10_REPRODUCIBILITY_GUIDE.md` | 13229 | `f1787cd1be36cdbdda040cbba4a6f4e33d5490c037c4a34f945ca91574d93c33` |
+| 35 | `docs/submission_package/11_API_ACCESS_GUIDE.md` | 14028 | `ca0b628d263ff528baa48f06e0b101bd8f41b83b078faf4890000dc037f60436` |
+| 36 | `docs/submission_package/12_VERSION_MANIFEST.md` | 15575 | `7454c37785efdfce75fcb93abe98c7b69088dd2f9ff59b0ef65f9370ff1beea4` |
+| 37 | `docs/submission_package/14_CHANGE_CONTROL.md` | 9563 | `d66c3ad06a43f4f6119d01f8fa3330c155909812dbc2a7334a09f518cd9a1f89` |
+| 38 | `docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md` | 9297 | `42a41103dd9b51a20ac389d51aebd45084f2c69d857e9fa31e977dbd614396f4` |
+| 39 | `docs/submission_package/DOCUMENT_REGISTER.md` | 4736 | `f0c404292075fdbaea7430d34cd80ed096ec394960f43cde5472d989f3030cd6` |
+| 40 | `docs/submission_package/HWP_HANDOFF_SPEC.md` | 7415 | `b336e549febab035a2aeabbe59d3721ab7b1ddc3823e5eeff7b1ea5ee75628a7` |
+| 41 | `docs/submission_package/LAB_METHOD_DECISION_REGISTER.md` | 9573 | `9018f69e6611b2c50fed52b34d14e304174c1d7ebc44bf2548835b16f2d5ee17` |
+| 42 | `docs/submission_package/MASTER_PLAN.md` | 21953 | `81abf057d513d404f64248863b94ec81760058722c12254e407776841d7ba3fe` |
+| 43 | `docs/submission_package/README.md` | 7953 | `875eef31471daf3701d183ae86c035bd983f8d6f0787b598610d3d216895af3b` |
+| 44 | `docs/submission_package/SUT_FREEZE_CANDIDATE.md` | 4604 | `85186b437d63963f8cb0a1a81fe290555c59235853410edeed018be1fa593773` |
+| 45 | `docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv` | 370 | `7774b5985c0b9055c219119a30bfd8cfdb00f19635c6978fc0afce87b50c1a36` |
+| 46 | `docs/submission_package/templates/SECTION_TEMPLATE.md` | 907 | `165f7bcc895d3e8f5d71dafec58fa0a983ed611f397b8fac7bd4f7a4724140fe` |
+| 47 | `docs/testing_lab_method_and_rubric_v1.md` | 9514 | `86d37134e19b853ae586dd44f066184ac16ac17322884262289274e04a34dd16` |
+| 48 | `prompts/judge_binary_v1.md` | 2255 | `97884ac7d7440b8e3843b0eee357478275871f949d4ef305b5c52a1eb3bad0bf` |
+| 49 | `prompts/judge_v1.md` | 751 | `3bbe73a96c0c0bacf6a383c40de2047d78760abdc5a6fd233454597fe9a035b9` |
+| 50 | `pyproject.toml` | 726 | `f826d884f7e0c0dbe0c1fc156c3e9030ac13e98b63e6579a74cf24b18aab39d5` |
+| 51 | `src/kolas_llm_judge/__init__.py` | 42 | `a0ab02a688904925f1e7b0c6b3655f63378ed6e9094317469d5fb6842dc12343` |
+| 52 | `src/kolas_llm_judge/automated_manifest.py` | 6754 | `190c9f63e07ca83a18b5c43f8f52f424bfed0916539dd09592c94dd416fa849b` |
+| 53 | `src/kolas_llm_judge/automated_report.py` | 12625 | `d089edb2f059103a5492764ec899eb1e54f72ff5ccc54aaedb563c8bd10c7ac7` |
+| 54 | `src/kolas_llm_judge/binary_evaluation.py` | 14207 | `92ecedad4d246f9e91c0b5e3baf68628f4de728a0df96df2e105da9bd1dc3adb` |
+| 55 | `src/kolas_llm_judge/binary_human_calibration.py` | 29612 | `59b500189eb4267d514172ac08c988da2f19b3af0184aca55c19312b229e7572` |
+| 56 | `src/kolas_llm_judge/binary_judge.py` | 11979 | `6523cd65eeee33e618cefecbb68a6cb1ec394e85ca40898b88d49e53b7470cef` |
+| 57 | `src/kolas_llm_judge/calibration.py` | 42624 | `260372e85bea70db602117cbe5be48bd9656c718977843e0857e86da177f963c` |
+| 58 | `src/kolas_llm_judge/cli.py` | 24580 | `7648eac69d1feb5e25ab4595edc0cee0da7b7ab92edccc52f6c9e3c00400cea7` |
+| 59 | `src/kolas_llm_judge/dataset.py` | 6033 | `bcbf5d6b29b1b89e1c56502c0918719c5fc836d23b4bbab87f84f209434599cd` |
+| 60 | `src/kolas_llm_judge/derived_analysis.py` | 8426 | `ddffe60865815b8bcffe00380e08e6bf88581160ec0bc25cb056d702a85574e4` |
+| 61 | `src/kolas_llm_judge/deterministic.py` | 10162 | `72e8d073d72988d262aeddd907e3f469bc892d59a5c2b289dfe2a3d707e86d77` |
+| 62 | `src/kolas_llm_judge/doctor.py` | 13442 | `7e2cf0c89f0e58f2ddcc3f1f43d1a6c4cfe6262d6fb1db2fde3ecf93c294b082` |
+| 63 | `src/kolas_llm_judge/identification.py` | 3415 | `4f62b70e26cb37fa983f487d75a7ac9cffad1026dd202b7618574b1a136be71b` |
+| 64 | `src/kolas_llm_judge/io_utils.py` | 1565 | `ccf901ad293af1ae7a16245540847e08a7c052a7a9433a5227429ae102ab00b8` |
+| 65 | `src/kolas_llm_judge/judge.py` | 25729 | `6e37b29d184b658e66d6a853eeb0875b2bcef54b82edadd563e7e4f0dca334d4` |
+| 66 | `src/kolas_llm_judge/manifest.py` | 14910 | `b9a2c03eee5a4490979eab3692d2f730365a34e2baf9df53054af2a90a8d3210` |
+| 67 | `src/kolas_llm_judge/matching.py` | 4261 | `3ca23ee4cffc8d5333b29946c497f713d88cb26b02c86255ca10b069fa84d943` |
+| 68 | `src/kolas_llm_judge/metrics.py` | 2576 | `062306281e7f3884c86ee4dd36858565db2af77138d39778c7cab19893f864f7` |
+| 69 | `src/kolas_llm_judge/models.py` | 5486 | `786253ae6f453d5a01b992073f02577abf7ed9adab2c0791b22721136cde821c` |
+| 70 | `src/kolas_llm_judge/official_live.py` | 11919 | `845a86cebc156c6844d31225650226292521f60bbe6352ddf5fa44d00e58064e` |
+| 71 | `src/kolas_llm_judge/official_runtime.py` | 13195 | `0f012a4ffa35b9b2fb8794fa5eb599846b7d6ee89cd59e3d88c54a04b5f572f0` |
+| 72 | `src/kolas_llm_judge/parallel_runner.py` | 14248 | `5e61273b1568da53c92be89a3de26a97437cbe2e34aba285a8b482080a316019` |
+| 73 | `src/kolas_llm_judge/parser.py` | 5143 | `8f57878b18a2526c0df251026d70af9baf6a8399e071ecbd1ccc4a8642db3e45` |
+| 74 | `src/kolas_llm_judge/qualification.py` | 10105 | `6d6cfe505f03cafada91fe5e571a6bdc1109a92d88003041a444d1c4d6c7ba20` |
+| 75 | `src/kolas_llm_judge/qualification_controls.py` | 11084 | `be759e962a2625bc4515768096895bd8078557a3a752b12c6be1c8326d3fa5d5` |
+| 76 | `src/kolas_llm_judge/repeatability.py` | 5964 | `6e39c3d345c165ab78f224b0521e821e9e73f09ef65456eb38074468bb069bc4` |
+| 77 | `src/kolas_llm_judge/report.py` | 25280 | `b6b0028aba22e1eedcc5ea08ea7545afeb92f306cd8f9b1c1738e0a914978543` |
+| 78 | `src/kolas_llm_judge/runner.py` | 22241 | `1a53a4ac32956c920183881e6d0b2ab015569f5daf1501e16bbc3fb3213c528f` |
+| 79 | `src/kolas_llm_judge/seal.py` | 6908 | `c6b82efbb42bf7d425f7452cf764ed3c139b3c5304c958d73c70d8fe4e91014b` |
+| 80 | `src/kolas_llm_judge/sut_client.py` | 27828 | `45cbc9a94f1f4e7497d4bd55826eaf5a032ab03f33e86494d82126cab4d42e1d` |
+| 81 | `tools/build_submission_manifest.py` | 10027 | `1be70a6678d5a2606727576bfaa6b3aab12621f80aa645b319b5a67095a63326` |
+| 82 | `tools/gt_provenance.py` | 3714 | `a52d7e7c35ed87233d0f9e5555233e6cb744fbdff53313d654d95e70206cdf4f` |
+| 83 | `uv.lock` | 173838 | `59502e93ca708512472ab858e78d22e3e4f06f5a8de63ddf9e51c8d3475c5c6f` |
 
 ## 7. Candidate root history
 
@@ -155,28 +157,18 @@ current_root_matches = true
 |---|---:|---|---|
 | Phase 8 최초 candidate | 76 | `7566872820ed951f05ad6ec18c7dc4aef5ead94dc3a3d35180056f4f8bb6c1ba` | fresh clone 재현 |
 | Phase 9 clean-room 반영 | 77 | `6473c87dd1f3d55aeecf243d96eb95c9f0322d8614b6d5480125cb033c0f72fd` | rehearsal/등록부 반영 |
-| Account gate + snapshot 정책 반영 | 77 | `993f2537abcf286089c84fd197ca9f3889ec0850fd13329212e07248b23ceffe` | evaluator/SUT freeze 강화 |
-| Fresh AJQG evidence pre-normalization | 80 | `287c4813d66c2b63209de92388a3b5e29f27f42270775d8d68e90a0953eda94c` | raw CRLF 제출사본 단계; commit 전 normalization으로 superseded |
-| Fresh AJQG evidence normalized | 80 | `08569120520fc4033325fb45b1ca0b9d8d9773637aa87f433a22e3aa9430a3dc` | 현재 최신 candidate |
+| Account gate + snapshot 정책 | 77 | `993f2537abcf286089c84fd197ca9f3889ec0850fd13329212e07248b23ceffe` | evaluator/SUT freeze 강화 |
+| Fresh AJQG normalized evidence | 80 | `08569120520fc4033325fb45b1ca0b9d8d9773637aa87f433a22e3aa9430a3dc` | current-source Judge qualification |
+| SUT freeze + method decision prep | 83 | `000bfe35d3b8a566f86f7d4ea803735cc7ff1ca0a34c0ee5502b9faec17d114d` | 현재 최신 candidate |
 
-## 8. 핵심 identity 교차확인
+## 8. 아직 final이 아닌 이유
 
-| 항목 | SHA-256 / identity |
-|---|---|
-| GT raw | `b76c9efa718a0429f587b311d9e6e1d2107bf13101b0f91bc02a69e695ad142a` |
-| scenarios | `2cdc1e8b9e05766d29790965bcf09c4015662daf8c70571209bccb4a15ee419c` |
-| official runtime | `1be77e55532324f98d8f2835178a1c02ead325c4f94b4724bda5511d883511e3` |
-| evaluator source aggregate | `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701` |
-| Core relevant source | `df38c2eab18eaed5d849643ce589523391a4cb02bdb24e11c32dd2599e4888f5` |
-| Agents relevant source | `3dc2a32f7e79bf740a249854284b01072fa41e62209714060eb16237c21d997b` |
-
-## 9. 아직 final이 아닌 이유
-
-- final SUT immutable deployment/tag 및 effective dated-snapshot env freeze 미완료
-- dedicated empty-instruction institution account provisioning 미완료
+- 시험기관 method decision 미승인
+- final SUT accredited base URL/tag 및 effective model env freeze 미완료
+- dedicated empty-instruction 시험계정 provisioning 미완료
 - RA/Law full DB snapshot hash 미완료
 - live clean-room sample/full run 미완료
-- 독립 제3자 sign-off 미완료
-- 시험기관 method decision 일부 및 최종 HWP/HWPX/PDF 미생성
+- 독립 operator sign-off 미완료
+- 최종 HWP/HWPX/PDF 미생성
 
-현재 evaluator qualification 자체는 current candidate 기준 PASS다. 공식 시험 직전에는 동일 frozen AJQG를 한 번 더 실행한다.
+이 조건을 닫기 전에는 현재 root를 최종 공인 제출 checksum으로 사용하지 않는다.

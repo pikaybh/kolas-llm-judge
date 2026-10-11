@@ -90,6 +90,16 @@
 | final HWP/HWPX/PDF | 아직 미생성 | Phase 10/11 직전 final manifest에 추가 |
 | final Git tag/release | `{{FINAL_MEASUREMENT_RELEASE_TAG}}` | PENDING |
 
+## 2.4 SUT freeze candidate evidence
+
+- Candidate ID: `SEEXR-RA-SUT-RC-2026.10.11.2`
+- Human-readable: `docs/submission_package/SUT_FREEZE_CANDIDATE.md`
+- Machine-readable: `data/submission/evidence/sut_freeze_20261011/candidate.json`
+- Candidate JSON SHA-256: `e3878ad6baa7d0e0dcb72ff6a84746a9af36d4c127195f22ef51f5bfb5a42def`
+- 상태: `PRE_FREEZE`
+
+이 candidate는 현재 Core/Agents/RA/Law commit, Core/Agents relevant source fingerprint, dated model snapshot env, RA embedding coverage, Law row counts 및 runtime version을 묶는다. final tag/base URL/dedicated account/RA·Law full snapshot hash가 채워지기 전에는 `FROZEN`으로 승격하지 않는다.
+
 ## 3. SUT Source Snapshot
 
 ### 3.1 Core

@@ -47,12 +47,13 @@
 - [x] 재시도 횟수와 실패가 metric에 반영되는 방식 정의
 - [ ] 동일 입력 반복 시험 횟수 및 허용 변동 최종 확정 — 통계 항목/최소 2회 후보 정의, `DEC-METHOD-005/006` 승인 대기
 - [x] 시험기관과 합의가 필요한 항목을 별도 표로 분리
+- [x] 시험기관 협의용 Method Decision Register 작성 — `LAB_METHOD_DECISION_REGISTER.md`; denominator B(end-to-end) 권고, 반복 2회, tolerance/성능합격선은 승인 전 비동결
 - [ ] `01_TEST_METHOD.md` 승인본 작성 — 현재 `0.2-draft / REVIEW`, 외부 method decision 이후 승인
 
 **완료 조건:** 동일 raw data를 주면 별도 해석 없이 같은 metric을 계산할 수 있다.
 
 **Phase 1 Draft:** `01_TEST_METHOD.md`
-**현재 상태:** 내부 구현 설명은 정리 완료. denominator·반복/허용변동·성능 합격선은 시험기관 승인 전 freeze 금지.
+**현재 상태:** 내부 구현과 기관 협의용 선택표까지 준비 완료. denominator·반복/허용변동·성능 합격선은 `LAB_METHOD_DECISION_REGISTER.md`에서 권고안/대안을 분리했으며 시험기관 승인 전 freeze 금지.
 
 ## Phase 2. SUT 및 추론 설정 Freeze
 
@@ -67,6 +68,7 @@
 - [x] prompt 파일 또는 prompt content hash 기록 — 단일 prompt 파일 대신 agent/workflow/prompt-builder source SHA-256 집합으로 기록
 - [x] tool/function/schema 설정 기록 — RA hybrid retrieval, structured-output schemas, conditional branches 정리
 - [x] dependency/runtime 버전 기록 — Node/npm/package-lock 및 주요 resolved package 기록
+- [x] SUT Freeze Candidate machine evidence 작성 — `SUT_FREEZE_CANDIDATE.md` + `data/submission/evidence/sut_freeze_20261011/candidate.json`; `PRE_FREEZE`로 source/model/runtime/stateful DB 상태 고정
 - [ ] DB/schema/migration 최종 상태 기록 — RA 6,443/6,443 embedding coverage(`text-embedding-3-large`, `risk-search-v1`) 및 Law `17/2861/323` row counts 확인; full content/vector snapshot hash는 operator-side PENDING
 - [x] feature flag 및 환경변수 중 시험에 영향을 주는 값 목록화 — secret 제외 whitelist + Agents `86b7f1b` model snapshot override 경로 구현
 - [x] `02_SYSTEM_UNDER_TEST.md`, `03_INFERENCE_CONFIGURATION.md`, `12_VERSION_MANIFEST.md` REVIEW 초안 작성
