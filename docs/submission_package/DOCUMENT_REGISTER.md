@@ -41,14 +41,20 @@ Evidence IDs:
 관련 evaluator version:
 ```
 
+### Clean-room working evidence
+
+| Evidence ID | 파일 | 상태 | 비고 |
+|---|---|---|---|
+| `EV-REPRO-CR-20261011` | `CLEAN_ROOM_REHEARSAL_20261011.md` | PARTIAL | offline reconstruction PASS; live/full/sign-off blocked |
+
 ## Evidence ID 규칙 권장안
 
 - `EV-SUT-###` — SUT 코드/설정/배포 증적
-- `EV-GT-###` — GT 및 source provenance
 - `EV-GT-###` — GT canonical identity, 기존 연구실 검증상태, provenance/lineage
 - `EV-EVAL-###` — evaluator/Judge 증적
 - `EV-RUN-###` — 실제 시험 run/raw 결과
 - `EV-API-###` — API contract/auth 증적
 - `EV-INT-###` — checksum/version/integrity
+- `EV-REPRO-###` — reproducibility/clean-room rehearsal evidence
 
 Evidence registry 파일 형식과 저장 위치는 Phase 0에서 실제 자료 위치를 확인한 뒤 확정한다.

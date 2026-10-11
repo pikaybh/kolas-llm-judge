@@ -193,19 +193,29 @@
 
 ## Phase 9. Clean-room 재현성 시험
 
-- [ ] 기존 개발환경과 분리된 환경 준비
-- [ ] 문서만 보고 설치/인증 수행
-- [ ] preflight 실행
+- [x] 기존 개발환경과 분리된 evaluator 환경 준비 — fresh clone `/tmp/kolas-cleanroom-20261011`
+- [x] 문서 절차대로 설치 수행 — `uv sync --frozen` PASS
+- [x] secure GT package 분리 배치 및 hash 검증 — raw/scenario canonical SHA 일치
+- [x] submission integrity root 재현 — 76-file candidate root 완전 일치
+- [x] offline preflight 실행 — 기술 identity checks PASS, credential 미제공 항목만 FAIL
+- [x] readiness blocking 확인 — `doctor --official --require-ready` exit code 2
+- [x] fresh-clone offline regression — 18/18 PASS
+- [x] 기존 환경 live SUT auth 교차확인 — email/password renewal + authenticated API + risk agent PASS
+- [ ] clean-room live preflight PASS — secure institution credential provisioning 필요
+- [ ] 유효 OpenAI credential로 AJQG PASS — 현재 내부 key는 live AJQG에서 401
 - [ ] sample subset 실행
-- [ ] full run 실행
+- [ ] full 425-case run 실행
 - [ ] 원 측정 결과와 비교
 - [ ] 결과 차이가 있으면 원인 분류(model nondeterminism / config / code / data / provider)
-- [ ] 허용 가능한 반복 변동 기준 정의
+- [ ] 허용 가능한 반복 변동 기준 최종 확정
 - [ ] 제3자 또는 작업에 관여하지 않은 내부 연구자가 문서만 보고 재현
-- [ ] 발견된 문서 누락 수정
+- [x] 발견된 문서 누락 수정 — `doctor` sign-off에 `--require-ready` 필요 명시
 - [ ] 최종 reproducibility sign-off
 
-**완료 조건:** 작성자가 직접 개입하지 않아도 재현 가능하다.
+**완료 조건:** 작성자가 직접 개입하지 않아도 secure credential을 받아 end-to-end sample/full run과 seal 검증까지 재현 가능하다.
+
+**Evidence:** `CLEAN_ROOM_REHEARSAL_20261011.md`
+**현재 상태:** offline clean-room reconstruction은 PASS. live reproduction은 유효 OpenAI credential, 기관용 SEEXR credential, final SUT freeze가 없어서 `BLOCKED`; 최종 sign-off는 아직 아니다.
 
 ## Phase 10. 공문형 HWP/HWPX 작성
 

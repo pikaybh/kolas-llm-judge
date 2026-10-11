@@ -31,6 +31,7 @@ SUBMISSION_DOCS = [
     "docs/submission_package/11_API_ACCESS_GUIDE.md",
     "docs/submission_package/12_VERSION_MANIFEST.md",
     "docs/submission_package/14_CHANGE_CONTROL.md",
+    "docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md",
     "docs/submission_package/templates/SECTION_TEMPLATE.md",
     "docs/submission_package/templates/GT_PROVENANCE_REGISTER_TEMPLATE.csv",
 ]

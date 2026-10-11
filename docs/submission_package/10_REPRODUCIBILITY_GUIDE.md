@@ -138,8 +138,16 @@ cp .env.example .env
 
 ### 3.1 Offline preflight
 
+진단용:
+
 ```bash
 uv run kolas-llm-judge doctor --official
+```
+
+`--require-ready`가 없으면 `NOT READY` 항목이 있어도 명령 자체는 exit code 0일 수 있다. 자동화/승인 판정에는 다음을 사용한다.
+
+```bash
+uv run kolas-llm-judge doctor --official --require-ready
 ```
 
 주요 검사:
@@ -424,6 +432,15 @@ Example artifact hashes:
 12. final seal verification PASS 확인
 13. run directory read-only 보존/복사
 14. `run_seal.json` root hash를 시험기록에 기재
+
+## 13.1 2026-10-11 clean-room rehearsal
+
+Fresh clone + secure GT 배치 + `uv sync --frozen` + integrity verification + offline preflight를 수행했다. 상세 evidence는 `CLEAN_ROOM_REHEARSAL_20261011.md`를 참조한다.
+
+- offline reconstruction: PASS
+- fresh-clone regression: 18/18 PASS
+- live clean-room reproduction: credential/final SUT freeze 문제로 BLOCKED
+- final sign-off: NOT YET
 
 ## 14. 현재 미완료 운영조건
 
