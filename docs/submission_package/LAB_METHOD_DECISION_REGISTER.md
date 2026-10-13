@@ -20,6 +20,7 @@
 | `DEC-METHOD-007` | Judge 적격성 | frozen AJQG mandatory; human meta-validation은 추가요구 시 | 승인 필요 |
 | `DEC-METHOD-008` | 제품 성능 합격선 | **시험기관/발주 규격이 요구하지 않으면 측정값 보고 방식 권고** | 승인 필요 |
 | `DEC-METHOD-009` | Secondary 지표 | Completion Rate + repeatability를 최소 포함 | 승인 필요 |
+| `DEC-METHOD-010` | GT와 RA retrieval DB 중복의 시험조건/해석 | 현재 통합제품 시험 시 overlap 공개; 독립 holdout 요구 시 별도 dataset/runtime freeze | **중요 승인 필요** |
 
 ## 2. DEC-METHOD-001 — Primary measurand
 
@@ -234,7 +235,33 @@ measurement/reporting test
 
 나머지 사고유형·감소대책·법규 등의 내부 QA 지표는 이번 Hazard Identification 공식 scope와 분리한다.
 
-## 11. 기관 회신용 최소 선택표
+
+## 11. DEC-METHOD-010 — GT와 RA retrieval DB 중복의 시험조건/해석
+
+### 2026-10-13 확인 결과
+
+SUT가 runtime에 사용하는 RA 검색 DB 6,443건과 GT 843건을 exact normalized 비교한 결과:
+
+- hazard exact: `718/843 (85.1720%)`
+- process + subprocess + hazard exact: `591/843 (70.1068%)`
+- process + subprocess + equipment + material + hazard exact: `583/843 (69.1578%)`
+- 8 textual fields exact: `194/843 (23.0130%)`
+
+따라서 현재 dataset을 모든 SUT runtime knowledge와 독립된 holdout으로 표현하지 않는다. 상세 증적은 `15_TEST_DATA_INDEPENDENCE_AUDIT.md`와 `data/submission/evidence/gt_ra_overlap_audit_20261013.json`을 참조한다.
+
+### 선택안 A — 현재 통합제품 end-to-end
+
+RA DB를 SUT 구성요소로 포함하여 snapshot/hash를 freeze하고 overlap을 시험조건에 명시한다. 결과는 현재 통합제품의 end-to-end Hazard Identification 성능으로 해석한다.
+
+### 선택안 B — 독립성 통제 시험
+
+시험기관이 independent holdout을 요구하면 별도 비중복 시험셋 또는 leakage-controlled retrieval condition을 사전 합의하고 새 identity로 freeze한다.
+
+### SEEXR 권고
+
+시험 목적이 현재 제품 성능 확인이라면 A가 제품 실동작을 가장 직접 반영한다. 단, 독립 일반화 성능을 요구하는 시험이라면 B가 필요하다. 어느 쪽이든 **시험 시작 전에 결정하고 시험 후 결과를 본 뒤 조건을 변경하지 않는다.**
+
+## 12. 기관 회신용 최소 선택표
 
 시험기관은 아래 칸만 채워도 method freeze 작업을 진행할 수 있다.
 
@@ -249,8 +276,9 @@ measurement/reporting test
 | Judge gate | frozen AJQG mandatory |  |
 | Product threshold | 별도 규격 없으면 measured value report |  |
 | Secondary | completion + repeatability 최소 포함 |  |
+| GT↔RA overlap | 통합제품 end-to-end + overlap 명시 / 독립 holdout 요구 시 별도 조건 |  |
 
-## 12. 승인 후 실행해야 할 자동 변경
+## 13. 승인 후 실행해야 할 자동 변경
 
 Decision Register가 승인되면 다음 순서로 반영한다.
 

@@ -1,12 +1,12 @@
 # SEEXR 위험요인 식별 성능 시험방법 명세
 
 - 문서 ID: `KOLAS-DOC-001`
-- 버전: `0.2-draft`
+- 버전: `0.3-draft`
 - 상태: `REVIEW`
 - 작성자: `{{AUTHOR}}`
 - 검토자: `{{REVIEWER}}`
 - 승인자: `{{APPROVER}}`
-- 기준일: `2026-10-11`
+- 기준일: `2026-10-13`
 - Evidence IDs: `EV-GT-001`, `EV-GT-003`, `EV-EVAL-001`~`EV-EVAL-006`, `EV-API-001`, `EV-SUT-001`~`EV-SUT-004`
 - 관련 Git commit/tag: `{{FINAL_MEASUREMENT_RELEASE_TAG}}`
 - 관련 GT version: `KOLAS_RA_GT v1.0.0`
@@ -315,11 +315,12 @@ supplementary `hazard_identification_accuracy`는
 - `DEC-METHOD-003` denominator 정책 미승인
 - `DEC-METHOD-005/006` 반복 횟수·허용 변동 미승인
 - `DEC-METHOD-008` 성능 합격선 미승인
-- Phase 3/4의 GT provenance·전문가 검증 미완료
+- GT 내용 자체의 연구실 검증은 완료되어 있으나 original-source provenance 보강 범위 및 `DEC-METHOD-010` 시험 독립성 해석 미승인
 - 최종 SUT clean release 미지정
 
 ## 16. 변경이력
 
 | 버전 | 일자 | 변경내용 | 상태 |
 |---|---|---|---|
+| 0.3-draft | 2026-10-13 | GT 연구실 검증 완료 사실과 source provenance를 분리하고, GT↔RA retrieval DB overlap에 따른 DEC-METHOD-010 승인조건 반영 | REVIEW |
 | 0.2-draft | 2026-10-11 | 실제 코드/runtime/parser/failure policy와 기존 시험기관 제안서를 통합하고 denominator 의사결정 gap 명시 | REVIEW |

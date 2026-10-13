@@ -21,6 +21,9 @@
 | KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
 | KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | REVIEW | candidate machine manifest/root 구축; final HWP/PDF freeze 대기 |
 | KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | REVIEW | Class A~G 영향/재시험 matrix 작성 |
+| KOLAS-DOC-015 | `15_TEST_DATA_INDEPENDENCE_AUDIT.md` | GT와 SUT 학습/runtime knowledge 중복 감사 | 붙임 3/6 | REVIEW | RA retrieval DB overlap 정량 확인; 시험기관 해석조건 결정 필요 |
+| KOLAS-DOC-016 | `16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md` | HW/SW 환경·반복 신규생성·세션·캐시 정책 | 붙임 1/5 | REVIEW | audit host/코드 확인 완료; final endpoint에서 재확인 |
+| KOLAS-DOC-017 | `17_KOLAS_REQUEST_CROSSWALK.md` | 시험기관 5개 대항목·19개 세부요청 대응 위치표 | 제출자료 개요 직후 | REVIEW | 본문/전자증적 위치 동기화 유지 |
 
 ## 공통 metadata
 
@@ -55,13 +58,21 @@ Evidence IDs:
 |---|---|---|---|
 | `EV-SUT-FREEZE-20261011` | `SUT_FREEZE_CANDIDATE.md` + `data/submission/evidence/sut_freeze_20261011/candidate.json` | PRE_FREEZE | 현재 source/model/DB-state candidate; final tag/base URL/account 대기 |
 | `EV-SUT-STATEFUL-20261011` | `data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json` | PRE_FREEZE | RA embedding 포함 content root + Law content root; 원문 미반출 hash-only evidence |
-| `METHOD-DECISION-REGISTER-20261011` | `LAB_METHOD_DECISION_REGISTER.md` | PROPOSAL | 시험기관이 승인/수정할 9개 method decision과 SEEXR 권고안 |
+| `METHOD-DECISION-REGISTER-20261011` | `LAB_METHOD_DECISION_REGISTER.md` | PROPOSAL | 시험기관이 승인/수정할 10개 method decision과 SEEXR 권고안 |
 
 ### Evaluator qualification evidence
 
 | Evidence ID | 파일 | 상태 | 비고 |
 |---|---|---|---|
 | `EV-EVAL-AJQG-20261011` | `data/submission/evidence/ajqg_20261011/` | PASS | current evaluator source `0069d7c2...`, 104 controls ×2, 376/376 stability; raw CSV hash와 LF-normalized 제출 copy hash 모두 binding에 기록 |
+
+### 시험 데이터 독립성 / 실행환경 보완 evidence
+
+| Evidence ID | 파일 | 상태 | 비고 |
+|---|---|---|---|
+| `EV-GT-OVERLAP-20261013` | `data/submission/evidence/gt_ra_overlap_audit_20261013.json` | REVIEW | GT 843 vs RA DB 6,443 exact-overlap audit; hazard 718/843 exact |
+| `EV-SUT-SOURCE-AUDIT-20261013` | `data/submission/evidence/sut_gt_source_overlap_audit_20261013.json` | REVIEW | tracked SUT source의 fine-tuning indicator/meaningful exact GT text audit |
+| `EV-ENV-20261013` | `16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md` | REVIEW | audit host HW/SW + final endpoint 재수집 조건 |
 
 ### Clean-room working evidence
 

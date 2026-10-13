@@ -26,6 +26,8 @@
 
 남은 핵심은 **승인·계정·최종 배포 freeze·실제 live full run·행정정보**다.
 
+2026-10-13 추가 감사에서 GT와 runtime RA retrieval DB 사이에 substantial exact-content overlap이 확인되었다. 따라서 공식시험 전에 `BLK-LAB-010`을 반드시 해소해야 한다.
+
 ## 2. Human / SEEXR owner blockers
 
 | ID | 항목 | 필요한 입력/행동 | 현재 상태 | 이후 자동화 |
@@ -53,6 +55,7 @@
 | `BLK-LAB-007` | Judge gate | frozen AJQG mandatory | APPROVAL REQUIRED |
 | `BLK-LAB-008` | Product performance threshold | 외부 규격 없으면 measured-value report | APPROVAL REQUIRED |
 | `BLK-LAB-009` | Local DB restore 필요 여부 | frozen remote SUT 사용 시 불필요; local restore 요구 시 secure backup 제공 | CONFIRMATION REQUIRED |
+| `BLK-LAB-010` | GT ↔ RA retrieval DB 중복의 시험 해석 | 통합제품 end-to-end로 시험하며 overlap 명시, 또는 독립 holdout/leakage-controlled 조건을 기관과 별도 확정 | **APPROVAL REQUIRED / CRITICAL** |
 
 상세 선택표: `LAB_METHOD_DECISION_REGISTER.md`.
 

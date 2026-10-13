@@ -21,6 +21,8 @@ SEEXR 위험성평가 AI KOLAS 시험 재현성 및 측정시스템 제출자료
 4. 재현시험 credential 별도 전달 안내
 5. 문의 담당자
 
+공문 본문/제출자료 개요 직후에는 `17_KOLAS_REQUEST_CROSSWALK.md`의 표를 **“시험기관 요청사항 대응표”**로 배치한다.
+
 다음 행정값은 최종 입력 전 추정하지 않는다.
 
 ```text
@@ -40,8 +42,9 @@ Source order:
 
 1. `01_TEST_METHOD.md`
 2. `02_SYSTEM_UNDER_TEST.md`
-3. `LAB_METHOD_DECISION_REGISTER.md` — **승인 결과만 반영하고 proposal 자체는 최종 붙임에서 제거 또는 승인표로 전환**
-4. `SUT_FREEZE_CANDIDATE.md` — final freeze 후 candidate 표현을 final identity 표로 전환
+3. `16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md`의 실행환경 부분
+4. `LAB_METHOD_DECISION_REGISTER.md` — **승인 결과만 반영하고 proposal 자체는 최종 붙임에서 제거 또는 승인표로 전환**
+5. `SUT_FREEZE_CANDIDATE.md` — final freeze 후 candidate 표현을 final identity 표로 전환
 
 필수 표:
 
@@ -74,8 +77,9 @@ Source:
 
 1. `04_GT_SPECIFICATION.md`
 2. `05_GT_SOURCE_PROVENANCE.md`
-3. `data/cases/dataset_manifest.json`
-4. `data/cases/gt_provenance_audit_manifest_v1.json`
+3. `15_TEST_DATA_INDEPENDENCE_AUDIT.md`
+4. `data/cases/dataset_manifest.json`
+5. `data/cases/gt_provenance_audit_manifest_v1.json`
 
 표현 원칙:
 
@@ -114,7 +118,8 @@ Source:
 
 1. `10_REPRODUCIBILITY_GUIDE.md`
 2. `11_API_ACCESS_GUIDE.md`
-3. `CLEAN_ROOM_REHEARSAL_20261011.md`의 최종 결과 부분
+3. `16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md`의 반복/세션/캐시 부분
+4. `CLEAN_ROOM_REHEARSAL_20261011.md`의 최종 결과 부분
 
 필수 구조:
 
@@ -137,6 +142,7 @@ Source:
 1. `12_VERSION_MANIFEST.md`
 2. `13_INTEGRITY_MANIFEST.md`
 3. `14_CHANGE_CONTROL.md`
+4. `15_TEST_DATA_INDEPENDENCE_AUDIT.md`의 시험조건 결정/overlap evidence
 
 최종본에서는 다음을 반드시 full-length로 기록한다.
 
@@ -195,6 +201,7 @@ Source:
 다음이면 최종 `APPROVED/FROZEN` HWP를 만들지 않는다.
 
 - `LAB_METHOD_DECISION_REGISTER.md`가 PROPOSAL 상태
+- `DEC-METHOD-010`(GT↔RA overlap 시험조건/해석) 미승인
 - SUT freeze가 PRE_FREEZE
 - dedicated account readiness 미완료
 - clean-room live full run 미완료
