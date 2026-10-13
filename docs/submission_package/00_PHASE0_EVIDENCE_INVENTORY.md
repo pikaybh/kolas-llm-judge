@@ -214,4 +214,4 @@ OpenAI 공식 API 문서 확인 기준(2026-10-11):
 
 ## 5. Phase 0 완료 판단
 
-Phase 0의 목적은 기존 자산을 **발견·검증·분류하고 gap을 명시하는 것**이다. 위 Evidence Register와 Gap Register가 생성되었으므로 Phase 0은 완료로 본다. GT source provenance 보강, clean SUT freeze, 새로운 full run 및 시험기관 method decision 확정 등은 후속 Phase의 작업이다.
+Phase 0의 목적은 기존 자산을 **발견·검증·분류하고 gap을 명시하는 것**이다. 위 Evidence Register와 Gap Register가 생성되었으므로 Phase 0은 완료로 본다. GT source provenance 생성, 전문가 검증, clean SUT freeze, 새로운 full run 등은 후속 Phase의 작업이다.

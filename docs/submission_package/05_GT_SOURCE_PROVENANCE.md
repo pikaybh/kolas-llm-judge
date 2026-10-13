@@ -110,9 +110,7 @@ Ledger는 843개의 모든 reference에 한 행씩 존재하며 raw hazard text 
 - `locator = blank`
 - `expert_validation_status = pending`
 
-여기서 `expert_validation_status`는 **해당 provenance row에 authoritative source를 연결한 뒤 수행하는 구조화된 source-level validation 상태**를 뜻한다. `KOLAS_RA_GT v1.0.0` 내용 자체가 연구실 구성원 검토를 거쳐 이미 검증되었다는 사실과는 별개 필드다.
-
-이는 “출처가 없다”를 숨기는 placeholder가 아니라 **현재 확인 가능한 provenance 상태 자체**다.
+이는 “출처가 없다”를 숨기는 placeholder가 아니라 **현재 확인 가능한 사실 자체**다.
 
 ## 5. Provenance manifest
 

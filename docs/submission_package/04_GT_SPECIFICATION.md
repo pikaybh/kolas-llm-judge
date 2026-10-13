@@ -11,7 +11,7 @@
 - 관련 시험방법: `01_TEST_METHOD.md`
 - 관련 provenance: `05_GT_SOURCE_PROVENANCE.md`
 
-> 이 문서는 현재 `KOLAS_RA_GT v1.0.0`의 **내용·구조·변환 규칙·식별자·무결성**을 명세한다. GT 내용 자체는 연구실 구성원들의 검토를 거쳐 이미 검증된 데이터로 사용한다. 별도로, 각 위험요인의 원작성 safety-source provenance와 구조화된 per-reference 출처 검증 상태는 `05_GT_SOURCE_PROVENANCE.md`에서 관리한다.
+> 이 문서는 현재 `KOLAS_RA_GT v1.0.0`의 **내용·구조·변환 규칙·식별자·무결성**을 명세한다. 이 문서만으로 843개 위험요인의 안전지식적 정당성이 입증되는 것은 아니다. 개별 위험요인의 근거 출처와 전문가 검증은 별도 provenance/validation 증적으로 관리한다.
 
 ## 1. GT 역할과 적용 범위
 
@@ -344,4 +344,4 @@ Provenance audit manifest SHA-256:
 - ID/versioning 규칙
 - duplicate screening 결과와 처리 원칙
 - `CONTENT-FROZEN`과 `accreditation-ready GT`를 구분한 상태 표
-- source provenance 미완료 현황과 GT 연구실 검증 완료 사실의 구분
+- provenance 및 전문가 검증 미완료 현황

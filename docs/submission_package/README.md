@@ -68,9 +68,6 @@ Markdown은 메모가 아니라 HWP 편집을 위한 **문서 중간 표현(Inte
 12. `12_VERSION_MANIFEST.md` — repo별 SHA, dependency, prompt/schema version
 13. `13_INTEGRITY_MANIFEST.md` — SHA-256 및 제출 파일 목록
 14. `14_CHANGE_CONTROL.md` — freeze 이후 변경통제
-15. `15_TEST_DATA_INDEPENDENCE_AUDIT.md` — GT와 SUT 학습/runtime retrieval knowledge 중복 감사
-16. `16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md` — HW/SW 환경과 반복시험 신규생성·세션·캐시 정책
-17. `17_KOLAS_REQUEST_CROSSWALK.md` — 시험기관 요청사항별 답변·증적 위치 one-stop index
 
 ## 5. 작업 상태
 

@@ -31,9 +31,6 @@ SUBMISSION_DOCS = [
     "docs/submission_package/11_API_ACCESS_GUIDE.md",
     "docs/submission_package/12_VERSION_MANIFEST.md",
     "docs/submission_package/14_CHANGE_CONTROL.md",
-    "docs/submission_package/15_TEST_DATA_INDEPENDENCE_AUDIT.md",
-    "docs/submission_package/16_EXECUTION_ENVIRONMENT_REPEAT_POLICY.md",
-    "docs/submission_package/17_KOLAS_REQUEST_CROSSWALK.md",
     "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md",
     "docs/submission_package/PLACEHOLDER_AUDIT.md",
     "docs/submission_package/HWP_ASSEMBLY_MAP.md",
@@ -61,8 +58,6 @@ SUBMISSION_EVIDENCE = [
     "data/submission/evidence/ajqg_20261011/control_results.csv",
     "data/submission/evidence/sut_freeze_20261011/candidate.json",
     "data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json",
-    "data/submission/evidence/gt_ra_overlap_audit_20261013.json",
-    "data/submission/evidence/sut_gt_source_overlap_audit_20261013.json",
 ]
 
 PACKAGE_METADATA = [
