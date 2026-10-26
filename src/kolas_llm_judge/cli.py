@@ -538,7 +538,7 @@ def official_live_command(
         str((summary.get("sut_completion_rate") or {}).get("rate")),
     )
     table.add_row(
-        "KOLAS primary semantic recall",
+        "Secondary strict semantic recall",
         str(
             (summary.get("metrics") or {})
             .get("hazard_semantic_identification_recall", {})
@@ -546,7 +546,7 @@ def official_live_command(
         ),
     )
     table.add_row(
-        "Supplementary KPI identification",
+        "Proposed primary HIA",
         str(
             (summary.get("metrics") or {})
             .get("hazard_identification_accuracy", {})
@@ -592,11 +592,11 @@ def derive_identification_command(
     table.add_column("Value")
     table.add_row("Source run", str(analysis.get("source_run_id")))
     table.add_row(
-        "KOLAS primary semantic recall",
+        "Secondary strict semantic recall",
         str((metrics.get("hazard_semantic_identification_recall") or {}).get("rate")),
     )
     table.add_row(
-        "Supplementary KPI identification",
+        "Proposed primary HIA",
         str((metrics.get("hazard_identification_accuracy") or {}).get("rate")),
     )
     table.add_row(

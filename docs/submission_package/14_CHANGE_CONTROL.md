@@ -284,3 +284,16 @@ Official runner는 시험 시작 시 Core/Agents relevant source fingerprint를 
 - 과거 sealed run의 해시·원본은 수정하지 않는다. 신규 소스는 별도 실행 및 증적이 필요하다.
 - Green 단위/무효키 smoke 외 실발급키 연결, Blue 운영 반영, A-only 전문가 검증 및 시험기관 지표/분모 승인은 미완료다.
 - 인증 롤백: `SEEXR_API_KEY`를 설정하지 않으면 기존 `SEEXR_EMAIL`/`SEEXR_PASSWORD` 경로를 사용한다.
+
+
+## 2026-10-27 — 기관용 협의안 간소화 / Blue API 키 전용 후보
+
+- 변경 목적: 기관용 문서의 Green·Blue 혼동, 불필요한 계정 인증 안내, 신규 전문가 재검증 완료 오인, 과거 버전 식별정보 중복 기재 해소
+- 본시험 **제안 대상**: Blue 운영 API `https://api.seexr.co.kr/api` (Blue 인증 코드 배포·운영키 검증 전에는 시험 미개시)
+- 공식 실행 후보: `SEEXR_API_KEY` 필수, JWT/계정 방식은 기관용 재현 절차에서 제외
+- 제안 주지표: 기존 계산 로직 그대로 `hazard_identification_accuracy`, `(H AND C) OR A`; 엄격 의미 Recall은 진단용
+- 원본 425개 시나리오/843개 GT, Judge rubric, 사전 통제문항의 기준판정값은 변경하지 않음
+- 과거 2026.09 개발실험: 평가완료 831/843, 넓은 HIA 795/831(95.67%), 전체 GT 기준 795/843(94.31%) — 연구개발 기록으로만 유지
+- 신규 전문인력 Judge pair 재라벨링은 수행/계획하지 않음. 시험기관이 추가 검증을 요구하면 사전 협의한다.
+- SHA-256 / Git commit은 내부 버전관리·감사자료에만 기록하고 기관용 간략 보고서의 주장으로 사용하지 않는다.
+- **공식 성능 합격선·분모·반복조건·측정방법은 시험기관 승인 전**. Green·Blue 혼용을 허용하지 않는다.

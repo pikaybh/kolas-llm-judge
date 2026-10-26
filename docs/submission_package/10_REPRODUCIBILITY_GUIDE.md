@@ -72,12 +72,10 @@ Credential은 Git/HWP/run artifact에 포함하지 않는다.
 
 필요한 secret은 별도 보안채널로 provisioning한다.
 
-- OpenAI Judge credential: `OPENAI_API_KEY`
-- SEEXR 전용 non-admin 시험계정:
-  - `SEEXR_EMAIL`
-  - `SEEXR_PASSWORD`
+- SEEXR 운영 위험성평가 API: `SEEXR_API_KEY` (SEEXR 담당자가 기관에 별도 전달)
+- OpenAI Judge API: `OPENAI_API_KEY` (별도 전달)
 
-공식 장시간 시험의 권장 방식은 발급·철회 가능한 `SEEXR_API_KEY`를 통한 HTTPS `x-api-key` 인증이다. 대체 방식으로 전용 non-admin 계정의 email/password와 refresh/relogin을 지원한다. 단기 JWT `SEEXR_API_TOKEN`은 development/smoke 전용이다. 키가 발급된 Green 또는 Blue 환경과 frozen official runtime의 base URL이 같아야 하며, 운영 전환은 소스·실행환경·해시를 다시 동결한다. 상세 절차는 `11_API_ACCESS_GUIDE.md`를 따른다.
+시험기관의 공식 실행은 **Blue 운영 API `https://api.seexr.co.kr/api`** 하나만 사용하며, 프로그램은 `SEEXR_API_KEY`를 HTTPS `x-api-key` 헤더에 자동 설정한다. 키 발급·웹 로그인 과정은 시험기관의 재현절차에 포함되지 않는다. 현재 Blue 인증 코드 배포 및 운영키 준비가 완료되지 않았으므로 **현 단계에서는 시험을 실행하지 않는다.** 구체적인 실행 순서는 `11_API_ACCESS_GUIDE.md`를 따른다.
 
 ## 2. Clean-room 설치
 

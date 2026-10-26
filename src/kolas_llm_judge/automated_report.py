@@ -254,9 +254,9 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
         "failure_stages": dict(sorted(failure_stages.items())),
         "deterministic": _deterministic_micro(results),
         "measurement_policy": {
-            "primary_metric": "hazard_semantic_identification_recall",
-            "primary_rule": "same_hazard_mechanism AND context_compatible",
-            "supplementary_kpi_metric": "hazard_identification_accuracy",
+            "primary_metric": "hazard_identification_accuracy",
+            "primary_rule": "(same_hazard_mechanism AND context_compatible) OR accident_compatible",
+            "supplementary_kpi_metric": "hazard_semantic_identification_recall",
             "performance_decision": "report_only_until_testing_lab_approval",
         },
         "metrics": _metric_micro(results, run_dir),

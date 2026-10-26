@@ -29,7 +29,7 @@ def _value(row: Any, name: str) -> Any:
 
 
 def pair_semantically_identifies_reference(row: Any) -> bool:
-    """KOLAS-primary reference identification rule.
+    """Strict semantic reference identification diagnostic.
 
     Accident-class compatibility alone never establishes identification. The generated
     risk must express the same hazardous mechanism in a compatible work/exposure context.

@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-26T09:09:42.309547+00:00",
-  "repository_base_head_at_generation": "e41ad8f8e8f5adaebbaae07ead1ee324bcaa6c12",
+  "generated_at_utc": "2026-10-26T18:07:41.768387+00:00",
+  "repository_base_head_at_generation": "c6b3e2265b780db910ce49a9e7517099b5b1fc2f",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -14,17 +14,17 @@
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
   "artifact_count": 88,
-  "artifact_root_sha256": "f4ea666aaeab8ea415037ebac2aede41ad29e61ed902d868cc8b02e653f93273",
+  "artifact_root_sha256": "aad460efd87bb1e491ba5c9bf04fbc3232917f10245749c0419946a29883211e",
   "artifacts": [
     {
       "path": ".env.example",
-      "size": 1452,
-      "sha256": "fff33092f4324e6ad28b6d0277e51c5418b3f9c495dda5e9c7bb575972394f6f"
+      "size": 1088,
+      "sha256": "825166c854e172ac772191201fa323085ac7a4e55bdd3d1fd718eb70a0175829"
     },
     {
       "path": "README.md",
-      "size": 15247,
-      "sha256": "3390295f8e0a7698e90a54586d5371cb6aad986b794cb665c625442ac951f9ea"
+      "size": 14935,
+      "sha256": "1323d410c2942ddba1bb7352042f52bbefeaa8a0837ed38ee7102d54a65b0f6f"
     },
     {
       "path": "configs/ajqg_gate_v1.yaml",
@@ -48,8 +48,8 @@
     },
     {
       "path": "configs/official_runtime_v1.yaml",
-      "size": 3002,
-      "sha256": "c0acd046f1f910f4bb57bfc33e084f3fee2bdfac5b5bb736fcfdbe275156bcbb"
+      "size": 3004,
+      "sha256": "0e10a8f81d38da0ad751551657e03ac5de95f14e895341c6fe7a745c20096a5f"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -153,8 +153,8 @@
     },
     {
       "path": "docs/submission_package/01_TEST_METHOD.md",
-      "size": 13730,
-      "sha256": "87f3c2b3305ffb1126f05c4d7e99a11ab8fce43cc1791b579a445893ffdb0d16"
+      "size": 6985,
+      "sha256": "e6fd952698dea9e7816f07d5e26da1d2277c63574d8fc4f19ed1822205d006f6"
     },
     {
       "path": "docs/submission_package/02_SYSTEM_UNDER_TEST.md",
@@ -188,13 +188,13 @@
     },
     {
       "path": "docs/submission_package/10_REPRODUCIBILITY_GUIDE.md",
-      "size": 13581,
-      "sha256": "48762fdfff2743fec2416687bd64fe857c76cdd2b26e8b1a844c92762c985a09"
+      "size": 13588,
+      "sha256": "47a1a76e8adda881a705fdbd6d97973ee004341e8e172c9631952dedee7489b8"
     },
     {
       "path": "docs/submission_package/11_API_ACCESS_GUIDE.md",
-      "size": 5892,
-      "sha256": "ff3112be412df7e8a7c163796ac77479bb0895743feda72675ca72ea26785bf3"
+      "size": 4109,
+      "sha256": "9158343f48fccda981068e25e0d1b61817deec0bb943c9b71da298a09cbb6db2"
     },
     {
       "path": "docs/submission_package/12_VERSION_MANIFEST.md",
@@ -203,13 +203,13 @@
     },
     {
       "path": "docs/submission_package/14_CHANGE_CONTROL.md",
-      "size": 10664,
-      "sha256": "b9a48258fd6753d6aa7e4c7cc721bd76ccdab6ea5db24ea710aafd5d7237f6dc"
+      "size": 12019,
+      "sha256": "5ade4bfa8003ab195649946af3f8fb96c276d11314b6fa3dd0dceb61a14a1cc4"
     },
     {
       "path": "docs/submission_package/15_METHOD_VALIDITY_AND_API_KEY.md",
-      "size": 12098,
-      "sha256": "df083b6e60de059edb574a1cc7f70910f1a99a98932be44db852ccc69b395d06"
+      "size": 6316,
+      "sha256": "87ab428ff93d133e8f47c3762426842d6ea506ce0842a6f1507428d9a2c6850e"
     },
     {
       "path": "docs/submission_package/CLEAN_ROOM_REHEARSAL_20261011.md",
@@ -303,8 +303,8 @@
     },
     {
       "path": "src/kolas_llm_judge/automated_report.py",
-      "size": 12625,
-      "sha256": "d089edb2f059103a5492764ec899eb1e54f72ff5ccc54aaedb563c8bd10c7ac7"
+      "size": 12650,
+      "sha256": "93628d734a749d09486db66b715278053681242da595e0a28a433037448bb18c"
     },
     {
       "path": "src/kolas_llm_judge/binary_evaluation.py",
@@ -328,8 +328,8 @@
     },
     {
       "path": "src/kolas_llm_judge/cli.py",
-      "size": 24580,
-      "sha256": "7648eac69d1feb5e25ab4595edc0cee0da7b7ab92edccc52f6c9e3c00400cea7"
+      "size": 24562,
+      "sha256": "dd33b85c37d233e9e7aed06f295cd99daf5888cda42051583b59b4a08b8cc325"
     },
     {
       "path": "src/kolas_llm_judge/dataset.py",
@@ -348,13 +348,13 @@
     },
     {
       "path": "src/kolas_llm_judge/doctor.py",
-      "size": 13557,
-      "sha256": "4933257846db793e9436fbdcfccd2c4f080574a140c5fd4bff7f25b181a7fbf5"
+      "size": 13304,
+      "sha256": "522f63f2e510b851570b54adbc051069aae2eded8082259c2c7072e7afa0f4e4"
     },
     {
       "path": "src/kolas_llm_judge/identification.py",
-      "size": 3415,
-      "sha256": "4f62b70e26cb37fa983f487d75a7ac9cffad1026dd202b7618574b1a136be71b"
+      "size": 3423,
+      "sha256": "f7081859ad183376362a6730d69be9ea8800bf55b0161d2fed224d5708d58b2d"
     },
     {
       "path": "src/kolas_llm_judge/io_utils.py",
@@ -393,8 +393,8 @@
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
-      "size": 13235,
-      "sha256": "bad8cf736f31f9ac35f3f1e8ce1bc4ecf7d86bc73d7ceee59d0e6191dbb0474c"
+      "size": 13299,
+      "sha256": "347e7ffe64fba828eea12f6eeadd7ce18afb15e33c9a3f0ceb256f5d64eb6836"
     },
     {
       "path": "src/kolas_llm_judge/parallel_runner.py",

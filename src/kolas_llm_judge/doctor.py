@@ -266,15 +266,11 @@ async def run_doctor(
         f"auth_mode={sut_config.auth_mode}",
     )
     if official:
-        renewable = sut_config.auth_mode in {"email_password", "api_key"}
+        valid_key = sut_config.auth_mode == "api_key"
         add(
-            "seexr_renewable_auth",
-            renewable,
-            (
-                ("api_key with non-refreshing revocable credential" if sut_config.auth_mode == "api_key" else "email_password with refresh/relogin support")
-                if renewable
-                else "official long run requires SEEXR_API_KEY or SEEXR_EMAIL + SEEXR_PASSWORD; static JWT cannot be renewed"
-            ),
+            "seexr_official_api_key",
+            valid_key,
+            "SEEXR_API_KEY configured" if valid_key else "SEEXR_API_KEY required for official execution",
         )
     elif sut_config.auth_mode == "token":
         warn(

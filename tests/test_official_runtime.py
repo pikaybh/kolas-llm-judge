@@ -16,15 +16,15 @@ def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     assert runtime.judge.model == "gpt-5.6-sol"
     assert runtime.judge.reasoning_effort == "medium"
     assert runtime.qualification.control_count == 104
-    assert runtime.metrics.primary_metric == "hazard_semantic_identification_recall"
-    assert runtime.metrics.primary_rule_version == "hazard-semantic-identification-v1"
-    assert runtime.metrics.primary_rule == "same_hazard_mechanism AND context_compatible"
+    assert runtime.metrics.primary_metric == "hazard_identification_accuracy"
+    assert runtime.metrics.primary_rule_version == "hazard-identification-v1"
+    assert runtime.metrics.primary_rule == "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
     assert runtime.metrics.primary_denominator == (
         "references_with_completed_binary_match_matrix"
     )
-    assert runtime.metrics.supplementary_kpi_metric == "hazard_identification_accuracy"
+    assert runtime.metrics.supplementary_kpi_metric == "hazard_semantic_identification_recall"
     assert runtime.metrics.supplementary_kpi_rule == (
-        "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+        "same_hazard_mechanism AND context_compatible"
     )
     assert runtime.acceptance.sut_performance_decision == (
         "report_only_until_testing_lab_approval"
@@ -56,6 +56,7 @@ def test_official_sut_runtime_uses_env_only_for_credentials() -> None:
         base_url="https://evil.invalid/api",
         agent_id="wrong",
         token="secret-token",
+        api_key="sk-test",
         email="eval@example.test",
         password="secret-password",
         risk_assessment_method="wrong",
@@ -66,10 +67,10 @@ def test_official_sut_runtime_uses_env_only_for_credentials() -> None:
         retry_backoff_seconds=99,
     )
     frozen = runtime.sut_config_with_credentials(env)
-    assert frozen.token == "secret-token"
-    assert frozen.email == "eval@example.test"
-    assert frozen.password == "secret-password"
-    assert frozen.base_url == "https://api.seexr.dev/api"
+    assert frozen.token is None
+    assert frozen.email is None
+    assert frozen.password is None
+    assert frozen.base_url == "https://api.seexr.co.kr/api"
     assert frozen.agent_id == "risk-assessment"
     assert frozen.risk_assessment_method == "빈도강도법 5x4"
     assert frozen.model_mode == "fast"
@@ -141,4 +142,14 @@ def test_official_runtime_rejects_tampered_raw_source(tmp_path: Path) -> None:
             project_root=tmp_path,
             scenarios_path=tmp_path / "data/cases/scenarios_v1.jsonl",
             runtime_path=tmp_path / "configs/official_runtime_v1.yaml",
+        )
+
+
+def test_official_runtime_requires_scoped_api_key() -> None:
+    import pytest
+
+    runtime = load_official_runtime()
+    with pytest.raises(ValueError, match="SEEXR_API_KEY"):
+        runtime.sut_config_with_credentials(
+            SutConfig(email="legacy@example.test", password="legacy")
         )

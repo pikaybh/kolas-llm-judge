@@ -1,6 +1,6 @@
 runtime_version: "official-runtime-v1"
 protocol: "automated-kolas-v1"
-evaluator_source_sha256: "e31e25c3eb01935b2d391165974b665ae340fdb6ce055c558ef40ef9638ff7da"
+evaluator_source_sha256: "7db7663d8b5c828796061dba26f12f5da9e7095736aa75d068c37dee6719a9c9"
 dataset:
   dataset_id: "KOLAS_RA_GT"
   dataset_version: "1.0.0"
@@ -31,13 +31,13 @@ judge:
   rubric_path: "configs/rubric_binary_v1.yaml"
   rubric_sha256: "d6993b9c49a88e4d5389c8d72dde27d750d0880c57d2fd18d38e08ae3ae93a22"
 metrics:
-  primary_metric: "hazard_semantic_identification_recall"
-  primary_rule_version: "hazard-semantic-identification-v1"
-  primary_rule: "same_hazard_mechanism AND context_compatible"
+  primary_metric: "hazard_identification_accuracy"
+  primary_rule_version: "hazard-identification-v1"
+  primary_rule: "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
   primary_denominator: "references_with_completed_binary_match_matrix"
-  supplementary_kpi_metric: "hazard_identification_accuracy"
-  supplementary_kpi_rule_version: "hazard-identification-v1"
-  supplementary_kpi_rule: "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
+  supplementary_kpi_metric: "hazard_semantic_identification_recall"
+  supplementary_kpi_rule_version: "hazard-semantic-identification-v1"
+  supplementary_kpi_rule: "same_hazard_mechanism AND context_compatible"
   supplementary_kpi_denominator: "references_with_completed_binary_match_matrix"
 acceptance:
   procedure_validity_rule: "AJQG pass AND all cases processed AND SUT source stable AND no evaluator/infrastructure failure AND seal verified"
@@ -50,7 +50,7 @@ parallel:
   quality_chunk_size: 40
   safety_chunk_size: 50
 sut:
-  base_url: "https://api.seexr.dev/api"
+  base_url: "https://api.seexr.co.kr/api"
   agent_id: "risk-assessment"
   risk_assessment_method: "빈도강도법 5x4"
   model_mode: "fast"

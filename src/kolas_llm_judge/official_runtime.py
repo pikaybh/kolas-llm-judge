@@ -140,32 +140,32 @@ class OfficialRuntimeConfig(BaseModel):
             raise ValueError("Official runtime requires binary-checklist-v1")
         if self.qualification.control_suite_version != "ajqg-controls-v1":
             raise ValueError("Official runtime AJQG suite version mismatch")
-        if self.metrics.primary_metric != "hazard_semantic_identification_recall":
+        if self.metrics.primary_metric != "hazard_identification_accuracy":
             raise ValueError("Official runtime primary metric mismatch")
         if (
             self.metrics.primary_rule_version
-            != HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION
+            != HAZARD_IDENTIFICATION_RULE_VERSION
         ):
             raise ValueError("Official runtime semantic-identification version mismatch")
-        if self.metrics.primary_rule != HAZARD_SEMANTIC_IDENTIFICATION_RULE:
+        if self.metrics.primary_rule != HAZARD_IDENTIFICATION_RULE:
             raise ValueError("Official runtime semantic-identification rule mismatch")
         if (
             self.metrics.primary_denominator
-            != HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR
+            != HAZARD_IDENTIFICATION_DENOMINATOR
         ):
             raise ValueError("Official runtime semantic-identification denominator mismatch")
-        if self.metrics.supplementary_kpi_metric != "hazard_identification_accuracy":
+        if self.metrics.supplementary_kpi_metric != "hazard_semantic_identification_recall":
             raise ValueError("Official runtime supplementary KPI metric mismatch")
         if (
             self.metrics.supplementary_kpi_rule_version
-            != HAZARD_IDENTIFICATION_RULE_VERSION
+            != HAZARD_SEMANTIC_IDENTIFICATION_RULE_VERSION
         ):
             raise ValueError("Official runtime KPI-identification version mismatch")
-        if self.metrics.supplementary_kpi_rule != HAZARD_IDENTIFICATION_RULE:
+        if self.metrics.supplementary_kpi_rule != HAZARD_SEMANTIC_IDENTIFICATION_RULE:
             raise ValueError("Official runtime KPI-identification rule mismatch")
         if (
             self.metrics.supplementary_kpi_denominator
-            != HAZARD_IDENTIFICATION_DENOMINATOR
+            != HAZARD_SEMANTIC_IDENTIFICATION_DENOMINATOR
         ):
             raise ValueError("Official runtime KPI-identification denominator mismatch")
         if self.acceptance.sut_performance_decision != (
@@ -200,13 +200,15 @@ class OfficialRuntimeConfig(BaseModel):
         )
 
     def sut_config_with_credentials(self, env_config: SutConfig) -> SutConfig:
+        if not env_config.api_key:
+            raise ValueError("Official run requires SEEXR_API_KEY")
         return SutConfig(
             base_url=_normalize_base_url(self.sut.base_url),
             agent_id=self.sut.agent_id,
-            token=env_config.token,
+            token=None,
             api_key=env_config.api_key,
-            email=env_config.email,
-            password=env_config.password,
+            email=None,
+            password=None,
             risk_assessment_method=self.sut.risk_assessment_method,
             model_mode=self.sut.model_mode,
             reasoning_style=self.sut.reasoning_style,

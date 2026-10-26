@@ -1,327 +1,82 @@
-# SEEXR 위험요인 식별 성능 시험방법 명세
+# 위험요인 식별 성능시험 방법 — 시험기관 협의안
 
-- 문서 ID: `KOLAS-DOC-001`
-- 버전: `0.2-draft`
-- 상태: `REVIEW`
-- 작성자: `{{AUTHOR}}`
-- 검토자: `{{REVIEWER}}`
-- 승인자: `{{APPROVER}}`
-- 기준일: `2026-10-11`
-- Evidence IDs: `EV-GT-001`, `EV-GT-003`, `EV-EVAL-001`~`EV-EVAL-006`, `EV-API-001`, `EV-SUT-001`~`EV-SUT-004`
-- 관련 Git commit/tag: `{{FINAL_MEASUREMENT_RELEASE_TAG}}`
-- 관련 GT version: `KOLAS_RA_GT v1.0.0`
-- 관련 evaluator version: `binary-checklist-v1`
+- 문서 ID: KOLAS-DOC-001
+- 버전: 2026-10-27
+- 상태: **시험기관 판정기준·분모 확정 전**
+- 측정대상: SEEXR 위험성평가 AI의 **위험요인 식별 기능**
+- 제안 주지표: **Hazard Identification Accuracy (HIA)**
 
-> 본 문서는 현재 구현과 기존 시험기관 협의안을 일치시키기 위한 **freeze candidate**이다. 13절의 시험기관 협의 필요 항목이 확정되기 전에는 `APPROVED` 또는 `FROZEN`으로 승격하지 않는다.
+## 1. 목적과 시험범위
 
-## 1. 시험 목적
+시험의 목적은 특정 공정·작업·설비 정보가 주어졌을 때 SEEXR가 안전관리상 대응되는 위험요인을 식별하는 정도를 측정하는 것이다. 사전에 연구실에서 검증한 KOLAS_RA_GT v1.0.0의 **425개 시나리오와 843개 기준 위험요인**을 그대로 사용한다. 기존 GT를 새로 작성하거나 시험 결과에 맞춰 조정하지 않는다.
 
-본 시험은 **SEEXR 위험성평가 AI가 공정·세부공정·설비·물질/자재로 구성된 건설 작업정보를 입력받아, 사전에 확정된 기준 위험요인(Ground Truth)을 의미적으로 식별하는 성능을 측정**하는 것을 목적으로 한다.
+문장 일치가 아닌 **위험 발생 메커니즘·작업 및 노출 맥락·사고 또는 피해 메커니즘**을 판정한다. 공인시험 기관이 요구한 객관성은 사전 정의된 Boolean 기준, 재현성은 동일 조건 반복, 추적성은 입력·원출력·판정 쌍별 이력을 보존하는 방식으로 확보하도록 설계한다.
 
-문자열의 동일성이나 단순 사고분류 일치를 정답으로 보지 않고, 위험 발생 메커니즘과 작업·노출 맥락의 의미적 동일성을 사전 정의된 Boolean Rubric으로 판정한다.
+## 2. 비교행렬과 평가단위
 
-## 2. 시험대상과 시험 단위
+시나리오 s의 기준 위험요인 r_si (i=1,…,n_s)와 생성 위험요인 g_sj (j=1,…,m_s)를 모두 조합한다. 각 쌍에 대해 Judge가 아래 세 가지 Boolean을 판정한다.
 
-### 2.1 시험대상 시스템(SUT)
-
-- 서비스: SEEXR 위험성평가 AI
-- SUT agent: `risk-assessment`
-- 호출 방식: SEEXR Core API를 통한 live inference
-- 현재 freeze candidate의 제품 실행 프로필: `modelMode=fast` → `quick-fast-v1.0.0`
-- 위험성평가 방식: `빈도강도법 5x4`
-- reasoning style: `balanced`
-
-최종 공인시험 전에는 SUT Core/Agents를 clean commit/tag 상태로 별도 freeze하고, 해당 버전을 `12_VERSION_MANIFEST.md`에 기록한다.
-
-### 2.2 Scenario
-
-시험 scenario는 GT 원본에서 **`공정 + 세부공정` 조합**을 기준으로 구성한다. 하나의 scenario는 1개 이상의 reference hazard를 가질 수 있다.
-
-현재 `KOLAS_RA_GT v1.0.0`은:
-
-- 425 scenarios
-- 843 reference hazards
-- 843 source rows
-
-으로 구성된다.
-
-### 2.3 SUT 입력과 비공개 GT
-
-SUT에 제공하는 입력은 다음 필드에 한정한다.
-
-- 공정
-- 세부공정
-- 설비
-- 물질/자재
-
-다음 정보는 SUT에 제공하지 않고 평가용 reference로만 보존한다.
-
-- 위험요인
-- 사고분류
-- 위험성 관련 값
-- 감소대책
-- 관련 법규
-
-## 3. Generated Risk의 측정 단위
-
-현재 측정 프로그램은 SUT 출력 `<risk_assessment>` XML의 `./items/item` **한 항목을 generated risk 한 개로 정의**한다.
-
-- XML 첫 번째 item → `g001`
-- 두 번째 item → `g002`
-- 이후 동일 방식으로 순차 ID를 부여
-
-측정 프로그램은 한 item의 `hazard` 또는 `hazard_analysis` 문장을 추가 LLM이나 의미분석으로 재분해하지 않는다. 즉 본 시험에서의 generated-risk unit은 **semantic atomicity를 추정한 단위가 아니라 SUT가 구조적으로 출력한 XML item 단위**다.
-
-이 규칙은 동일 raw output을 항상 동일 generated-risk set으로 파싱하기 위한 deterministic contract다.
-
-## 4. Reference × Generated 비교행렬
-
-정상 파싱된 각 scenario에 대해 모든 reference hazard와 모든 generated risk의 Cartesian product를 평가한다.
-
-예를 들어 reference 2개와 generated risk 3개가 있으면 6개의 pair를 Judge에 평가한다.
-
-각 pair에는 최소 다음 정보가 제공된다.
-
-- scenario context
-- reference hazard
-- generated hazard
-- 필요한 사고분류/감소대책/법규 context
-
-2026-10-26 방법 적합성 보강 자료: [`15_METHOD_VALIDITY_AND_API_KEY.md`](./15_METHOD_VALIDITY_AND_API_KEY.md) — 비교행렬 수식, 기존 넓은 KPI의 공학적 용도, 엄격 주지표와의 구분, A-only 허위양성 전문가 검증, 분모·KOLAS 승인과 API Key 절차를 설명한다. 본문의 공식 Primary는 시험기관의 변경 승인 전까지 유지한다.
-
-## 5. 위험요인 식별 Boolean Rubric
-
-각 `reference hazard × generated risk` pair에 대해 다음 Boolean을 판정한다.
-
-| 판정항목 | True 기준 | Primary 사용 여부 |
+| 기호 | 의미 | 참(True) 판정의 핵심 |
 |---|---|---|
-| `same_hazard_mechanism` | 핵심 위험원→사건→피해 메커니즘이 실질적으로 동일 | 사용 |
-| `context_compatible` | 작업·설비·노출 맥락이 동일하거나 함께 성립할 수 있을 정도로 양립 가능 | 사용 |
-| `accident_compatible` | 사고유형 또는 피해 메커니즘이 동일·양립 가능 | Primary에는 미사용 |
+| H_sij | same_hazard_mechanism | 위험원·사건·피해 발생 메커니즘이 의미적으로 동일 |
+| C_sij | context_compatible | 해당 공정·설비·노출 상황이 일치하거나 모순 없이 양립 |
+| A_sij | accident_compatible | 사고·피해 메커니즘이 실질적으로 동일하거나 양립 |
 
-KOLAS primary MATCH 규칙은 다음과 같이 고정한다.
+제안하는 HIA 판정행렬의 원소를 다음과 같이 정한다.
 
-`MATCH = same_hazard_mechanism AND context_compatible`
+`M_sij = (H_sij AND C_sij) OR A_sij`
 
-따라서 다음은 MATCH로 인정하지 않는다.
+단순히 '추락' 또는 '끼임'이라는 사고분류 표제가 같다는 이유만으로 A를 True로 판정하도록 허용하는 것은 적절하지 않다. **A는 해당 기준 위험과 생성 위험의 사고·피해 발생 경로가 실제로 양립하는지**에 대한 Judge 판정값이다. 기존 Rubric의 문구 및 사전 통제집합으로 이를 구분하고, 시험기관과 해석 경계를 확인한다. 사후에 별도 규칙을 덧붙여 기존 점수를 재산정하지 않는다.
 
-- 사고분류만 같은 경우
-- 동일 키워드만 포함하는 경우
-- 위험 메커니즘은 비슷하지만 해당 작업 맥락에서 양립할 수 없는 경우
+시나리오별 식별 여부는
 
-반대로 표현이 다르더라도 핵심 위험 메커니즘과 맥락이 같으면 MATCH로 인정할 수 있다.
+`I_si = 1 if ∃j: M_sij=1, otherwise 0`
 
-## 6. Reference-level 식별 규칙
+또는 `I_si = max_j M_sij` 이다. 생성 위험요인이 없을 때는 0으로 정한다. 같은 기준 위험요인에 여러 출력이 대응하더라도 식별 성공은 한 건만 인정한다. 한 출력이 여러 기준 위험을 식별했다면 각 쌍의 독립적인 True 판정이 있을 때에만 개별 집계한다.
 
-### 6.1 여러 generated risk → 하나의 reference
+## 3. 공식 후보 지표 및 분모
 
-하나의 reference hazard에 대해 generated risk 중 **하나 이상**이 MATCH이면 해당 reference는 `identified=true`다.
+`HIA_evaluable (%) = 100 × Σ_(r∈E) I_r / |E|`
 
-여러 generated risk가 같은 reference에 MATCH되어도 numerator에는 reference 1건으로만 계산한다.
+E는 비교행렬 판정이 완료된 기준 위험요인이다. 이는 **정상적으로 의미 판정이 수행된 표본에 대한 조건부 위험요인 식별률**이라는 측정량이다.
 
-### 6.2 하나의 generated risk → 여러 reference
+`HIA_end_to_end (%) = 100 × Σ_(r∈T) 1[r∈E]·I_r / |T|`
 
-하나의 generated risk가 여러 reference와 각각 독립적으로 MATCH 조건을 충족할 경우, 여러 reference를 식별할 수 있다.
+T는 시험대상 전체 GT 집합이다. 여기서는 미완료 결과의 식별을 0으로 처리하므로 **시스템 전체의 입력 대비 식별 성공률**이다. 이 둘은 서로 다른 측정량이므로 결과표에서 명칭·분모·실패 건수를 명시해 오인을 막는다.
 
-따라서 KOLAS primary Recall에는 Hungarian 1:1 uniqueness를 강제하지 않는다. 이는 **reference-level many-to-one identification**이다.
+본 시험의 **주지표로 HIA_evaluable을 제안**하며, SUT 완료율 및 전체 대상 기준 HIA를 별도 병기한다. 최종 분모·SUT 비응답의 처리 기준과 95% 성능 기준의 적용 범위는 **시험기관이 시험 시작 전에 합의·확정**한다. 설정은 이를 반영하는 후보로 작성되었으나 공인 판정기준 승인 완료는 아니다.
 
-### 6.3 Hungarian matching의 역할
+엄격한 `H_sij AND C_sij` 판정과 Hungarian 1:1 대응 결과는 기술 진단용 자료로 유지한다. **본 시험의 제안 주지표를 엄격 Recall로 혼용하지 않는다.**
 
-Hungarian maximum-cardinality 1:1 matching은 `Reference Risk Coverage` 및 일부 matched quality 지표를 위한 **secondary/diagnostic** 절차이며, primary Recall numerator를 결정하지 않는다.
+## 4. 시험 흐름
 
-## 7. Primary 지표
+1. 고정된 시나리오를 운영 서버 `https://api.seexr.co.kr/api`에 입력한다.
+2. SEEXR API가 생성한 원출력, run ID, 시각, 완료/실패 상태를 기록한다.
+3. XML 위험요인을 미리 정한 원자화·중복 처리 원칙으로 분리한다.
+4. 모든 GT × 생성 위험요인 쌍을 Judge가 Boolean으로 평가한다.
+5. 위 수식으로 지표를 집계하고 평가 불가/서비스 비응답을 별도 보고한다.
+6. 동일 입력을 사용한 독립 반복에서 결과의 변동과 Judge 통제문항의 판정 안정성을 확인한다.
 
-공식 지표명은 다음을 freeze candidate로 사용한다.
+시험기관은 SEEXR가 제공한 `SEEXR_API_KEY`와 Judge용 `OPENAI_API_KEY`로 실행한다. 별도 웹 로그인이나 사용자 비밀번호는 재현 절차에 필요하지 않다. 상세한 실행 순서는 `11_API_ACCESS_GUIDE.md`에 정의한다.
 
-**Hazard Semantic Identification Recall**
-내부 metric key: `hazard_semantic_identification_recall`
+## 5. Judge 검증 및 기록
 
-### 7.1 Numerator
+실제 시행한 검증은 사전 정의된 AJQG 통제문항 104개에 대한 판정 정확성과 반복결정의 안정성 확인이다. **기존 GT는 연구실 검증 완료 자료**이다. 별도의 독립 건설안전 전문가 2인에 의한 Judge의 모든 쌍별 판정 재검증은 수행하지 않았으며, 실시 예정이라고 기재하지 않는다. 시험기관이 추가 판정 검증을 요구하는 경우 범위와 기준을 사전 협의한다.
 
-정상적으로 binary match matrix가 완료된 reference 중, 하나 이상의 generated risk와
+판정 오류, 비응답, 세션 실패, Judge 인프라 장애는 각기 구분해 기록하고 누락된 평가대상 개수를 보고한다. 본 시험 후보는 Judge 버전·프롬프트·rubric·SUT 설정, GT 버전, 요청/응답 ID 및 검사결과의 연결 관계를 보존한다.
 
-`same_hazard_mechanism=true AND context_compatible=true`
+## 6. 기존 개발실험 — 측정량 비교(공인 성적 아님)
 
-인 reference 수다.
+2026-09-09 연구개발 실행기록: 425개 시나리오 중 419개 완료, 843개 GT 중 비교행렬 완료 GT 831개. 넓은 HIA는 795/831=95.67%, 전체 GT 843개를 분모에 넣으면 795/843=94.31%였다. 엄격 의미 일치는 711/831=85.56%, 엄격 1:1 coverage는 704/831=84.72%다.
 
-### 7.2 현재 구현의 Denominator
+이 수치는 동일 실행기록에서 **측정목적과 분모가 다른 값**을 계산한 것이다. 사후에 채택 지표나 분모를 정해 합격을 선언하지 않는다. 최종 시험조건·목표 성능기준은 시험기관과의 서면 협의 후 확정한다.
 
-현재 코드·runtime·시험방법 문서가 일치하여 사용하는 denominator는:
+## 7. 시험기관 확인 요청
 
-`references_with_completed_binary_match_matrix`
+- HIA의 판정식 `(H AND C) OR A`를 해당 시험의 주지표로 채택할 수 있는지
+- 사고·피해 메커니즘의 '양립' 판정 해석 범위
+- 평가완료 GT 기준의 조건부 HIA와 전체 GT 기준 HIA를 구분하고 어떤 분모를 성적서에 적용할지
+- 연구실 검증 GT와 AJQG 통제문항·반복시험 기록으로 Judge 적격성을 확인할 수 있는지
+- SUT 실패/평가기 장애의 재시도 정책, 반복 횟수, 성능 합격선을 어떻게 합의할지
 
-즉 **binary match matrix가 정상적으로 완료된 reference hazard 수**다.
-
-현재 구현에서는 SUT non-completion으로 case result가 생성되지 않으면 해당 scenario의 reference는 primary Recall denominator에서 제외되고, SUT completion rate에 별도로 반영된다.
-
-### 7.3 Denominator 정책의 시험기관 승인 필요성
-
-위 정책은 현재 구현에 대해 완전히 재현 가능하지만, 공인시험 관점에서는 다음 두 방식 중 무엇을 primary로 할지 시험기관과 명시적으로 합의해야 한다.
-
-| 정책 | 분모 | SUT non-completion 처리 | 장점/주의점 |
-|---|---|---|---|
-| A. 현재 구현 | match matrix가 완료된 reference | Recall 분모에서 제외, completion rate에 별도 반영 | semantic Judge가 실제 평가한 표본만 측정. 단, non-completion이 많을수록 Recall이 낙관적으로 보일 수 있음 |
-| B. End-to-end | 선택된 모든 reference | 식별 실패로 계산 | 시스템 전체 위험요인 식별 성공률을 직접 반영. evaluator failure와 SUT failure 구분 규칙을 더 엄격히 정의해야 함 |
-
-**현재 freeze candidate는 A이며, 시험기관 승인 전 이를 최종 공인 denominator로 선언하지 않는다.** 필요 시 승인된 정책으로 metric version을 올리고 코드/runtime/test를 함께 변경한다.
-
-## 8. SUT 실패 및 시험 인프라 실패 처리
-
-현재 failure taxonomy는 다음과 같다.
-
-### 8.1 `sut_non_completion`
-
-다음은 제품 결과의 실패로 기록하되 시험절차 자체를 자동 무효화하지 않는다.
-
-- 충분한 입력인데 `<ask_user>` 반환
-- invalid `<risk_assessment>` XML
-- `<risk_assessment>` 누락
-- parsing 불가 SUT output
-- SUT run terminal failure / final content 누락
-
-현재 denominator 정책 A에서는 이 case의 reference가 primary Recall에서 제외되고, `SUT Completion Rate`에 실패로 기록된다.
-
-### 8.2 `evaluator_failure`
-
-예:
-
-- Judge/evaluator가 retry 후에도 실패
-- 결과 조립 실패
-
-공식 candidate를 무효화한다.
-
-### 8.3 `infrastructure_failure`
-
-예:
-
-- SUT transport/API failure가 bounded retry 이후에도 지속
-
-공식 candidate를 무효화한다.
-
-## 9. Retry 및 Timeout 규칙
-
-### 9.1 SUT
-
-현재 official runtime freeze candidate:
-
-- timeout: 1200초
-- `max_retries=3`
-- 초기 backoff: 0.5초
-- 지수 backoff: `0.5 × 2^retry_index`, 최대 5초
-- run 생성: 최초 시도 + 최대 3회 retry
-- SSE stream: last durable sequence 이후 재연결, 최대 3회 reconnect
-- 같은 run 생성 retry에는 동일 `client_request_id`를 사용하여 중복 생성 위험을 줄인다.
-
-retryable 조건에는 transport/timeout과 사전에 정의된 retryable HTTP status가 포함된다.
-
-### 9.2 Judge
-
-- request timeout: 180초
-- OpenAI SDK `max_retries=3`
-- bounded retry 후에도 Judge가 실패하면 `evaluator_failure`로 분류하여 official candidate를 무효화한다.
-
-## 10. 절차 유효성
-
-공식 candidate는 최소 다음을 모두 만족해야 한다.
-
-1. official runtime validation 성공
-2. AJQG 통과
-3. 모든 selected case가 `result` 또는 명시적 error 결과로 처리
-4. evaluator/infrastructure failure 0건
-5. 시험 시작·종료 사이 SUT relevant source fingerprint 동일
-6. 최종 run seal verification 성공
-
-SUT non-completion은 현재 procedure validity를 자동으로 무효화하지 않고 별도 제품 outcome으로 기록한다.
-
-## 11. 재현성 평가
-
-동일한 다음 조건으로 live run을 반복한다.
-
-- 동일 GT version/hash
-- 동일 SUT release/config
-- 동일 Judge model/config
-- 동일 prompt/rubric
-- 동일 parser/metric code
-- 동일 API method 및 failure policy
-
-현재 시험방법 제안은 **동일 조건 full run 최소 2회**를 기본으로 한다. 시험기관이 다른 반복 횟수를 요구하면 시험 시작 전에 해당 횟수를 freeze한다.
-
-반복 run 간 다음을 계산한다.
-
-- primary Recall의 mean
-- sample standard deviation
-- min / max / range
-- case별 metric 차이
-- reference별 `identified` Boolean의 일치 비율
-- 모든 run에서 동일한 detection state를 가진 reference 비율
-
-생성 텍스트의 byte/string 동일성은 재현성 지표로 사용하지 않는다.
-
-## 12. Secondary / Diagnostic 지표
-
-Primary와 구분하여 다음을 보고할 수 있다.
-
-- SUT Completion Rate
-- Reference Risk Coverage (Hungarian 1:1)
-- Accident Classification Agreement
-- Mitigation Appropriateness
-- Mitigation Actionability
-- Mitigation Specificity
-- Legal Basis Presence / Relevance
-- Unsafe Advice Rate
-- Critical Safety Error Rate
-- Schema Compliance
-- frequency/severity 범위 및 `risk = frequency × severity` deterministic consistency
-- supplementary `hazard_identification_accuracy`
-
-supplementary `hazard_identification_accuracy`는
-
-`(same_hazard_mechanism AND context_compatible) OR accident_compatible`
-
-로 primary보다 넓으므로 공식 primary와 혼용하지 않는다.
-
-## 13. 시험기관 협의·승인 필요 항목
-
-| Decision ID | 항목 | 현재 freeze candidate | 최종 상태 |
-|---|---|---|---|
-| `DEC-METHOD-001` | Primary measurand | Hazard Semantic Identification Recall | 시험기관 승인 필요 |
-| `DEC-METHOD-002` | MATCH rule | mechanism AND context | 시험기관 승인 필요 |
-| `DEC-METHOD-003` | Denominator | completed binary match matrix references | **특히 승인 필요**; end-to-end 방식과 비교 설명 필요 |
-| `DEC-METHOD-004` | Dataset 범위 | 425 scenarios / 843 refs | GT validation 이후 승인 필요 |
-| `DEC-METHOD-005` | 반복횟수 | full run 최소 2회 | 시험기관 승인 필요 |
-| `DEC-METHOD-006` | 허용 변동 기준 | 아직 미확정 | 시험기관과 결정 필요 |
-| `DEC-METHOD-007` | Judge 적격성 | frozen AJQG + 별도 human meta-validation 가능 | 시험기관 승인 필요 |
-| `DEC-METHOD-008` | 성능 합격선 | `report_only_until_testing_lab_approval` | 시험기관과 결정 필요 |
-| `DEC-METHOD-009` | 성적서 secondary 지표 | 12절 후보 | 시험기관과 결정 필요 |
-
-## 14. HWP 반영 지시
-
-본 문서는 최종 HWP의 **붙임 1. 시험방법 및 시험대상 시스템 명세서**의 시험방법 부분에 반영한다.
-
-필수 표:
-
-- 표 1. 시험대상·입력·GT 요약
-- 표 2. Boolean MATCH Rubric
-- 표 3. Primary numerator/denominator 정의
-- 표 4. Failure taxonomy와 공식 candidate 영향
-- 표 5. 시험기관 협의 필요 항목
-
-필수 그림:
-
-`Scenario input → SUT → XML item parsing → Reference×Generated Boolean matrix → Reference-level Recall → Report/Seal`
-
-## 15. 승인 차단조건
-
-다음이 해결되지 않으면 이 문서를 `APPROVED/FROZEN`으로 변경하지 않는다.
-
-- `DEC-METHOD-003` denominator 정책 미승인
-- `DEC-METHOD-005/006` 반복 횟수·허용 변동 미승인
-- `DEC-METHOD-008` 성능 합격선 미승인
-- Phase 3/4의 GT provenance·전문가 검증 미완료
-- 최종 SUT clean release 미지정
-
-## 16. 변경이력
-
-| 버전 | 일자 | 변경내용 | 상태 |
-|---|---|---|---|
-| 0.2-draft | 2026-10-11 | 실제 코드/runtime/parser/failure policy와 기존 시험기관 제안서를 통합하고 denominator 의사결정 gap 명시 | REVIEW |
+근거 및 내부 설명: `15_METHOD_VALIDITY_AND_API_KEY.md`. 시험기관의 확인이 있기 전까지 이 문서는 공식 승인된 시험방법이라고 주장하지 않는다.

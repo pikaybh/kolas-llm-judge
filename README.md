@@ -70,7 +70,7 @@ Judge 적격성 시험만 실행:
 
 ```bash
 uv run kolas-llm-judge make-binary-calibration <SEALED_RUN_ID>
-# 전문가 2인 독립 라벨링 및 adjudication 후
+# 독립 전문가 라벨링은 현 제출 범위에 포함되지 않으며 별도 협의 시에만 사용
 uv run kolas-llm-judge score-binary-calibration <SEALED_RUN_ID>
 ```
 
@@ -84,15 +84,9 @@ uv run kolas-llm-judge score-binary-calibration <SEALED_RUN_ID>
 `.env`에는 다음 두 종류의 credential이 필요합니다.
 
 1. OpenAI Judge: `OPENAI_API_KEY`
-2. SEEXR SUT:
-   - 권장: 발급·폐기 가능한 전용 `SEEXR_API_KEY` (HTTP `x-api-key`)
-   - 대체: 전용 non-admin 시험계정의 `SEEXR_EMAIL` + `SEEXR_PASSWORD`
-   - JWT `SEEXR_API_TOKEN`은 단기 smoke/development 전용
+2. SEEXR SUT: 별도 전달받은 운영 전용 `SEEXR_API_KEY` (HTTP `x-api-key`)
 
-현재 권장 방식은 장기 실행용 SEEXR API Key(`SEEXR_API_KEY`)이며, 해당 환경의 HTTPS 요청에 `x-api-key` 헤더를 사용합니다. 이 방식은 JWT 갱신이 필요하지 않고 키 폐기/만료 시 즉시 실패합니다.
-기존 계정 방식(`SEEXR_EMAIL` + `SEEXR_PASSWORD`)에서는 401 발생 시 메모리의 refresh token으로 자동 갱신하고, refresh가 실패하면 동일 non-admin
-계정으로 재로그인합니다. access/refresh token은 artifact나 manifest에 저장하지 않습니다.
-관리자 계정은 production MFA가 필요하므로 자동 시험계정으로 사용하지 않습니다.
+공식 KOLAS 실행은 **Blue 운영 서버(`https://api.seexr.co.kr/api`) + SEEXR_API_KEY만** 허용합니다. 키 발급 절차는 시험기관이 수행하지 않습니다. 운영 배포와 키가 준비되기 전에는 본시험을 실행하지 않습니다. 키 실패 시 다른 인증 방식으로 우회하지 않습니다.
 
 Stage-1 match matrix는 기본 80 pair 단위로 분할하고 최대 3개 batch를 병렬 처리합니다.
 감소대책/법규는 matching 이후 실제 matched pair에 대해서만 평가합니다.
@@ -299,8 +293,8 @@ cannot silently change the metric definition.
 
 The lab-facing method is now explicitly separated from legacy project KPI semantics:
 
-- **KOLAS primary:** `hazard_semantic_identification_recall` = `same_hazard_mechanism AND context_compatible` at reference level.
-- **Supplementary legacy KPI:** `hazard_identification_accuracy` retains the broader OR-accident-compatible rule for continuity only.
+- **Proposed KOLAS primary:** `hazard_identification_accuracy` = `(same_hazard_mechanism AND context_compatible) OR accident_compatible` at reference level.
+- **Secondary diagnostic:** `hazard_semantic_identification_recall` = `same_hazard_mechanism AND context_compatible`. No post hoc scoring-rule change. Final acceptance requires laboratory agreement.
 - Product pass/fail thresholds remain **unfrozen pending testing-lab approval**; procedure-validity gates are frozen independently.
 - `compare-repeatability` compares two or more equivalent sealed live runs and reports aggregate, per-case, and per-reference semantic stability.
 - Dataset identity is explicit: `KOLAS_RA_GT` v1.0.0 / `kolas-ra-dataset-v1`.
