@@ -204,6 +204,7 @@ class OfficialRuntimeConfig(BaseModel):
             base_url=_normalize_base_url(self.sut.base_url),
             agent_id=self.sut.agent_id,
             token=env_config.token,
+            api_key=env_config.api_key,
             email=env_config.email,
             password=env_config.password,
             risk_assessment_method=self.sut.risk_assessment_method,

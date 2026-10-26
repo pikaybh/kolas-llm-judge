@@ -77,7 +77,7 @@ Credential은 Git/HWP/run artifact에 포함하지 않는다.
   - `SEEXR_EMAIL`
   - `SEEXR_PASSWORD`
 
-공식 장시간 시험은 refresh/relogin 가능한 email/password 방식을 사용한다. static `SEEXR_API_TOKEN`은 development/smoke 용도로만 취급한다.
+공식 장시간 시험의 권장 방식은 발급·철회 가능한 `SEEXR_API_KEY`를 통한 HTTPS `x-api-key` 인증이다. 대체 방식으로 전용 non-admin 계정의 email/password와 refresh/relogin을 지원한다. 단기 JWT `SEEXR_API_TOKEN`은 development/smoke 전용이다. 키가 발급된 Green 또는 Blue 환경과 frozen official runtime의 base URL이 같아야 하며, 운영 전환은 소스·실행환경·해시를 다시 동결한다. 상세 절차는 `11_API_ACCESS_GUIDE.md`를 따른다.
 
 ## 2. Clean-room 설치
 

@@ -31,6 +31,7 @@ SUBMISSION_DOCS = [
     "docs/submission_package/11_API_ACCESS_GUIDE.md",
     "docs/submission_package/12_VERSION_MANIFEST.md",
     "docs/submission_package/14_CHANGE_CONTROL.md",
+    "docs/submission_package/15_METHOD_VALIDITY_AND_API_KEY.md",
     "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md",
     "docs/submission_package/PLACEHOLDER_AUDIT.md",
     "docs/submission_package/HWP_ASSEMBLY_MAP.md",

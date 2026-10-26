@@ -85,11 +85,12 @@ uv run kolas-llm-judge score-binary-calibration <SEALED_RUN_ID>
 
 1. OpenAI Judge: `OPENAI_API_KEY`
 2. SEEXR SUT:
-   - smoke/development: `SEEXR_API_TOKEN` 또는 non-admin 계정
-   - official pilot/full: 전용 non-admin 시험계정의 `SEEXR_EMAIL` + `SEEXR_PASSWORD`
+   - 권장: 발급·폐기 가능한 전용 `SEEXR_API_KEY` (HTTP `x-api-key`)
+   - 대체: 전용 non-admin 시험계정의 `SEEXR_EMAIL` + `SEEXR_PASSWORD`
+   - JWT `SEEXR_API_TOKEN`은 단기 smoke/development 전용
 
-현재 Core의 access token 기본 만료가 짧기 때문에 장시간 official run은 갱신 가능한 계정 로그인을 사용합니다.
-하네스는 401 발생 시 메모리의 refresh token으로 자동 갱신하고, refresh가 실패하면 동일 non-admin
+현재 권장 방식은 장기 실행용 SEEXR API Key(`SEEXR_API_KEY`)이며, 해당 환경의 HTTPS 요청에 `x-api-key` 헤더를 사용합니다. 이 방식은 JWT 갱신이 필요하지 않고 키 폐기/만료 시 즉시 실패합니다.
+기존 계정 방식(`SEEXR_EMAIL` + `SEEXR_PASSWORD`)에서는 401 발생 시 메모리의 refresh token으로 자동 갱신하고, refresh가 실패하면 동일 non-admin
 계정으로 재로그인합니다. access/refresh token은 artifact나 manifest에 저장하지 않습니다.
 관리자 계정은 production MFA가 필요하므로 자동 시험계정으로 사용하지 않습니다.
 

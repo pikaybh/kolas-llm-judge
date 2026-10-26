@@ -48,6 +48,7 @@ class SutConfig:
     base_url: str = "https://api.seexr.dev/api"
     agent_id: str = "risk-assessment"
     token: str | None = None
+    api_key: str | None = None
     email: str | None = None
     password: str | None = None
     risk_assessment_method: str = "빈도강도법 5x4"
@@ -59,6 +60,8 @@ class SutConfig:
 
     @property
     def auth_mode(self) -> str:
+        if self.api_key:
+            return "api_key"
         if self.token:
             return "token"
         if self.email and self.password:
@@ -80,6 +83,10 @@ class SutConfig:
             ),
             token=(
                 os.getenv("SEEXR_API_TOKEN")
+                or None
+            ),
+            api_key=(
+                os.getenv("SEEXR_API_KEY")
                 or None
             ),
             email=(
@@ -207,7 +214,9 @@ class SeexrSutClient:
         headers = {
             "Accept": "application/json"
         }
-        if self.config.token:
+        if self.config.api_key:
+            headers["x-api-key"] = self.config.api_key
+        elif self.config.token:
             headers[
                 "Authorization"
             ] = (
@@ -338,6 +347,8 @@ class SeexrSutClient:
         reason: str = "401",
         observed_version: int | None = None,
     ) -> bool:
+        if self.config.api_key:
+            return False
         if self._static_token_mode and not (
             self.config.email and self.config.password
         ):
@@ -410,7 +421,7 @@ class SeexrSutClient:
     async def ensure_authenticated(
         self,
     ) -> None:
-        if self.config.token:
+        if self.config.api_key or self.config.token:
             return
         if (
             not self.config.email
@@ -418,7 +429,7 @@ class SeexrSutClient:
         ):
             raise RuntimeError(
                 "SEEXR authentication is missing. "
-                "Set SEEXR_API_TOKEN or "
+                "Set SEEXR_API_KEY or SEEXR_API_TOKEN or "
                 "SEEXR_EMAIL + SEEXR_PASSWORD "
                 "for a non-admin evaluation account."
             )

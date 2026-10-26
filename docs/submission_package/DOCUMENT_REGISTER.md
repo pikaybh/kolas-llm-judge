@@ -21,6 +21,7 @@
 | KOLAS-DOC-012 | `12_VERSION_MANIFEST.md` | repo/model/prompt/schema/runtime 버전 | 붙임 6 | REVIEW | audit snapshot 작성; final freeze 필드 대기 |
 | KOLAS-DOC-013 | `13_INTEGRITY_MANIFEST.md` | 파일 목록·SHA-256 | 붙임 6/7 | REVIEW | candidate machine manifest/root 구축; final HWP/PDF freeze 대기 |
 | KOLAS-DOC-014 | `14_CHANGE_CONTROL.md` | 변경 승인·영향·재시험 규칙 | 붙임 6 | REVIEW | Class A~G 영향/재시험 matrix 작성 |
+| KOLAS-DOC-015 | `15_METHOD_VALIDITY_AND_API_KEY.md` | 비교행렬 판정의 측정적합성 논증·수식·분모·API Key 인증 변경 | 붙임 0(2026.10.26) | REVIEW | 기존 GT/Judge 재사용, 전문가 교차검증·최종 방법/운영환경 승인 대기 |
 
 ## 공통 metadata
 

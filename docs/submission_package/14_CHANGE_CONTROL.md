@@ -271,3 +271,16 @@ Official runner는 시험 시작 시 Core/Agents relevant source fingerprint를 
 - [ ] 최종 tag/release 생성
 
 현재 2026-10-11 상태는 최종 `FROZEN`이 아니라 **submission candidate preparation** 단계다.
+
+## 2026-10-26 — API Key 실행계약 및 비교행렬 측정적합성 보강
+
+- Change ID: `CHANGE-KOLAS-20261026-API-METHOD`
+- 상태: **후보 변경, 시험기관 승인 전**
+- 데이터셋(425 scenario/843 GT), Judge prompt/rubric, 엄격 Primary 및 넓은 supplementary 판정식: **변경 없음**
+- SUT 인증: 기존 JWT/email-password 호환 유지, `SEEXR_API_KEY` / HTTP `x-api-key` 신규 지원
+- 신규 하네스 소스 fingerprint: `e31e25c3eb01935b2d391165974b665ae340fdb6ce055c558ef40ef9638ff7da`
+- 직전 후보 소스 fingerprint: `0069d7c24a53339b7d586e435547544e8bf8d4a7c52395f730efbffefd76a701`
+- 근거 문서: `11_API_ACCESS_GUIDE.md`, `15_METHOD_VALIDITY_AND_API_KEY.md`
+- 과거 sealed run의 해시·원본은 수정하지 않는다. 신규 소스는 별도 실행 및 증적이 필요하다.
+- Green 단위/무효키 smoke 외 실발급키 연결, Blue 운영 반영, A-only 전문가 검증 및 시험기관 지표/분모 승인은 미완료다.
+- 인증 롤백: `SEEXR_API_KEY`를 설정하지 않으면 기존 `SEEXR_EMAIL`/`SEEXR_PASSWORD` 경로를 사용한다.

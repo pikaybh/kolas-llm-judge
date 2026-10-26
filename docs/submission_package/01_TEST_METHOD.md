@@ -87,6 +87,8 @@ SUT에 제공하는 입력은 다음 필드에 한정한다.
 - generated hazard
 - 필요한 사고분류/감소대책/법규 context
 
+2026-10-26 방법 적합성 보강 자료: [`15_METHOD_VALIDITY_AND_API_KEY.md`](./15_METHOD_VALIDITY_AND_API_KEY.md) — 비교행렬 수식, 기존 넓은 KPI의 공학적 용도, 엄격 주지표와의 구분, A-only 허위양성 전문가 검증, 분모·KOLAS 승인과 API Key 절차를 설명한다. 본문의 공식 Primary는 시험기관의 변경 승인 전까지 유지한다.
+
 ## 5. 위험요인 식별 Boolean Rubric
 
 각 `reference hazard × generated risk` pair에 대해 다음 Boolean을 판정한다.

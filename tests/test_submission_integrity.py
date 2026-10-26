@@ -34,6 +34,7 @@ def test_candidate_scope_has_no_self_reference_or_secrets() -> None:
     assert "data/submission/evidence/sut_freeze_20261011/candidate.json" in values
     assert "data/submission/evidence/stateful_snapshot_20261011/content_fingerprints.json" in values
     assert "docs/submission_package/SUT_FREEZE_CANDIDATE.md" in values
+    assert "docs/submission_package/15_METHOD_VALIDITY_AND_API_KEY.md" in values
     assert "docs/submission_package/LAB_METHOD_DECISION_REGISTER.md" in values
     assert "docs/submission_package/FINALIZATION_BLOCKER_REGISTER.md" in values
     assert "docs/submission_package/HWP_ASSEMBLY_MAP.md" in values
