@@ -19,3 +19,6 @@ runs/*
 # Derived analyses may summarize production evaluation artifacts
 derived/*
 !derived/.gitkeep
+
+# Local-only documentation (including all submission packages and handoff notes)
+docs/
