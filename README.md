@@ -46,9 +46,9 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 **Monitoring presentation policy:** CLI progress and result screens show HIA (Hazard Identification Accuracy) as the only performance KPI, highlighted in bold bright cyan, plus operational status, validation failures, and artifact paths. All other metrics (semantic recall, coverage, schema compliance, Judge qualification/calibration details, token usage, etc.) remain computed and stored unmodified in JSON/CSV evidence. This display-only policy applies to smoke, pilot, official-live, derived and repeatability monitoring; do not suppress failures or weaken official gates.
 
-KOLAS 현장 시험용 경로는 multi-day human calibration을 요구하지 않습니다. 시험 시작 시 construction-defined 104-control **Automatic Judge Qualification Gate (AJQG)** 를 자동 실행하고, PASS한 frozen binary-checklist Judge만 본시험에 사용합니다.
+**KOLAS 평가 프로토콜 후보 v2:** 시험 시작 시 AJQG를 자동 실행하지 않습니다. AJQG는 외부에서 선택적으로 실행하는 독립 Judge 검증 절차로 유지합니다. 시험기관과 v2 시험절차 변경 합의는 아직 필요합니다.
 
-Judge 적격성 시험만 실행:
+선택적으로 별도 실행하는 Judge 검증(본시험의 필수 게이트 아님):
 
     /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge qualify-judge
 
@@ -56,17 +56,17 @@ Judge 적격성 시험만 실행:
 
     /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live
 
-`official-live`는 **preflight → AJQG → 425-case bounded parallel evaluation → production source fingerprint 재검증 → report → SHA-256 seal → self-verification**을 자동 수행합니다. 공식 모드에서는 case 일부 실행이나 AJQG skip을 허용하지 않습니다.
+`official-live`는 **preflight → 425-case bounded parallel evaluation → production source fingerprint 재검증 → report → SHA-256 seal → self-verification**을 자동 수행합니다. 공식 모드에서는 case 일부 실행을 허용하지 않습니다. AJQG는 스킵 옵션 없이 처음부터 본시험 경로에서 분리되어 있습니다.
 
-공식 runtime은 `configs/official_runtime_v1.yaml`에 freeze되어 있습니다: **case queue 24 / SUT 6 / Judge 12 / GPT-5.6 Sol medium**. 50-case production load test에서 255.38초, SUT p95 36.72초, retry/reconnect/auth recovery 0, source stable, procedure valid, seal verified를 확인했습니다. 공식 모드에서는 CLI/.env의 model·concurrency·chunk·SUT-method override를 무시하며 `.env`는 자격증명만 제공합니다. dataset/AJQG seed·gate·control/binary prompt·rubric SHA도 runtime에 고정됩니다.
+현재 공식 시험 절차 후보는 `configs/official_runtime_v2.yaml`이며, v1 파일은 과거 시험용 기록으로 보존합니다: **case queue 24 / SUT 6 / Judge 12 / GPT-5.6 Sol medium**. 50-case production load test에서 255.38초, SUT p95 36.72초, retry/reconnect/auth recovery 0, source stable, procedure valid, seal verified를 확인했습니다. 공식 모드에서는 CLI/.env의 model·concurrency·chunk·SUT-method override를 무시하며 `.env`는 자격증명만 제공합니다. dataset·binary Judge prompt·rubric SHA와 평가기 소스 해시는 v2 runtime에 고정됩니다. AJQG seed/gate/control은 독립 검증용으로 분리되어 본시험 동결 입력에 포함되지 않습니다.
 
 병렬 처리량 개발 benchmark 예시:
 
-    /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live --development --case-limit 10 --skip-qualification
+    /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live --development --case-limit 10
 
 실패는 자동 분류합니다. `sut_non_completion`(예: `<ask_user>`, 누락/비정상 risk XML)은 제품의 completion 측정값으로 남기되 시험 절차 자체를 무효화하지 않습니다. `evaluator_failure` 또는 retry 후 지속되는 `infrastructure_failure`는 official candidate를 무효화합니다.
 
-현재 AJQG v1은 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록합니다.
+별도의 AJQG v1 명령은 여전히 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록할 수 있습니다. 단 본시험 실행 여부·절차 유효성에는 관여하지 않습니다.
 
 시험 전 독립 Human–LLM 검증이 필요한 경우에는 official Boolean Rubric 그대로 blinded 표본을 생성합니다. 이 경로는 **official-live의 필수 gate가 아니며**, sealed source run을 수정하지 않고 `derived/binary_calibration/<run_id>/`에만 산출물을 둡니다.
 
@@ -133,7 +133,7 @@ SUT에는 공정, 세부공정, 원본에 명시된 설비, 물질/자재만 입
 
 ## Legacy / FACE research execution sequence
 
-아래 0–4/0–2 ordinal human calibration 기반 흐름은 학술/FACE/기존 연구 호환용으로만 보존합니다. KOLAS official v1의 Boolean Human–LLM 검증은 위 `make-binary-calibration` / `score-binary-calibration`을 사용하고, 시험 당일 필수 경로는 `official-live` + AJQG입니다.
+아래 0–4/0–2 ordinal human calibration 기반 흐름은 학술/FACE/기존 연구 호환용으로만 보존합니다. KOLAS 공식 시험 후보 v2의 Boolean Human–LLM 검증은 위 `make-binary-calibration` / `score-binary-calibration`을 사용하고, 본시험 실행 경로는 `official-live`입니다. 과거 v1의 AJQG 통합 절차는 기존 실행 기록으로만 남습니다.
 
 ### 1. 10-case smoke
 

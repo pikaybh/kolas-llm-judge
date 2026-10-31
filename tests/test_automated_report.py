@@ -162,3 +162,23 @@ def test_smoke_with_saved_instructions_is_not_officially_valid(tmp_path: Path) -
         },
     )
     assert collect_automated_report(tmp_path)["procedure_valid"] is False
+
+def test_v2_procedure_validity_does_not_depend_on_ajqg(tmp_path: Path) -> None:
+    _write_fixture(tmp_path, failure_class="sut_non_completion")
+    manifest_path = tmp_path / "manifest.json"
+    import json
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["protocol"] = "automated-kolas-v2"
+    manifest["qualification"] = {"mode": "independent-not-required", "gate_pass": None}
+    atomic_write_json(manifest_path, manifest)
+    report = collect_automated_report(tmp_path)
+    assert report["protocol"] == "automated-kolas-v2"
+    assert report["procedure_valid"] is True
+    assert report["qualification"]["gate_pass"] is None
+
+    # Neither an evaluator failure nor a saved-instruction exception is waived by v2.
+    (tmp_path / "preflight.json").write_text(
+        '{"development_exception":{"check":"evaluation_saved_instruction_empty"}}',
+        encoding="utf-8",
+    )
+    assert collect_automated_report(tmp_path)["procedure_valid"] is False

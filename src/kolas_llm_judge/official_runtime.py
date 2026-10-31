@@ -23,7 +23,7 @@ from .qualification_controls import load_generated_control_suite
 from .sut_client import SutConfig, _normalize_base_url
 
 
-DEFAULT_OFFICIAL_RUNTIME_PATH = Path("configs/official_runtime_v1.yaml")
+DEFAULT_OFFICIAL_RUNTIME_PATH = Path("configs/official_runtime_v2.yaml")
 
 FROZEN_EVALUATOR_SOURCE_GLOBS = (
     "src/kolas_llm_judge/*.py",
@@ -122,7 +122,8 @@ class OfficialRuntimeConfig(BaseModel):
     protocol: str
     evaluator_source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     dataset: FrozenDatasetConfig
-    qualification: FrozenQualificationConfig
+    qualification: FrozenQualificationConfig | None = None
+    independent_judge_validation: dict[str, Any] = Field(default_factory=dict)
     judge: FrozenJudgeConfig
     metrics: FrozenMetricPolicy
     acceptance: FrozenAcceptancePolicy
@@ -132,13 +133,26 @@ class OfficialRuntimeConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_versions(self) -> "OfficialRuntimeConfig":
-        if self.runtime_version != "official-runtime-v1":
+        versions = {
+            "official-runtime-v1": "automated-kolas-v1",
+            "official-runtime-v2": "automated-kolas-v2",
+        }
+        if self.runtime_version not in versions:
             raise ValueError("Unsupported official runtime version")
-        if self.protocol != "automated-kolas-v1":
+        if self.protocol != versions[self.runtime_version]:
             raise ValueError("Official runtime protocol mismatch")
+        if self.runtime_version == "official-runtime-v1" and self.qualification is None:
+            raise ValueError("Historical v1 runtime requires AJQG")
+        if self.runtime_version == "official-runtime-v2":
+            if self.qualification is not None:
+                raise ValueError("v2 official runtime must not depend on AJQG")
+            if self.independent_judge_validation.get("official_gate_required") is not False:
+                raise ValueError("v2 Judge qualification is independent, not an official gate")
+            if "AJQG" in self.acceptance.procedure_validity_rule.upper():
+                raise ValueError("v2 procedure validity must not require AJQG")
         if self.judge.pipeline_version != "binary-checklist-v1":
             raise ValueError("Official runtime requires binary-checklist-v1")
-        if self.qualification.control_suite_version != "ajqg-controls-v1":
+        if self.qualification is not None and self.qualification.control_suite_version != "ajqg-controls-v1":
             raise ValueError("Official runtime AJQG suite version mismatch")
         if self.metrics.primary_metric != "hazard_identification_accuracy":
             raise ValueError("Official runtime primary metric mismatch")
@@ -298,12 +312,15 @@ def validate_official_runtime(
             f"actual={dataset_manifest.get('reference_count')}"
         )
 
-    frozen_files = (
-        (runtime.qualification.seed_path, runtime.qualification.seed_sha256),
-        (runtime.qualification.gate_path, runtime.qualification.gate_sha256),
+    frozen_files = [
         (runtime.judge.prompt_path, runtime.judge.prompt_sha256),
         (runtime.judge.rubric_path, runtime.judge.rubric_sha256),
-    )
+    ]
+    if runtime.qualification is not None:
+        frozen_files += [
+            (runtime.qualification.seed_path, runtime.qualification.seed_sha256),
+            (runtime.qualification.gate_path, runtime.qualification.gate_sha256),
+        ]
     for relative, expected_sha in frozen_files:
         artifact = project_root / relative
         if not artifact.is_file():
@@ -315,15 +332,16 @@ def validate_official_runtime(
                 f"expected={expected_sha}, actual={actual_sha}"
             )
 
-    suite = load_generated_control_suite(project_root / runtime.qualification.seed_path)
-    if suite.suite_version != runtime.qualification.control_suite_version:
-        raise RuntimeError("Frozen official AJQG suite version mismatch")
-    if len(suite.controls) != runtime.qualification.control_count:
-        raise RuntimeError("Frozen official AJQG control count mismatch")
-    if suite.controls_sha256 != runtime.qualification.control_suite_sha256:
-        raise RuntimeError(
-            "Frozen official AJQG SHA mismatch: "
-            f"expected={runtime.qualification.control_suite_sha256}, "
-            f"actual={suite.controls_sha256}"
-        )
+    if runtime.qualification is not None:
+        suite = load_generated_control_suite(project_root / runtime.qualification.seed_path)
+        if suite.suite_version != runtime.qualification.control_suite_version:
+            raise RuntimeError("Frozen official AJQG suite version mismatch")
+        if len(suite.controls) != runtime.qualification.control_count:
+            raise RuntimeError("Frozen official AJQG control count mismatch")
+        if suite.controls_sha256 != runtime.qualification.control_suite_sha256:
+            raise RuntimeError(
+                "Frozen official AJQG SHA mismatch: "
+                f"expected={runtime.qualification.control_suite_sha256}, "
+                f"actual={suite.controls_sha256}"
+            )
     return runtime

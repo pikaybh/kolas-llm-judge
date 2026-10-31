@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-31T03:01:59.216094+00:00",
-  "repository_base_head_at_generation": "2add7bc961d723811c08fbc866bd64ab027e11d2",
+  "generated_at_utc": "2026-10-31T03:21:33.815558+00:00",
+  "repository_base_head_at_generation": "ac69d5a4c61a0a2c4d129e329ffa158d553918a4",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 88,
-  "artifact_root_sha256": "7fd1959366749d54bd517842b40145c124e11a3d43dacf8bf53f34c52ad3273c",
+  "artifact_count": 89,
+  "artifact_root_sha256": "d5d19e71586bc5e1a57e440805bd9c35701c205af47ff43f4466852f69e96622",
   "artifacts": [
     {
       "path": ".env.example",
@@ -23,8 +23,8 @@
     },
     {
       "path": "README.md",
-      "size": 15688,
-      "sha256": "725128f10b0747794d159d73ede80f825ea83f54b110e661726f19719f7f5413"
+      "size": 16150,
+      "sha256": "d5393f06e81f9fd708f2f8c82904a59655b915e4b2d23e2e7395152a915f72cb"
     },
     {
       "path": "configs/ajqg_gate_v1.yaml",
@@ -50,6 +50,11 @@
       "path": "configs/official_runtime_v1.yaml",
       "size": 3010,
       "sha256": "dca2d7b1c414594c279c2fd97a47ae75ce1270bf4f9618493c4d8a9d2e02404e"
+    },
+    {
+      "path": "configs/official_runtime_v2.yaml",
+      "size": 2662,
+      "sha256": "8ac8b66ca4a0083c9e0beab47cc3c53d18a68eb13e784af0a3215ee712641fbc"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -298,13 +303,13 @@
     },
     {
       "path": "src/kolas_llm_judge/automated_manifest.py",
-      "size": 6745,
-      "sha256": "e012ef8db2030ed4b92cc9ea5a2ffeb637bf870f56d0910a884b3e4dfae9ee88"
+      "size": 6035,
+      "sha256": "1c1e0c8c2198dec34833add045814908645ab1065822b49b968ad7d1fc295873"
     },
     {
       "path": "src/kolas_llm_judge/automated_report.py",
-      "size": 12908,
-      "sha256": "8552aaa924a62e199eede3cce41946757359e121485765a59767ea1d2308ef40"
+      "size": 13111,
+      "sha256": "2785252c6a3735e70965a1fb82332f6b689e39d1c8307c2e9f780b1aa8d17102"
     },
     {
       "path": "src/kolas_llm_judge/binary_evaluation.py",
@@ -328,8 +333,8 @@
     },
     {
       "path": "src/kolas_llm_judge/cli.py",
-      "size": 23051,
-      "sha256": "e9424c019c1cc2c33d8f0cd54a6526e10182f8bb83795f6e9b161cb80c9a4598"
+      "size": 22933,
+      "sha256": "1925faab84d30e56740ac65427069341144f30ff99ce3fe53a5d35eaf2b81322"
     },
     {
       "path": "src/kolas_llm_judge/dataset.py",
@@ -348,8 +353,8 @@
     },
     {
       "path": "src/kolas_llm_judge/doctor.py",
-      "size": 12584,
-      "sha256": "6676b58f00150962fb04a7bc773d966bc4b4d109a682b4f6bce692125b09c205"
+      "size": 12605,
+      "sha256": "559972ab31b1baaa4e5ab6b4094d896b00383e01130702a309cafbab8ff9c7cb"
     },
     {
       "path": "src/kolas_llm_judge/identification.py",
@@ -388,13 +393,13 @@
     },
     {
       "path": "src/kolas_llm_judge/official_live.py",
-      "size": 13499,
-      "sha256": "821fa5497e136339ddf7b7c66b53da48ea42f4ca12a78dfb913f3f341903aa9b"
+      "size": 9952,
+      "sha256": "f442b3451131cd3719de8b1b176ef99aad76478c1715c0c4eb723475fd2e9642"
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
-      "size": 13323,
-      "sha256": "dd030129acdf4f20aeea7d3efd07833e894209d039961fa788b48dc2f3f5c8d9"
+      "size": 14454,
+      "sha256": "957e91b54dbea43c1dad9bdbef3dfd526606751ae83c5fb892eca72fb31cc723"
     },
     {
       "path": "src/kolas_llm_judge/parallel_runner.py",

@@ -9,20 +9,14 @@ from typing import Any
 from .binary_judge import BinaryJudgeConfig
 from .dataset import sha256_file
 from .parallel_runner import ParallelRunnerConfig
-from .qualification_controls import load_generated_control_suite
 from .sut_client import SutConfig
 from .manifest import sut_evaluation_identity
 
 
 AUTOMATED_HASHED_PATHS = [
-    Path("configs/official_runtime_v1.yaml"),
-    Path("configs/ajqg_seed_v1.yaml"),
-    Path("configs/ajqg_gate_v1.yaml"),
+    Path("configs/official_runtime_v2.yaml"),
     Path("configs/rubric_binary_v1.yaml"),
     Path("prompts/judge_binary_v1.md"),
-    Path("docs/automated_kolas_protocol_v1.md"),
-    Path("docs/testing_lab_method_and_rubric_v1.md"),
-    Path("docs/kolas_compliance_plan_v1.md"),
     Path("data/raw/PROVENANCE.md"),
     Path("data/cases/dataset_manifest.json"),
     Path("pyproject.toml"),
@@ -31,9 +25,12 @@ AUTOMATED_HASHED_PATHS = [
 
 AUTOMATED_SOURCE_GLOBS = [
     "src/kolas_llm_judge/*.py",
-    "configs/*.yaml",
-    "prompts/*.md",
-    "docs/*.md",
+    "configs/evaluation.yaml",
+    "configs/rubric_v1.yaml",
+    "configs/official_runtime_v2.yaml",
+    "configs/rubric_binary_v1.yaml",
+    "prompts/judge_v1.md",
+    "prompts/judge_binary_v1.md",
     "data/raw/PROVENANCE.md",
     "data/cases/dataset_manifest.json",
     "pyproject.toml",
@@ -102,27 +99,22 @@ def capture_automated_method_identity(
     runner: ParallelRunnerConfig,
     sut: SutConfig,
 ) -> dict[str, Any]:
-    suite = load_generated_control_suite(project_root / "configs/ajqg_seed_v1.yaml")
     artifacts: dict[str, str | None] = {}
     for relative in AUTOMATED_HASHED_PATHS:
         path = project_root / relative
         artifacts[str(relative)] = sha256_file(path) if path.exists() else None
-    runtime_path = project_root / "configs/official_runtime_v1.yaml"
+    runtime_path = project_root / "configs/official_runtime_v2.yaml"
     return {
-        "protocol": "automated-kolas-v1",
+        "protocol": "automated-kolas-v2",
         "dataset_sha256": sha256_file(scenarios_path),
         "source_tree_sha256": automated_source_tree_sha256(project_root),
         "evaluation_artifacts": artifacts,
         "judge": automated_judge_identity(judge),
         "parallel_runner": parallel_runner_identity(runner),
         "sut_evaluation_identity": sut_evaluation_identity(sut),
-        "qualification_control_suite": {
-            "suite_version": suite.suite_version,
-            "control_count": len(suite.controls),
-            "sha256": suite.controls_sha256,
-        },
+        "independent_judge_validation": "optional-separate-evidence; not an execution gate",
         "official_runtime": {
-            "path": "configs/official_runtime_v1.yaml",
+            "path": "configs/official_runtime_v2.yaml",
             "sha256": sha256_file(runtime_path) if runtime_path.exists() else None,
         },
     }
@@ -137,8 +129,8 @@ def build_automated_manifest(
     judge: BinaryJudgeConfig,
     runner: ParallelRunnerConfig,
     sut: SutConfig,
-    qualification: dict[str, Any],
-    qualification_summary_path: Path,
+    qualification: dict[str, Any] | None,
+    qualification_summary_path: Path | None,
     sut_api_start: dict[str, Any],
     development_mode: bool,
 ) -> dict[str, Any]:
@@ -147,7 +139,7 @@ def build_automated_manifest(
     return {
         "manifest_version": "automated-1.0",
         "created_at_utc": _utc_now(),
-        "protocol": "automated-kolas-v1",
+        "protocol": "automated-kolas-v2",
         "run_id": run_id,
         "mode": "official-live" if not development_mode else "official-live-development",
         "development_mode": development_mode,
@@ -172,19 +164,15 @@ def build_automated_manifest(
         "sut_evaluation_identity": sut_evaluation_identity(sut),
         "sut_api_start": sut_api_start,
         "qualification": {
-            "gate_pass": bool(qualification.get("gate_pass")),
-            "qualification_version": qualification.get("qualification_version"),
-            "gate_version": qualification.get("gate_version"),
-            "control_suite_sha256": qualification.get("control_suite_sha256"),
-            "control_count": qualification.get("control_count"),
-            "judge": qualification.get("judge"),
-            "summary_path": str(qualification_summary_path),
-            "summary_sha256": sha256_file(qualification_summary_path),
+            "mode": "independent-not-required",
+            "gate_pass": None,
+            "summary_path": None,
+            "summary_sha256": None,
         },
         "parallel_runner": parallel_runner_identity(runner),
         "binary_judge": automated_judge_identity(judge),
         "official_runtime": {
-            "path": "configs/official_runtime_v1.yaml",
-            "sha256": sha256_file(project_root / "configs/official_runtime_v1.yaml"),
+            "path": "configs/official_runtime_v2.yaml",
+            "sha256": sha256_file(project_root / "configs/official_runtime_v2.yaml"),
         },
     }

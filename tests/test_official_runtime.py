@@ -9,13 +9,15 @@ from kolas_llm_judge.sut_client import SutConfig
 
 def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     runtime = load_official_runtime()
-    assert runtime.runtime_version == "official-runtime-v1"
+    assert runtime.runtime_version == "official-runtime-v2"
+    assert runtime.protocol == "automated-kolas-v2"
     assert runtime.parallel.case_concurrency == 24
     assert runtime.parallel.sut_concurrency == 6
     assert runtime.judge.max_concurrency == 12
     assert runtime.judge.model == "gpt-5.6-sol"
     assert runtime.judge.reasoning_effort == "medium"
-    assert runtime.qualification.control_count == 104
+    assert runtime.qualification is None
+    assert runtime.independent_judge_validation["official_gate_required"] is False
     assert runtime.metrics.primary_metric == "hazard_identification_accuracy"
     assert runtime.metrics.primary_rule_version == "hazard-identification-v1"
     assert runtime.metrics.primary_rule == "(same_hazard_mechanism AND context_compatible) OR accident_compatible"
@@ -33,7 +35,7 @@ def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     assert runtime.benchmark_evidence["fifty_case_wall_seconds"] == 255.38
 
 
-def test_official_runtime_validates_frozen_dataset_and_ajqg() -> None:
+def test_official_runtime_v2_validates_frozen_dataset_without_ajqg() -> None:
     root = Path.cwd()
     runtime = validate_official_runtime(
         project_root=root,
@@ -87,9 +89,7 @@ def test_official_runtime_rejects_tampered_binary_prompt(tmp_path: Path) -> None
     shutil.copy2(root / "pyproject.toml", tmp_path / "pyproject.toml")
     shutil.copy2(root / "uv.lock", tmp_path / "uv.lock")
     for relative in [
-        "configs/official_runtime_v1.yaml",
-        "configs/ajqg_seed_v1.yaml",
-        "configs/ajqg_gate_v1.yaml",
+        "configs/official_runtime_v2.yaml",
         "configs/rubric_binary_v1.yaml",
         "prompts/judge_binary_v1.md",
         "data/cases/scenarios_v1.jsonl",
@@ -122,9 +122,7 @@ def test_official_runtime_rejects_tampered_raw_source(tmp_path: Path) -> None:
     shutil.copy2(root / "pyproject.toml", tmp_path / "pyproject.toml")
     shutil.copy2(root / "uv.lock", tmp_path / "uv.lock")
     for relative in [
-        "configs/official_runtime_v1.yaml",
-        "configs/ajqg_seed_v1.yaml",
-        "configs/ajqg_gate_v1.yaml",
+        "configs/official_runtime_v2.yaml",
         "configs/rubric_binary_v1.yaml",
         "prompts/judge_binary_v1.md",
         "data/cases/scenarios_v1.jsonl",
@@ -141,7 +139,7 @@ def test_official_runtime_rejects_tampered_raw_source(tmp_path: Path) -> None:
         validate_official_runtime(
             project_root=tmp_path,
             scenarios_path=tmp_path / "data/cases/scenarios_v1.jsonl",
-            runtime_path=tmp_path / "configs/official_runtime_v1.yaml",
+            runtime_path=tmp_path / "configs/official_runtime_v2.yaml",
         )
 
 
@@ -166,3 +164,9 @@ def test_official_source_hash_is_cross_platform_and_tamper_sensitive(tmp_path: P
     assert official_evaluator_source_sha256(tmp_path) == linux_sha
     source.write_bytes(b"first = 1\r\nsecond = 3\r\n")
     assert official_evaluator_source_sha256(tmp_path) != linux_sha
+
+def test_archived_v1_protocol_is_preserved_but_not_current_default() -> None:
+    legacy = load_official_runtime(Path("configs/official_runtime_v1.yaml"))
+    assert legacy.runtime_version == "official-runtime-v1"
+    assert legacy.qualification is not None
+    assert legacy.qualification.control_count == 104

@@ -28,16 +28,14 @@ def test_official_live_rejects_partial_official_run_before_any_io(tmp_path) -> N
         )
 
 
-def test_official_live_rejects_skipped_qualification_in_official_mode(tmp_path) -> None:
-    with pytest.raises(ValueError, match="development-only"):
-        asyncio.run(
-            execute_official_live(
-                project_root=tmp_path,
-                scenarios_path=tmp_path / "missing.jsonl",
-                development_mode=False,
-                skip_qualification=True,
-            )
-        )
+def test_v2_official_live_has_no_automatic_qualification_stage() -> None:
+    import inspect
+    import kolas_llm_judge.official_live as module
+
+    source = inspect.getsource(module.execute_official_live)
+    assert "run_qualification(" not in source
+    assert "load_generated_control_suite(" not in source
+    assert "qualification_dir" not in source
 
 
 def test_official_live_rejects_runtime_override_in_official_mode(tmp_path) -> None:

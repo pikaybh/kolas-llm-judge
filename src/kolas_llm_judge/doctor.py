@@ -10,7 +10,7 @@ from .deterministic import post_improvement_mode_for_model_mode
 from .io_utils import load_json, load_scenarios
 from .judge import JudgeConfig
 from .manifest import capture_sut_api_contract
-from .official_runtime import validate_official_runtime
+from .official_runtime import DEFAULT_OFFICIAL_RUNTIME_PATH, validate_official_runtime
 from .sut_client import SeexrSutClient, SutConfig
 
 
@@ -151,7 +151,7 @@ async def run_doctor(
     if official:
         required_files.extend(
             [
-                project_root / "configs/official_runtime_v1.yaml",
+                project_root / DEFAULT_OFFICIAL_RUNTIME_PATH,
                 project_root / "configs/rubric_binary_v1.yaml",
                 project_root / "prompts/judge_binary_v1.md",
             ]
@@ -207,7 +207,7 @@ async def run_doctor(
             )
             sut_config = official_runtime.sut_config_with_credentials(env_sut_config)
             binary_judge_config = official_runtime.judge_config()
-            runtime_path = project_root / "configs/official_runtime_v1.yaml"
+            runtime_path = project_root / DEFAULT_OFFICIAL_RUNTIME_PATH
             add(
                 "official_runtime",
                 True,

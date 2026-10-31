@@ -15,8 +15,6 @@ from .io_utils import atomic_write_json, load_scenarios
 from .manifest import capture_sut_api_contract, sut_api_contract_matches
 from .official_runtime import validate_official_runtime
 from .parallel_runner import ParallelRunnerConfig, run_parallel_cases
-from .qualification import run_qualification, write_qualification_artifacts
-from .qualification_controls import load_generated_control_suite
 from .seal import seal_run, verify_run
 from .sut_client import SeexrSutClient, SutConfig
 
@@ -81,8 +79,6 @@ async def execute_official_live(
 ) -> OfficialLiveResult:
     if case_limit is not None and not development_mode:
         raise ValueError("case_limit is development-only; official mode must use all frozen scenarios")
-    if skip_qualification and not development_mode:
-        raise ValueError("skip_qualification is development-only")
     if runner_config is not None and not development_mode:
         raise ValueError("runner_config override is development-only")
 
@@ -152,12 +148,10 @@ async def execute_official_live(
         sut_config = official_runtime.sut_config_with_credentials(env_sut_config)
         judge_config = official_runtime.judge_config()
         runner_config = official_runtime.runner_config()
-        qualification_repeats = official_runtime.qualification.repeats
     else:
         sut_config = env_sut_config
         judge_config = BinaryJudgeConfig.from_env()
         runner_config = runner_config or ParallelRunnerConfig.from_env()
-        qualification_repeats = 2
     async with SeexrSutClient(sut_config) as api_client:
         api_start = capture_sut_api_contract(
             await api_client.healthcheck_auth(), sut_config
@@ -166,49 +160,9 @@ async def execute_official_live(
         raise RuntimeError("SUT API contract unavailable at start")
 
 
+    # Protocol v2: qualification is a separate optional validation command.
+    # No AJQG API calls, fake passes, or qualification artifacts are created.
     judge = BinaryChecklistJudge(judge_config)
-    qualification_dir = run_dir / "qualification"
-    _phase(
-        progress_callback,
-        "qualification",
-        status="running",
-        controls=104,
-    )
-    if skip_qualification:
-        suite = load_generated_control_suite(project_root / "configs/ajqg_seed_v1.yaml")
-        qualification_summary = {
-            "qualification_version": "ajqg-v1",
-            "gate_version": "development-skip",
-            "control_suite_sha256": suite.controls_sha256,
-            "control_count": len(suite.controls),
-            "judge": {
-                "pipeline_version": judge_config.pipeline_version,
-                "model": judge_config.model,
-                "reasoning_effort": judge_config.reasoning_effort,
-            },
-            "gate_pass": True,
-            "development_skip": True,
-        }
-        qualification_dir.mkdir(parents=True, exist_ok=True)
-        atomic_write_json(qualification_dir / "summary.json", qualification_summary)
-        (qualification_dir / "control_results.csv").write_text(
-            "development_skip\ntrue\n",
-            encoding="utf-8",
-        )
-    else:
-        qualification_result = await run_qualification(
-            judge=judge,
-            repeats=qualification_repeats,
-        )
-        write_qualification_artifacts(qualification_result, qualification_dir)
-        qualification_summary = qualification_result.summary
-    _phase(
-        progress_callback,
-        "qualification",
-        status="pass" if qualification_summary.get("gate_pass") else "fail",
-        gate_pass=bool(qualification_summary.get("gate_pass")),
-    )
-
     manifest = build_automated_manifest(
         project_root=project_root,
         run_id=actual_run_id,
@@ -217,55 +171,12 @@ async def execute_official_live(
         judge=judge_config,
         runner=runner_config,
         sut=sut_config,
-        qualification=qualification_summary,
-        qualification_summary_path=qualification_dir / "summary.json",
+        qualification=None,
+        qualification_summary_path=None,
         sut_api_start=api_start,
         development_mode=development_mode,
     )
     atomic_write_json(run_dir / "manifest.json", manifest)
-
-    if not qualification_summary.get("gate_pass"):
-        async with SeexrSutClient(sut_config) as api_client:
-            api_end = capture_sut_api_contract(
-                await api_client.healthcheck_auth(), sut_config
-            )
-        completion = {
-            "status": "qualification_failed",
-            "selected": len(selected),
-            "processed": 0,
-            "completed": 0,
-            "failed": 0,
-            "auth_recovery_count": 0,
-            "sut_api_end": api_end,
-            "sut_api_contract_stable": sut_api_contract_matches(api_start, api_end),
-            "elapsed_ms": round((perf_counter() - started) * 1000),
-            "completed_at_utc": _utc_now(),
-        }
-        atomic_write_json(run_dir / "completion.json", completion)
-        export_automated_report(run_dir)
-        atomic_write_json(
-            run_dir / "final_status.json",
-            {
-                "status": "INVALID_QUALIFICATION",
-                "procedure_valid": False,
-                "development_mode": development_mode,
-                "completed_at_utc": _utc_now(),
-            },
-        )
-        seal_run(run_dir)
-        first_verify = verify_run(run_dir)
-        atomic_write_json(run_dir / "verification.json", first_verify)
-        seal_run(run_dir)
-        final_verify = verify_run(run_dir)
-        await judge.client.close()
-        return OfficialLiveResult(
-            run_dir=run_dir,
-            status="INVALID_QUALIFICATION",
-            procedure_valid=False,
-            development_mode=development_mode,
-            final_verification_ok=bool(final_verify.get("ok")),
-            summary=collect_automated_report(run_dir),
-        )
 
     _phase(
         progress_callback,

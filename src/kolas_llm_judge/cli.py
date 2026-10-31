@@ -435,15 +435,13 @@ def official_live_command(
     ),
     skip_qualification: bool = typer.Option(
         False,
-        help="Development-only: skip live AJQG to benchmark case throughput.",
+        help="Deprecated compatibility flag; AJQG is independent of protocol v2 runs.",
     ),
     case_concurrency: int | None = typer.Option(None, min=1),
     sut_concurrency: int | None = typer.Option(None, min=1),
 ) -> None:
     if case_limit is not None and not development:
         raise typer.BadParameter("--case-limit requires --development")
-    if skip_qualification and not development:
-        raise typer.BadParameter("--skip-qualification requires --development")
     if (case_concurrency is not None or sut_concurrency is not None) and not development:
         raise typer.BadParameter(
             "concurrency overrides require --development; official mode uses frozen runtime"

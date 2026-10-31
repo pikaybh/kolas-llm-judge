@@ -236,16 +236,22 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
     preflight_path = run_dir / "preflight.json"
     preflight = load_json(preflight_path) if preflight_path.exists() else {}
     development_exception = preflight.get("development_exception")
+    protocol = str(manifest.get("protocol") or "automated-kolas-v1")
+    qualification_ok = (
+        qualification.get("gate_pass") is True
+        if protocol == "automated-kolas-v1"
+        else protocol == "automated-kolas-v2"
+    )
     procedure_valid = bool(
         processed == selected
-        and qualification.get("gate_pass") is True
+        and qualification_ok
         and contract_stable is True
         and infrastructure_failures == 0
         and not development_exception
     )
 
     return {
-        "protocol": "automated-kolas-v1",
+        "protocol": protocol,
         "run_id": manifest.get("run_id"),
         "mode": manifest.get("mode"),
         "selected_cases": selected,
