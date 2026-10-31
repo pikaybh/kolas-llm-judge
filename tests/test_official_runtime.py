@@ -153,3 +153,16 @@ def test_official_runtime_requires_scoped_api_key() -> None:
         runtime.sut_config_with_credentials(
             SutConfig(email="legacy@example.test", password="legacy")
         )
+
+
+def test_official_source_hash_is_cross_platform_and_tamper_sensitive(tmp_path: Path) -> None:
+    from kolas_llm_judge.official_runtime import official_evaluator_source_sha256
+
+    source = tmp_path / "src/kolas_llm_judge/fixture.py"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"first = 1\nsecond = 2\n")
+    linux_sha = official_evaluator_source_sha256(tmp_path)
+    source.write_bytes(b"first = 1\r\nsecond = 2\r\n")
+    assert official_evaluator_source_sha256(tmp_path) == linux_sha
+    source.write_bytes(b"first = 1\r\nsecond = 3\r\n")
+    assert official_evaluator_source_sha256(tmp_path) != linux_sha

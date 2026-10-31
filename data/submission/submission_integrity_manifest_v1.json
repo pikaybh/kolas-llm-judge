@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-31T01:38:46.507459+00:00",
-  "repository_base_head_at_generation": "0d3fcf1d67d3d7604ebb3865c235fad45b2654a9",
+  "generated_at_utc": "2026-10-31T02:12:21.490324+00:00",
+  "repository_base_head_at_generation": "225035c65d655aab661d6b6716a70cfa1007dce3",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -14,7 +14,7 @@
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
   "artifact_count": 88,
-  "artifact_root_sha256": "61966e08770b2647fc4026a7ae65fdabdd1d1104eaa050062f5dc971369845bc",
+  "artifact_root_sha256": "a9530b4dac407a9f295abe5b1f8c50f2569bd2950ce03326cb87d81173449c4e",
   "artifacts": [
     {
       "path": ".env.example",
@@ -23,8 +23,8 @@
     },
     {
       "path": "README.md",
-      "size": 15024,
-      "sha256": "c088f3bbefc86ff7fdcdb91297625d8317e6dec19348cc470bb231372a8e4fa9"
+      "size": 15110,
+      "sha256": "0c74b4d1535617392d31d15a415cbcc71155818161bf659f2ce4c56e3f64ab4b"
     },
     {
       "path": "configs/ajqg_gate_v1.yaml",
@@ -49,7 +49,7 @@
     {
       "path": "configs/official_runtime_v1.yaml",
       "size": 3010,
-      "sha256": "2e28a15ef2a5197b3fc225bd13999b24d0d17ba470d51019db41e278826b64cc"
+      "sha256": "6dc130d78c3873c78ee0943bd22952599e636a5d1e6c631aca5efdb6c6ffe577"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -348,8 +348,8 @@
     },
     {
       "path": "src/kolas_llm_judge/doctor.py",
-      "size": 12472,
-      "sha256": "39dd3286de2d4a2796de801092e3e3da1eec8ed9e25ecd12fd374af7fc00df96"
+      "size": 12584,
+      "sha256": "6676b58f00150962fb04a7bc773d966bc4b4d109a682b4f6bce692125b09c205"
     },
     {
       "path": "src/kolas_llm_judge/identification.py",
@@ -393,8 +393,8 @@
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
-      "size": 13299,
-      "sha256": "347e7ffe64fba828eea12f6eeadd7ce18afb15e33c9a3f0ceb256f5d64eb6836"
+      "size": 13323,
+      "sha256": "dd030129acdf4f20aeea7d3efd07833e894209d039961fa788b48dc2f3f5c8d9"
     },
     {
       "path": "src/kolas_llm_judge/parallel_runner.py",

@@ -133,7 +133,8 @@ async def run_doctor(
         add(
             "dataset_manifest",
             False,
-            "dataset manifest not found",
+            ("dataset manifest not found" if not dataset_manifest.exists()
+             else "scenarios file missing; cannot validate dataset manifest"),
         )
 
     required_files = [

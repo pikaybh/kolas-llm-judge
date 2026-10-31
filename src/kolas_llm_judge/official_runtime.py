@@ -41,7 +41,7 @@ def official_evaluator_source_sha256(project_root: Path) -> str:
         relative = str(path.relative_to(project_root)).replace("\\", "/")
         digest.update(relative.encode("utf-8"))
         digest.update(b"\0")
-        digest.update(path.read_bytes())
+        digest.update(path.read_bytes().replace(b"\r\n", b"\n"))
         digest.update(b"\0")
     return digest.hexdigest()
 
