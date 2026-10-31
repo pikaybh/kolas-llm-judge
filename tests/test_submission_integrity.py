@@ -42,6 +42,9 @@ def test_candidate_scope_has_no_self_reference_or_secrets() -> None:
 
 
 def test_candidate_paths_all_exist() -> None:
+    if not (ROOT / "docs/submission_package").is_dir():
+        import pytest
+        pytest.skip("Internal-only submission documents are not distributed")
     paths = candidate_paths(ROOT)
     assert paths
     assert all((ROOT / path).is_file() for path in paths)
@@ -69,6 +72,9 @@ def test_manifest_build_and_verify_detects_tamper(tmp_path: Path) -> None:
 
 
 def test_real_candidate_manifest_matches_files_when_present() -> None:
+    if not (ROOT / "docs/submission_package").is_dir():
+        import pytest
+        pytest.skip("Internal-only submission documents are not distributed")
     path = ROOT / DEFAULT_OUTPUT
     if not path.exists():
         return
