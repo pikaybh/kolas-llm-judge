@@ -35,6 +35,11 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _development_instruction_only_failure(preflight: dict[str, Any], development: bool) -> bool:
+    failed = [check["name"] for check in preflight.get("checks", []) if not check.get("ok")]
+    return development and failed == ["evaluation_saved_instruction_empty"]
+
+
 def make_official_run_id() -> str:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return f"{stamp}-official-live-{uuid.uuid4().hex[:8]}"
@@ -102,8 +107,18 @@ async def execute_official_live(
         live=True,
         official=True,
     )
+    failed_checks = [check for check in preflight["checks"] if not check["ok"]]
+    # Smoke-only exception: never relax official KOLAS readiness or conceal the FAIL.
+    development_instruction_exception = _development_instruction_only_failure(
+        preflight, development_mode
+    )
+    if development_instruction_exception:
+        preflight["development_exception"] = {
+            "check": "evaluation_saved_instruction_empty",
+            "reason": "Saved account instructions may influence smoke results; not official evidence.",
+        }
     atomic_write_json(run_dir / "preflight.json", preflight)
-    if not preflight.get("ok"):
+    if not preflight.get("ok") and not development_instruction_exception:
         atomic_write_json(
             run_dir / "final_status.json",
             {
@@ -113,8 +128,15 @@ async def execute_official_live(
                 "completed_at_utc": _utc_now(),
             },
         )
-        raise RuntimeError("Official-live preflight failed")
-    _phase(progress_callback, "preflight", status="pass")
+        names = ", ".join(check["name"] for check in failed_checks)
+        raise RuntimeError(
+            f"Official-live preflight failed ({names}); see {run_dir / 'preflight.json'}"
+        )
+    _phase(
+        progress_callback,
+        "preflight",
+        status="development-instructions-nonempty" if development_instruction_exception else "pass",
+    )
 
     scenarios = load_scenarios(scenarios_path)
     selected = (

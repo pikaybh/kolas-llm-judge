@@ -233,11 +233,15 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
         failure_classes.get("evaluator_failure", 0)
         + failure_classes.get("infrastructure_failure", 0)
     )
+    preflight_path = run_dir / "preflight.json"
+    preflight = load_json(preflight_path) if preflight_path.exists() else {}
+    development_exception = preflight.get("development_exception")
     procedure_valid = bool(
         processed == selected
         and qualification.get("gate_pass") is True
         and contract_stable is True
         and infrastructure_failures == 0
+        and not development_exception
     )
 
     return {

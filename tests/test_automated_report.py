@@ -151,3 +151,14 @@ def test_old_result_backfills_hazard_identification_from_binary_matrix(tmp_path:
     report = collect_automated_report(tmp_path)
     metric = report["metrics"]["hazard_identification_accuracy"]
     assert metric == {"numerator": 1, "denominator": 1, "rate": 1.0}
+
+def test_smoke_with_saved_instructions_is_not_officially_valid(tmp_path: Path) -> None:
+    _write_fixture(tmp_path, failure_class="sut_non_completion")
+    atomic_write_json(
+        tmp_path / "preflight.json",
+        {
+            "ok": False,
+            "development_exception": {"check": "evaluation_saved_instruction_empty"},
+        },
+    )
+    assert collect_automated_report(tmp_path)["procedure_valid"] is False

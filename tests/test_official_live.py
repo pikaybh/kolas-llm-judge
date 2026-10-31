@@ -50,3 +50,23 @@ def test_official_live_rejects_runtime_override_in_official_mode(tmp_path) -> No
                 runner_config=ParallelRunnerConfig(case_concurrency=99),
             )
         )
+
+def test_development_instruction_exception_is_narrow_and_official_stays_strict() -> None:
+    from kolas_llm_judge.official_live import _development_instruction_only_failure
+
+    instruction_failure = {
+        "checks": [
+            {"name": "dataset_manifest", "ok": True},
+            {"name": "evaluation_saved_instruction_empty", "ok": False},
+        ]
+    }
+    assert _development_instruction_only_failure(instruction_failure, True)
+    assert not _development_instruction_only_failure(instruction_failure, False)
+    assert not _development_instruction_only_failure(
+        {"checks": instruction_failure["checks"] + [{"name": "seexr_live_auth", "ok": False}]},
+        True,
+    )
+    assert not _development_instruction_only_failure(
+        {"checks": [{"name": "evaluation_saved_instruction_empty", "ok": True}]},
+        True,
+    )

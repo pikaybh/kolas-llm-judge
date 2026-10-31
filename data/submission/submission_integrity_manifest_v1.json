@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-31T02:22:07.973301+00:00",
-  "repository_base_head_at_generation": "b71c56271ddb7bd16920c906d9e0195711241932",
+  "generated_at_utc": "2026-10-31T02:36:10.345612+00:00",
+  "repository_base_head_at_generation": "77551d0873574c5346d175f17d572e222462ae7c",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -14,7 +14,7 @@
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
   "artifact_count": 88,
-  "artifact_root_sha256": "a9530b4dac407a9f295abe5b1f8c50f2569bd2950ce03326cb87d81173449c4e",
+  "artifact_root_sha256": "b1b689c852251ec6be49faf8b71bd1ad3900c6da6d928b1c61062f0595c1756d",
   "artifacts": [
     {
       "path": ".env.example",
@@ -49,7 +49,7 @@
     {
       "path": "configs/official_runtime_v1.yaml",
       "size": 3010,
-      "sha256": "6dc130d78c3873c78ee0943bd22952599e636a5d1e6c631aca5efdb6c6ffe577"
+      "sha256": "f045a7a693b8dc2b574359f5dd7069c430481d1a4965477cdb446dcbb1f52259"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -303,8 +303,8 @@
     },
     {
       "path": "src/kolas_llm_judge/automated_report.py",
-      "size": 12678,
-      "sha256": "19a5e58e45e3524f456f19c9c3fffde2132c1e2b806e989b0f75947b5492ee64"
+      "size": 12908,
+      "sha256": "8552aaa924a62e199eede3cce41946757359e121485765a59767ea1d2308ef40"
     },
     {
       "path": "src/kolas_llm_judge/binary_evaluation.py",
@@ -388,8 +388,8 @@
     },
     {
       "path": "src/kolas_llm_judge/official_live.py",
-      "size": 12396,
-      "sha256": "46151a92712e044ed297f0912849e2bdfaa06478f7301ee063d9073f0d313c86"
+      "size": 13499,
+      "sha256": "821fa5497e136339ddf7b7c66b53da48ea42f4ca12a78dfb913f3f341903aa9b"
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
