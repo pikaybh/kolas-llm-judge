@@ -21,6 +21,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 from rich.table import Table
+from rich.text import Text
 
 from .binary_human_calibration import (
     make_binary_human_calibration_template,
@@ -63,9 +64,17 @@ def _format_hia(metric: dict[str, object] | None) -> str:
     return f"{rate * 100:.2f}%"
 
 
+def _styled_hia(value: str) -> Text:
+    """Highlight the primary KPI consistently without changing its value."""
+    return Text(value, style="bold bright_cyan")
+
+
 def _print_hia(table: Table, metrics: dict[str, object]) -> None:
     hia = metrics.get("hazard_identification_accuracy")
-    table.add_row("HIA (primary)", _format_hia(hia if isinstance(hia, dict) else None))
+    table.add_row(
+        _styled_hia("HIA (primary)"),
+        _styled_hia(_format_hia(hia if isinstance(hia, dict) else None)),
+    )
 
 
 def _resolve_run_dir(run: str) -> Path:
@@ -581,8 +590,8 @@ def compare_repeatability_command(
     table.add_column("Value")
     table.add_row("Runs", str(analysis.get("run_count")))
     table.add_row("All seals verified", str(analysis.get("all_seals_verified")))
-    table.add_row("HIA (mean)", _format_hia({"rate": hia.get("mean")}))
-    table.add_row("HIA (range)", _format_hia({"rate": hia.get("range")}))
+    table.add_row(_styled_hia("HIA (mean)"), _styled_hia(_format_hia({"rate": hia.get("mean")})))
+    table.add_row(_styled_hia("HIA (range)"), _styled_hia(_format_hia({"rate": hia.get("range")})))
     console.print(table)
     console.print(f"Repeatability artifact: {output}")
 
@@ -627,7 +636,7 @@ def list_runs() -> None:
     table.add_column("Mode")
     table.add_column("Selected")
     table.add_column("Completion")
-    table.add_column("HIA (primary)")
+    table.add_column("HIA (primary)", header_style="bold bright_cyan")
     for run_dir in sorted(
         (path for path in runs_dir.iterdir() if path.is_dir()),
         reverse=True,
@@ -645,7 +654,7 @@ def list_runs() -> None:
             str(data.get("mode", "")),
             str(data.get("selected_case_count", "")),
             "yes" if completion.exists() else "no",
-            _format_hia(hia),
+            _styled_hia(_format_hia(hia)),
         )
     console.print(table)
 

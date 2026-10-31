@@ -148,3 +148,20 @@ def test_list_runs_shows_only_hia_as_performance_column(monkeypatch, tmp_path: P
     assert "HIA (primary)" in screen and "95.00%" in screen
     assert "Semantic" not in screen
     assert "30.00%" not in screen
+
+def test_hia_uses_distinct_emphasized_color_in_every_monitor():
+    from rich.table import Table
+
+    label = cli._styled_hia("HIA (primary)")
+    assert label.plain == "HIA (primary)"
+    assert label.style == "bold bright_cyan"
+    assert cli._styled_hia(cli._format_hia({"rate": 0.95})).plain == "95.00%"
+
+    table = Table()
+    table.add_column("Item")
+    table.add_column("Value")
+    cli._print_hia(table, {"hazard_identification_accuracy": {"rate": 0.95}})
+    assert table.rows
+    cells = table.columns
+    assert cells[0]._cells[0].style == "bold bright_cyan"
+    assert cells[1]._cells[0].style == "bold bright_cyan"

@@ -44,7 +44,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 ## KOLAS official automated path
 
-**Monitoring presentation policy:** CLI progress and result screens show HIA (Hazard Identification Accuracy) as the only performance KPI, plus operational status, validation failures, and artifact paths. All other metrics (semantic recall, coverage, schema compliance, Judge qualification/calibration details, token usage, etc.) remain computed and stored unmodified in JSON/CSV evidence. This display-only policy applies to smoke, pilot, official-live, derived and repeatability monitoring; do not suppress failures or weaken official gates.
+**Monitoring presentation policy:** CLI progress and result screens show HIA (Hazard Identification Accuracy) as the only performance KPI, highlighted in bold bright cyan, plus operational status, validation failures, and artifact paths. All other metrics (semantic recall, coverage, schema compliance, Judge qualification/calibration details, token usage, etc.) remain computed and stored unmodified in JSON/CSV evidence. This display-only policy applies to smoke, pilot, official-live, derived and repeatability monitoring; do not suppress failures or weaken official gates.
 
 KOLAS 현장 시험용 경로는 multi-day human calibration을 요구하지 않습니다. 시험 시작 시 construction-defined 104-control **Automatic Judge Qualification Gate (AJQG)** 를 자동 실행하고, PASS한 frozen binary-checklist Judge만 본시험에 사용합니다.
 
