@@ -55,6 +55,19 @@ app = typer.Typer(
 console = Console()
 
 
+def _format_hia(metric: dict[str, object] | None) -> str:
+    """Display-only formatting; all raw metrics remain in report artifacts."""
+    rate = metric.get("rate") if isinstance(metric, dict) else None
+    if not isinstance(rate, (float, int)) or isinstance(rate, bool):
+        return "N/A"
+    return f"{rate * 100:.2f}%"
+
+
+def _print_hia(table: Table, metrics: dict[str, object]) -> None:
+    hia = metrics.get("hazard_identification_accuracy")
+    table.add_row("HIA (primary)", _format_hia(hia if isinstance(hia, dict) else None))
+
+
 def _resolve_run_dir(run: str) -> Path:
     candidate = Path(run)
     if candidate.exists():
@@ -169,29 +182,8 @@ def qualify_judge_command(
         )
     )
     paths = write_qualification_artifacts(result, output)
-    table = Table(title="Automatic Judge Qualification Gate")
-    table.add_column("Check")
-    table.add_column("Value")
-    table.add_column("Minimum")
-    table.add_column("Status")
-    for name, check in result.summary["checks"].items():
-        if name == "required_families":
-            table.add_row(
-                name,
-                ", ".join(check["value"]),
-                "all",
-                "[green]PASS[/green]" if check["pass"] else "[red]FAIL[/red]",
-            )
-            continue
-        value = check.get("value")
-        minimum = check.get("minimum")
-        table.add_row(
-            name,
-            f"{value:.4f}" if isinstance(value, float) else str(value),
-            f"{minimum:.4f}" if isinstance(minimum, float) else str(minimum),
-            "[green]PASS[/green]" if check["pass"] else "[red]FAIL[/red]",
-        )
-    console.print(table)
+    # Qualification is an operational gate, not another headline performance KPI.
+    # Its individual calibration metrics remain available in summary.json.
     console.print(f"summary: {paths['summary']}")
     console.print(f"controls: {paths['controls']}")
     console.print(
@@ -316,8 +308,8 @@ def score_binary_calibration_command(
     )
     output = directory / "gate_result.json"
     atomic_write_json(output, result)
-    console.print_json(json=json.dumps(result, ensure_ascii=False))
     console.print("[green]BINARY HUMAN CALIBRATION PASS[/green]" if result["gate_pass"] else "[red]BINARY HUMAN CALIBRATION FAIL[/red]")
+    console.print(f"Detailed results: {output}")
     if not result["gate_pass"]:
         raise typer.Exit(code=3)
 
@@ -371,7 +363,8 @@ def judge_repeatability_command(
             max_cases=max_cases,
         )
     )
-    console.print_json(json=json.dumps(summary, ensure_ascii=False))
+    console.print("[green]Judge repeatability finished[/green]")
+    console.print(f"Detailed results: {output_dir}")
 
 
 @app.command("score-calibration")
@@ -410,7 +403,7 @@ def score_calibration_command(
     )
     output = run_dir / "calibration/gate_result.json"
     atomic_write_json(output, result)
-    console.print_json(json=json.dumps(result, ensure_ascii=False))
+    console.print(f"Detailed results: {output}")
     console.print(
         "[green]CALIBRATION GATE PASS[/green]"
         if result["gate_pass"]
@@ -533,34 +526,7 @@ def official_live_command(
     table.add_row("Run", result.run_dir.name)
     table.add_row("Procedure valid", str(result.procedure_valid))
     table.add_row("Seal verified", str(result.final_verification_ok))
-    table.add_row(
-        "SUT completion",
-        str((summary.get("sut_completion_rate") or {}).get("rate")),
-    )
-    table.add_row(
-        "Secondary strict semantic recall",
-        str(
-            (summary.get("metrics") or {})
-            .get("hazard_semantic_identification_recall", {})
-            .get("rate")
-        ),
-    )
-    table.add_row(
-        "Proposed primary HIA",
-        str(
-            (summary.get("metrics") or {})
-            .get("hazard_identification_accuracy", {})
-            .get("rate")
-        ),
-    )
-    table.add_row(
-        "Strict reference coverage",
-        str((summary.get("metrics") or {}).get("reference_risk_coverage", {}).get("rate")),
-    )
-    table.add_row(
-        "Schema compliance",
-        str((summary.get("deterministic") or {}).get("schema_compliance", {}).get("rate")),
-    )
+    _print_hia(table, summary.get("metrics") or {})
     console.print(table)
     console.print(f"Artifacts: {result.run_dir}")
     if not development and result.status != "VALID":
@@ -586,39 +552,11 @@ def derive_identification_command(
     atomic_write_json(output, analysis)
 
     metrics = analysis.get("metrics") or {}
-    coverage = analysis.get("coverage") or {}
     table = Table(title="Derived Hazard Identification Analysis")
     table.add_column("Item")
     table.add_column("Value")
     table.add_row("Source run", str(analysis.get("source_run_id")))
-    table.add_row(
-        "Secondary strict semantic recall",
-        str((metrics.get("hazard_semantic_identification_recall") or {}).get("rate")),
-    )
-    table.add_row(
-        "Proposed primary HIA",
-        str((metrics.get("hazard_identification_accuracy") or {}).get("rate")),
-    )
-    table.add_row(
-        "Strict reference coverage (1:1)",
-        str((metrics.get("strict_reference_risk_coverage_1to1") or {}).get("rate")),
-    )
-    table.add_row(
-        "Semantic evaluable references",
-        str(coverage.get("semantic_evaluable_references")),
-    )
-    table.add_row("Dataset references", str(coverage.get("dataset_references")))
-    table.add_row(
-        "End-to-end if unjudged are failures",
-        str(
-            (
-                metrics.get(
-                    "end_to_end_hazard_identification_if_unjudged_are_failures"
-                )
-                or {}
-            ).get("rate")
-        ),
-    )
+    _print_hia(table, metrics)
     console.print(table)
     console.print(f"Derived artifact: {output}")
 
@@ -635,19 +573,16 @@ def compare_repeatability_command(
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         output = PROJECT_ROOT / "derived" / f"repeatability-{stamp}.json"
     atomic_write_json(output, analysis)
-    primary = (analysis.get("aggregate_metric_stability") or {}).get(
-        "hazard_semantic_identification_recall", {}
+    hia = (analysis.get("aggregate_metric_stability") or {}).get(
+        "hazard_identification_accuracy", {}
     )
-    detection = analysis.get("semantic_reference_detection") or {}
-    table = Table(title="SUT Semantic Repeatability")
+    table = Table(title="SUT Repeatability")
     table.add_column("Item")
     table.add_column("Value")
     table.add_row("Runs", str(analysis.get("run_count")))
     table.add_row("All seals verified", str(analysis.get("all_seals_verified")))
-    table.add_row("Primary metric mean", str(primary.get("mean")))
-    table.add_row("Primary metric std", str(primary.get("std")))
-    table.add_row("Primary metric range", str(primary.get("range")))
-    table.add_row("Stable reference rate", str(detection.get("stable_reference_rate")))
+    table.add_row("HIA (mean)", _format_hia({"rate": hia.get("mean")}))
+    table.add_row("HIA (range)", _format_hia({"rate": hia.get("range")}))
     console.print(table)
     console.print(f"Repeatability artifact: {output}")
 
@@ -692,6 +627,7 @@ def list_runs() -> None:
     table.add_column("Mode")
     table.add_column("Selected")
     table.add_column("Completion")
+    table.add_column("HIA (primary)")
     for run_dir in sorted(
         (path for path in runs_dir.iterdir() if path.is_dir()),
         reverse=True,
@@ -701,11 +637,15 @@ def list_runs() -> None:
             continue
         data = json.loads(manifest.read_text(encoding="utf-8"))
         completion = run_dir / "completion.json"
+        report_path = run_dir / "report/summary.json"
+        report = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
+        hia = (report.get("metrics") or {}).get("hazard_identification_accuracy")
         table.add_row(
             run_dir.name,
             str(data.get("mode", "")),
             str(data.get("selected_case_count", "")),
             "yes" if completion.exists() else "no",
+            _format_hia(hia),
         )
     console.print(table)
 
