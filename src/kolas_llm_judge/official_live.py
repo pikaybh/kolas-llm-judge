@@ -12,7 +12,7 @@ from .automated_report import collect_automated_report, export_automated_report
 from .binary_judge import BinaryChecklistJudge, BinaryJudgeConfig
 from .doctor import run_doctor
 from .io_utils import atomic_write_json, load_scenarios
-from .manifest import capture_sut_source_fingerprints, sut_source_matches
+from .manifest import capture_sut_api_contract, sut_api_contract_matches
 from .official_runtime import validate_official_runtime
 from .parallel_runner import ParallelRunnerConfig, run_parallel_cases
 from .qualification import run_qualification, write_qualification_artifacts
@@ -136,7 +136,13 @@ async def execute_official_live(
         judge_config = BinaryJudgeConfig.from_env()
         runner_config = runner_config or ParallelRunnerConfig.from_env()
         qualification_repeats = 2
-    source_start = capture_sut_source_fingerprints()
+    async with SeexrSutClient(sut_config) as api_client:
+        api_start = capture_sut_api_contract(
+            await api_client.healthcheck_auth(), sut_config
+        )
+    if not api_start.get("available"):
+        raise RuntimeError("SUT API contract unavailable at start")
+
 
     judge = BinaryChecklistJudge(judge_config)
     qualification_dir = run_dir / "qualification"
@@ -191,13 +197,16 @@ async def execute_official_live(
         sut=sut_config,
         qualification=qualification_summary,
         qualification_summary_path=qualification_dir / "summary.json",
-        sut_source_start=source_start,
+        sut_api_start=api_start,
         development_mode=development_mode,
     )
     atomic_write_json(run_dir / "manifest.json", manifest)
 
     if not qualification_summary.get("gate_pass"):
-        source_end = capture_sut_source_fingerprints()
+        async with SeexrSutClient(sut_config) as api_client:
+            api_end = capture_sut_api_contract(
+                await api_client.healthcheck_auth(), sut_config
+            )
         completion = {
             "status": "qualification_failed",
             "selected": len(selected),
@@ -205,8 +214,8 @@ async def execute_official_live(
             "completed": 0,
             "failed": 0,
             "auth_recovery_count": 0,
-            "sut_source_end": source_end,
-            "sut_source_stable": sut_source_matches(source_start, source_end),
+            "sut_api_end": api_end,
+            "sut_api_contract_stable": sut_api_contract_matches(api_start, api_end),
             "elapsed_ms": round((perf_counter() - started) * 1000),
             "completed_at_utc": _utc_now(),
         }
@@ -264,14 +273,17 @@ async def execute_official_live(
         await sut.client.aclose()
         await judge.client.close()
 
-    source_end = capture_sut_source_fingerprints()
-    source_stable = sut_source_matches(source_start, source_end)
+    async with SeexrSutClient(sut_config) as api_client:
+        api_end = capture_sut_api_contract(
+            await api_client.healthcheck_auth(), sut_config
+        )
+    contract_stable = sut_api_contract_matches(api_start, api_end)
     completion = {
         "status": "completed",
         **run_summary.as_dict(),
         "auth_recovery_count": auth_recoveries,
-        "sut_source_end": source_end,
-        "sut_source_stable": source_stable,
+        "sut_api_end": api_end,
+        "sut_api_contract_stable": contract_stable,
         "elapsed_ms": round((perf_counter() - started) * 1000),
         "completed_at_utc": _utc_now(),
     }

@@ -21,7 +21,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] atomic per-stage checkpoint and resume
 - [x] immutable run manifest
 - [x] production Core/Agents working-tree fingerprint 기록
-- [x] 실행 전/후 SUT source stability 검증
+- [x] 실행 전/후 인증된 SUT API 계약 상태 비교 (`GET /agents`) — 외부 API 계약 검증이며 운영 서버의 소스 커밋 증빙과는 별개
 - [x] legacy ordinal human calibration template/gate (research compatibility)
 - [x] official Boolean blinded Human–LLM calibration template/gate under `derived/`
 - [x] Judge repeatability runner
@@ -287,7 +287,7 @@ cannot silently change the metric definition.
 별도 생성합니다. 평가 로직과 제출 양식을 분리하여 보고서 형식 변경이 시험 결과를
 바꾸지 않도록 합니다.
 
-자세한 시험 프로토콜은 `docs/evaluation_spec.md`를 참조하세요.
+시험 실행 방법은 본 README와 `configs/official_runtime_v1.yaml`을 참조하세요. 내부 기술 문서는 별도 관리합니다.
 
 ## KOLAS compliance hardening (2026-09-14)
 

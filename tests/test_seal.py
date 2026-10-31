@@ -24,7 +24,7 @@ def _make_run(tmp_path: Path) -> Path:
         run_dir / "completion.json",
         {
             "run_id": "run-test",
-            "sut_source_stable": True,
+            "sut_api_contract_stable": True,
         },
     )
     case_dir = run_dir / "cases/case-1"

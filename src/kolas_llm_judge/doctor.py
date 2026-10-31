@@ -9,7 +9,7 @@ from .dataset import sha256_file
 from .deterministic import post_improvement_mode_for_model_mode
 from .io_utils import load_json, load_scenarios
 from .judge import JudgeConfig
-from .manifest import capture_sut_source_fingerprints
+from .manifest import capture_sut_api_contract
 from .official_runtime import validate_official_runtime
 from .sut_client import SeexrSutClient, SutConfig
 
@@ -144,8 +144,6 @@ async def run_doctor(
         project_root
         / "prompts/judge_v1.md",
         project_root
-        / "docs/evaluation_spec.md",
-        project_root
         / "data/raw/PROVENANCE.md",
         project_root / "uv.lock",
     ]
@@ -155,9 +153,6 @@ async def run_doctor(
                 project_root / "configs/official_runtime_v1.yaml",
                 project_root / "configs/rubric_binary_v1.yaml",
                 project_root / "prompts/judge_binary_v1.md",
-                project_root / "docs/automated_kolas_protocol_v1.md",
-                project_root / "docs/testing_lab_method_and_rubric_v1.md",
-                project_root / "docs/kolas_compliance_plan_v1.md",
             ]
         )
     for path in required_files:
@@ -200,34 +195,6 @@ async def run_doctor(
             "evaluation_git_head",
             "No evaluation harness commit yet.",
         )
-
-    sut_source = (
-        capture_sut_source_fingerprints()
-    )
-    for component in ("core", "agents"):
-        row = sut_source.get(component, {})
-        add(
-            f"sut_source:{component}",
-            bool(row.get("available")),
-            (
-                "relevant_files="
-                f"{row.get('relevant_file_count')}, "
-                "relevant_dirty="
-                f"{row.get('relevant_dirty')}, "
-                "hash="
-                f"{row.get('relevant_source_fingerprint_sha256')}"
-            ),
-        )
-        if row.get("relevant_dirty"):
-            warn(
-                f"sut_source:{component}:dirty",
-                (
-                    "Relevant production source has "
-                    "uncommitted changes. Exact content "
-                    "hash will still be frozen in each "
-                    "run manifest."
-                ),
-            )
 
     env_sut_config = SutConfig.from_env()
     official_runtime = None
@@ -397,6 +364,13 @@ async def run_doctor(
                     "risk_agent_available",
                     risk_available,
                     sut_config.agent_id,
+                )
+                api_contract = capture_sut_api_contract(data, sut_config)
+                add(
+                    "sut_api_contract",
+                    bool(api_contract.get("available")),
+                    (api_contract.get("api_contract_sha256")
+                     or api_contract.get("reason", "API contract unavailable")),
                 )
                 if official:
                     account_state = (

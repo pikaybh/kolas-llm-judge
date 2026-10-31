@@ -139,7 +139,7 @@ def build_automated_manifest(
     sut: SutConfig,
     qualification: dict[str, Any],
     qualification_summary_path: Path,
-    sut_source_start: dict[str, Any],
+    sut_api_start: dict[str, Any],
     development_mode: bool,
 ) -> dict[str, Any]:
     git_head = _git(["rev-parse", "HEAD"], project_root)
@@ -170,7 +170,7 @@ def build_automated_manifest(
             sut=sut,
         ),
         "sut_evaluation_identity": sut_evaluation_identity(sut),
-        "sut_source_start": sut_source_start,
+        "sut_api_start": sut_api_start,
         "qualification": {
             "gate_pass": bool(qualification.get("gate_pass")),
             "qualification_version": qualification.get("qualification_version"),

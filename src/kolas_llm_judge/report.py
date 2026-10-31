@@ -658,9 +658,9 @@ def build_summary(
             if selected
             else None
         ),
-        "sut_source_stable": (
+        "sut_api_contract_stable": (
             completion.get(
-                "sut_source_stable"
+                "sut_api_contract_stable"
             )
         ),
         "calibration_gate_pass": (
@@ -690,7 +690,7 @@ def build_summary(
             == selected
             and not failed
             and completion.get(
-                "sut_source_stable"
+                "sut_api_contract_stable"
             )
             is True
             and (

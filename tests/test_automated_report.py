@@ -20,7 +20,7 @@ def _write_fixture(tmp_path: Path, *, failure_class: str) -> None:
     )
     atomic_write_json(
         tmp_path / "completion.json",
-        {"sut_source_stable": True, "auth_recovery_count": 1},
+        {"sut_api_contract_stable": True, "auth_recovery_count": 1},
     )
     root = tmp_path / "cases" / "case-ok"
     atomic_write_json(

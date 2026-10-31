@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fnmatch
 import hashlib
 import importlib.metadata
 import json
@@ -21,7 +20,6 @@ HASHED_PATHS = [
     Path("configs/evaluation.yaml"),
     Path("configs/rubric_v1.yaml"),
     Path("prompts/judge_v1.md"),
-    Path("docs/evaluation_spec.md"),
     Path("data/raw/PROVENANCE.md"),
     Path("data/cases/dataset_manifest.json"),
     Path("uv.lock"),
@@ -31,40 +29,12 @@ SOURCE_GLOBS = [
     "src/kolas_llm_judge/*.py",
     "configs/*.yaml",
     "prompts/*.md",
-    "docs/*.md",
     "data/raw/PROVENANCE.md",
     "data/cases/dataset_manifest.json",
     "pyproject.toml",
     "uv.lock",
 ]
 
-CORE_RELEVANT_GLOBS = [
-    "package.json",
-    "package-lock.json",
-    "tsconfig*.json",
-    "src/main.ts",
-    "src/app.module.ts",
-    "src/common/**/*.ts",
-    "src/modules/agents/**/*.ts",
-    "src/modules/chat/**/*.ts",
-    "src/modules/auth/**/*.ts",
-    "src/modules/users/**/*.ts",
-]
-
-AGENTS_RELEVANT_GLOBS = [
-    "package.json",
-    "package-lock.json",
-    "tsconfig*.json",
-    "src/mastra/**/*.ts",
-    "src/mastra/**/*.json",
-    "src/mastra/**/*.yaml",
-    "src/mastra/**/*.yml",
-]
-
-AGENTS_EXCLUDED_PREFIXES = [
-    "src/mastra/public/.mastra/",
-    "src/mastra/node_modules/",
-]
 
 
 def _utc_now() -> str:
@@ -86,199 +56,36 @@ def _git(
         return None
 
 
-def _matches_any(
-    relative_path: str,
-    patterns: list[str],
-) -> bool:
-    normalized = relative_path.replace("\\", "/")
-    return any(
-        fnmatch.fnmatch(normalized, pattern)
-        for pattern in patterns
+
+
+def capture_sut_api_contract(response: dict[str, Any], sut: SutConfig) -> dict[str, Any]:
+    """Snapshot the *observable* API contract, not private server source code."""
+    agents = response.get("agents")
+    if not isinstance(agents, list):
+        return {"available": False, "reason": "GET /agents returned no agents list"}
+    details = sorted(
+        ({"id": str(agent["id"]), "enabled": bool(agent.get("enabled", True))}
+         for agent in agents if isinstance(agent, dict) and agent.get("id")),
+        key=lambda item: item["id"],
     )
+    if not any(row["id"] == sut.agent_id and row["enabled"] for row in details):
+        return {"available": False, "reason": "risk-assessment agent not enabled"}
+    observed = {"base_url": sut.base_url, "agent_id": sut.agent_id, "agents": details}
+    digest = hashlib.sha256(json.dumps(observed, sort_keys=True).encode("utf-8")).hexdigest()
+    return {"available": True, "base_url": sut.base_url, "agent_id": sut.agent_id,
+            "api_contract_sha256": digest, "evidence": "authenticated GET /agents"}
 
 
-def _is_excluded(
-    relative_path: str,
-    prefixes: list[str],
-) -> bool:
-    normalized = relative_path.replace("\\", "/")
-    return any(
-        normalized.startswith(prefix)
-        for prefix in prefixes
+def sut_api_contract_matches(first: dict[str, Any], second: dict[str, Any]) -> bool:
+    """Fail closed if either API contract observation is missing or changed."""
+    return (
+        isinstance(first, dict) and isinstance(second, dict)
+        and first.get("available") is True and second.get("available") is True
+        and isinstance(first.get("api_contract_sha256"), str)
+        and first["api_contract_sha256"] == second.get("api_contract_sha256")
+        and first.get("base_url") == second.get("base_url")
+        and first.get("agent_id") == second.get("agent_id")
     )
-
-
-def _status_path(line: str) -> str | None:
-    if len(line) < 4:
-        return None
-    value = line[3:].strip()
-    if " -> " in value:
-        value = value.split(" -> ", 1)[1]
-    if value.startswith('"') and value.endswith('"'):
-        value = value[1:-1]
-    return value or None
-
-
-def _relevant_source_fingerprint(
-    repo: Path,
-    *,
-    patterns: list[str],
-    excluded_prefixes: list[str] | None = None,
-) -> dict[str, Any]:
-    excluded_prefixes = excluded_prefixes or []
-    if not (repo / ".git").exists():
-        return {
-            "path": str(repo),
-            "available": False,
-        }
-
-    head = _git(
-        ["rev-parse", "HEAD"],
-        cwd=repo,
-    )
-    status = (
-        _git(
-            ["status", "--porcelain=v1"],
-            cwd=repo,
-        )
-        or ""
-    )
-    status_lines = [
-        line
-        for line in status.splitlines()
-        if line.strip()
-    ]
-
-    files: set[Path] = set()
-    for pattern in patterns:
-        for path in repo.glob(pattern):
-            if not path.is_file():
-                continue
-            relative = str(
-                path.relative_to(repo)
-            ).replace("\\", "/")
-            if _is_excluded(
-                relative,
-                excluded_prefixes,
-            ):
-                continue
-            files.add(path)
-
-    relevant_status: list[str] = []
-    for line in status_lines:
-        relative = _status_path(line)
-        if relative is None:
-            continue
-        if _is_excluded(
-            relative,
-            excluded_prefixes,
-        ):
-            continue
-        if _matches_any(relative, patterns):
-            relevant_status.append(line)
-
-    digest = hashlib.sha256()
-    for path in sorted(
-        files,
-        key=lambda value: str(
-            value.relative_to(repo)
-        ),
-    ):
-        relative = str(
-            path.relative_to(repo)
-        ).replace("\\", "/")
-        digest.update(relative.encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(path.read_bytes())
-        digest.update(b"\0")
-
-    # Include relevant git status so deletion/rename of a relevant
-    # source file is detected even when the path no longer exists.
-    for line in sorted(relevant_status):
-        digest.update(b"STATUS\0")
-        digest.update(
-            line.encode(
-                "utf-8",
-                errors="surrogateescape",
-            )
-        )
-        digest.update(b"\0")
-
-    return {
-        "path": str(repo),
-        "available": True,
-        "head": head,
-        "full_repo_dirty": bool(status_lines),
-        "full_repo_status_sha256": (
-            hashlib.sha256(
-                status.encode("utf-8")
-            ).hexdigest()
-        ),
-        "full_modified_entry_count": len(
-            status_lines
-        ),
-        "relevant_dirty": bool(
-            relevant_status
-        ),
-        "relevant_modified_entry_count": len(
-            relevant_status
-        ),
-        "relevant_file_count": len(files),
-        "relevant_source_fingerprint_sha256": (
-            digest.hexdigest()
-        ),
-        "relevant_globs": patterns,
-        "excluded_prefixes": excluded_prefixes,
-    }
-
-
-def capture_sut_source_fingerprints() -> dict[str, Any]:
-    return {
-        "core": _relevant_source_fingerprint(
-            Path(
-                "/srv/green-server/"
-                "seexr-api-core"
-            ),
-            patterns=CORE_RELEVANT_GLOBS,
-        ),
-        "agents": _relevant_source_fingerprint(
-            Path(
-                "/srv/green-server/"
-                "seexr-api-agents"
-            ),
-            patterns=AGENTS_RELEVANT_GLOBS,
-            excluded_prefixes=(
-                AGENTS_EXCLUDED_PREFIXES
-            ),
-        ),
-    }
-
-
-def sut_source_matches(
-    first: dict[str, Any],
-    second: dict[str, Any],
-) -> bool:
-    for component in ("core", "agents"):
-        left = first.get(component)
-        right = second.get(component)
-        if not isinstance(left, dict):
-            return False
-        if not isinstance(right, dict):
-            return False
-        if not left.get("available"):
-            return False
-        if not right.get("available"):
-            return False
-        if (
-            left.get(
-                "relevant_source_fingerprint_sha256"
-            )
-            != right.get(
-                "relevant_source_fingerprint_sha256"
-            )
-        ):
-            return False
-    return True
 
 
 def _source_tree_hash(root: Path) -> str:
@@ -491,9 +298,6 @@ def build_run_manifest(
                 ]
             ),
         },
-        "sut_source": (
-            capture_sut_source_fingerprints()
-        ),
         "sut_evaluation_identity": sut_evaluation_identity(sut),
         "sut": {
             "base_url": sut.base_url,
@@ -569,11 +373,6 @@ def write_manifest_once(
             if existing.get(key)
             != manifest.get(key)
         ]
-        if not sut_source_matches(
-            existing.get("sut_source", {}),
-            manifest.get("sut_source", {}),
-        ):
-            mismatched.append("sut_source")
         if mismatched:
             raise RuntimeError(
                 "Existing manifest does not "

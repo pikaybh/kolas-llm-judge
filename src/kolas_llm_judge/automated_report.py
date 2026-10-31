@@ -225,9 +225,9 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
     completion_path = run_dir / "completion.json"
     completion = load_json(completion_path) if completion_path.exists() else {}
     qualification = manifest.get("qualification") or {}
-    source_stable = completion.get("sut_source_stable")
-    if source_stable is None:
-        source_stable = manifest.get("sut_source_stable")
+    contract_stable = completion.get("sut_api_contract_stable")
+    if contract_stable is None:
+        contract_stable = manifest.get("sut_api_contract_stable")
 
     infrastructure_failures = (
         failure_classes.get("evaluator_failure", 0)
@@ -236,7 +236,7 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
     procedure_valid = bool(
         processed == selected
         and qualification.get("gate_pass") is True
-        and source_stable is True
+        and contract_stable is True
         and infrastructure_failures == 0
     )
 
@@ -279,7 +279,7 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
             "max_per_completed_case": max(generated_counts) if generated_counts else None,
         },
         "qualification": qualification,
-        "sut_source_stable": source_stable,
+        "sut_api_contract_stable": contract_stable,
         "evaluator_or_infrastructure_failure_count": infrastructure_failures,
         "procedure_valid": procedure_valid,
         "note": (

@@ -1,6 +1,6 @@
 runtime_version: "official-runtime-v1"
 protocol: "automated-kolas-v1"
-evaluator_source_sha256: "7db7663d8b5c828796061dba26f12f5da9e7095736aa75d068c37dee6719a9c9"
+evaluator_source_sha256: "b3e8eaaa3fb7ee704fbc9ef9dcf0de7f2dd32efd269942e92e491c0e33b7c13d"
 dataset:
   dataset_id: "KOLAS_RA_GT"
   dataset_version: "1.0.0"
@@ -40,7 +40,7 @@ metrics:
   supplementary_kpi_rule: "same_hazard_mechanism AND context_compatible"
   supplementary_kpi_denominator: "references_with_completed_binary_match_matrix"
 acceptance:
-  procedure_validity_rule: "AJQG pass AND all cases processed AND SUT source stable AND no evaluator/infrastructure failure AND seal verified"
+  procedure_validity_rule: "AJQG pass AND all cases processed AND SUT API contract stable AND no evaluator/infrastructure failure AND seal verified"
   sut_performance_decision: "report_only_until_testing_lab_approval"
   performance_thresholds_frozen: false
 parallel:

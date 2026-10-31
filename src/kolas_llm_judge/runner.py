@@ -29,10 +29,10 @@ from .judge import JudgeCallRecord, JudgeConfig, LlmJudge
 from .manifest import (
     build_run_manifest,
     capture_current_method_identity,
-    capture_sut_source_fingerprints,
+    capture_sut_api_contract,
     method_identity_matches,
     sut_evaluation_identity,
-    sut_source_matches,
+    sut_api_contract_matches,
     write_manifest_once,
 )
 from .matching import match_risks
@@ -519,6 +519,9 @@ async def execute_run(
 
     async with SeexrSutClient(sut_config) as sut:
         await sut.ensure_authenticated()
+        api_start = capture_sut_api_contract(await sut.healthcheck_auth(), sut_config)
+        if not api_start.get("available"):
+            raise RuntimeError("SUT API contract unavailable")
         judge = LlmJudge(judge_config)
         completed = 0
         failed = 0
@@ -604,19 +607,20 @@ async def execute_run(
                     )
                     progress.advance(task)
 
-    end_sut_source = capture_sut_source_fingerprints()
-    sut_source_stable = sut_source_matches(
-        manifest["sut_source"],
-        end_sut_source,
-    )
+    async with SeexrSutClient(sut_config) as api_client:
+        api_end = capture_sut_api_contract(
+            await api_client.healthcheck_auth(), sut_config
+        )
+    contract_stable = sut_api_contract_matches(api_start, api_end)
     completion_payload = {
         "run_id": actual_run_id,
         "completed_at_utc": utc_now(),
         "completed_this_invocation": completed,
         "failed_this_invocation": failed,
         "skipped_this_invocation": skipped,
-        "sut_source_stable": sut_source_stable,
-        "sut_source_at_end": end_sut_source,
+        "sut_api_start": api_start,
+        "sut_api_end": api_end,
+        "sut_api_contract_stable": contract_stable,
     }
     atomic_write_json(run_dir / "completion.json", completion_payload)
     reports = export_reports(run_dir)
@@ -626,9 +630,6 @@ async def execute_run(
     atomic_write_json(run_dir / "completion.json", completion_payload)
     if mode == "full":
         seal_run(run_dir)
-    if not sut_source_stable:
-        raise RuntimeError(
-            "Production SUT source changed during the evaluation run; "
-            "the run is not valid as an official candidate."
-        )
+    if not contract_stable:
+        raise RuntimeError("SUT API contract changed or became unavailable")
     return run_dir
