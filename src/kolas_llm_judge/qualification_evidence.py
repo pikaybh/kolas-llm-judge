@@ -4,10 +4,26 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-import hashlib
 
 from .io_utils import load_json
 from .dataset import sha256_file
+from .official_runtime import official_evaluator_source_sha256
+
+FROZEN_FILES = {
+    "prompt_sha256": "prompts/judge_binary_v1.md",
+    "rubric_sha256": "configs/rubric_binary_v1.yaml",
+    "gate_sha256": "configs/ajqg_gate_v1.yaml",
+    "seed_sha256": "configs/ajqg_seed_v1.yaml",
+    "runtime_sha256": "configs/official_runtime_v2.yaml",
+}
+
+
+def capture_frozen_qualification_identity(project_root: Path) -> dict[str, str]:
+    """Record the exact official Judge/runtime/evaluator inputs used by the qualification."""
+    result = {k: sha256_file(project_root / rel) for k, rel in FROZEN_FILES.items()}
+    result["evaluator_source_sha256"] = official_evaluator_source_sha256(project_root)
+    return result
+
 
 
 def validate_qualification_evidence(
@@ -44,15 +60,7 @@ def validate_qualification_evidence(
                 continue
             # Bind to the exact frozen evaluator-side configuration files.
             config = data.get("frozen_evaluator") or {}
-            if not config or not all(
-                config.get(name) == sha256_file(project_root / rel)
-                for name, rel in {
-                    "prompt_sha256": "prompts/judge_binary_v1.md",
-                    "rubric_sha256": "configs/rubric_binary_v1.yaml",
-                    "gate_sha256": "configs/ajqg_gate_v1.yaml",
-                    "seed_sha256": "configs/ajqg_seed_v1.yaml",
-                }.items()
-            ):
+            if not config or config != capture_frozen_qualification_identity(project_root):
                 continue
             # Each qualification is for one official run only.
             used = any(

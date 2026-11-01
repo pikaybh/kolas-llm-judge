@@ -183,8 +183,8 @@ async def execute_official_live(
         atomic_write_json(run_dir / "sut_source_start.json", source_start)
 
 
-    # Protocol v2: qualification is a separate optional validation command.
-    # No AJQG API calls, fake passes, or qualification artifacts are created.
+    # AJQG is independently run by the testing institution, but a fresh
+    # validated PASS is mandatory for this official execution.
     judge = BinaryChecklistJudge(judge_config)
     manifest = build_automated_manifest(
         project_root=project_root,

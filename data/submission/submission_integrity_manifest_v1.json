@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-11-01T15:04:09.947209+00:00",
-  "repository_base_head_at_generation": "89959dcd6683c35118739430888a933c0f93e3af",
+  "generated_at_utc": "2026-11-01T15:37:18.319264+00:00",
+  "repository_base_head_at_generation": "6ab17b6aaa8fb2ba266c13d283cf79356a3de395",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -14,7 +14,7 @@
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
   "artifact_count": 90,
-  "artifact_root_sha256": "82fe26c601c645f594295e70babb6faeab912c952bd15395681fc45cbb586b94",
+  "artifact_root_sha256": "715d8187cedfa040273a611cec38dda9af7f928fb840b09bb98fb3721413e76b",
   "artifacts": [
     {
       "path": ".env.example",
@@ -54,7 +54,7 @@
     {
       "path": "configs/official_runtime_v2.yaml",
       "size": 2669,
-      "sha256": "2485a03327cbfddfba17635bca0c4d93ea9c4e27c74992ff8bcfa21e6be8f06c"
+      "sha256": "3b6c34d7adcc6e0089d2d4da2d101cfc75f1d2b5483b482395230b2d3ba643a0"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -303,8 +303,8 @@
     },
     {
       "path": "src/kolas_llm_judge/automated_manifest.py",
-      "size": 6087,
-      "sha256": "1a5042c3425b41bd2004bdf55dbbeaba2a28f084fa6504532e4da0ca546df4f8"
+      "size": 6086,
+      "sha256": "cf4cbf7f625e21edb2b7d685f513ec51db6d9c2796023201232da07828903ea7"
     },
     {
       "path": "src/kolas_llm_judge/automated_report.py",
@@ -333,8 +333,8 @@
     },
     {
       "path": "src/kolas_llm_judge/cli.py",
-      "size": 22933,
-      "sha256": "1925faab84d30e56740ac65427069341144f30ff99ce3fe53a5d35eaf2b81322"
+      "size": 23104,
+      "sha256": "d42a047e428270b03da53dbd8954dc71257a59e56709dd5193dca3f9b8a9b9d6"
     },
     {
       "path": "src/kolas_llm_judge/dataset.py",
@@ -393,8 +393,8 @@
     },
     {
       "path": "src/kolas_llm_judge/official_live.py",
-      "size": 11638,
-      "sha256": "ea133e8a65503fd385d78c10dc22a7784f027e64ea728aa201df72fae64b3fc1"
+      "size": 11619,
+      "sha256": "5d8c83fa823c2386b52c42ee305b52023dacb3fe5654bb3859e0d3fd7506badb"
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
@@ -423,8 +423,8 @@
     },
     {
       "path": "src/kolas_llm_judge/qualification_evidence.py",
-      "size": 3586,
-      "sha256": "96068f10a661e3c65a7abc2e6c7fb8955684f18a9ca2878bd37fcdeadd210063"
+      "size": 3926,
+      "sha256": "d2bba642d9771a63e5802d0763679c6cc61c2a54de4e256a831cda30f7f1453d"
     },
     {
       "path": "src/kolas_llm_judge/repeatability.py",

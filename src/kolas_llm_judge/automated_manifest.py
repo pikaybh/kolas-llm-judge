@@ -112,7 +112,7 @@ def capture_automated_method_identity(
         "judge": automated_judge_identity(judge),
         "parallel_runner": parallel_runner_identity(runner),
         "sut_evaluation_identity": sut_evaluation_identity(sut),
-        "independent_judge_validation": "optional-separate-evidence; not an execution gate",
+        "independent_judge_validation": "separate-required-pass-before-every-official-run",
         "official_runtime": {
             "path": "configs/official_runtime_v2.yaml",
             "sha256": sha256_file(runtime_path) if runtime_path.exists() else None,

@@ -190,6 +190,8 @@ def qualify_judge_command(
             repeats=repeats,
         )
     )
+    from .qualification_evidence import capture_frozen_qualification_identity
+    result.summary["frozen_evaluator"] = capture_frozen_qualification_identity(PROJECT_ROOT)
     paths = write_qualification_artifacts(result, output)
     # Qualification is an operational gate, not another headline performance KPI.
     # Its individual calibration metrics remain available in summary.json.
