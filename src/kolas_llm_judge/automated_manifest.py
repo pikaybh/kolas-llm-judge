@@ -163,8 +163,8 @@ def build_automated_manifest(
         ),
         "sut_evaluation_identity": sut_evaluation_identity(sut),
         "sut_api_start": sut_api_start,
-        "qualification": {
-            "mode": "independent-not-required",
+        "qualification": qualification if qualification is not None else {
+            "mode": "development-no-qualification",
             "gate_pass": None,
             "summary_path": None,
             "summary_sha256": None,

@@ -12,10 +12,12 @@ from .automated_report import collect_automated_report, export_automated_report
 from .binary_judge import BinaryChecklistJudge, BinaryJudgeConfig
 from .doctor import run_doctor
 from .io_utils import atomic_write_json, load_scenarios
-from .manifest import capture_sut_api_contract, sut_api_contract_matches
+from .manifest import (capture_sut_api_contract, sut_api_contract_matches,
+                       normalize_sut_source_fingerprint, sut_source_fingerprint_matches)
 from .official_runtime import validate_official_runtime
 from .parallel_runner import ParallelRunnerConfig, run_parallel_cases
 from .seal import seal_run, verify_run
+from .qualification_evidence import validate_qualification_evidence
 from .sut_client import SeexrSutClient, SutConfig
 
 
@@ -134,6 +136,17 @@ async def execute_official_live(
         status="development-instructions-nonempty" if development_instruction_exception else "pass",
     )
 
+    qualification_evidence = None
+    qualification_summary_path = None
+    if not development_mode:
+        qualification_evidence, qualification_summary_path = validate_qualification_evidence(
+            project_root,
+            expected_model=official_runtime.judge.model,
+            expected_effort=official_runtime.judge.reasoning_effort,
+        )
+        atomic_write_json(run_dir / "qualification_evidence.json", qualification_evidence)
+        _phase(progress_callback, "qualification", status="pass")
+
     scenarios = load_scenarios(scenarios_path)
     selected = (
         _evenly_spaced_subset(scenarios, case_limit)
@@ -159,6 +172,16 @@ async def execute_official_live(
     if not api_start.get("available"):
         raise RuntimeError("SUT API contract unavailable at start")
 
+    # Separate runtime compiled-source fingerprint from the observable API contract.
+    # Always required for official procedure validity; skip only for development smoke.
+    source_start = None
+    if not development_mode:
+        async with SeexrSutClient(sut_config) as source_client:
+            source_start = normalize_sut_source_fingerprint(
+                await source_client.sut_source_fingerprint()
+            )
+        atomic_write_json(run_dir / "sut_source_start.json", source_start)
+
 
     # Protocol v2: qualification is a separate optional validation command.
     # No AJQG API calls, fake passes, or qualification artifacts are created.
@@ -171,8 +194,8 @@ async def execute_official_live(
         judge=judge_config,
         runner=runner_config,
         sut=sut_config,
-        qualification=None,
-        qualification_summary_path=None,
+        qualification=qualification_evidence,
+        qualification_summary_path=qualification_summary_path,
         sut_api_start=api_start,
         development_mode=development_mode,
     )
@@ -211,12 +234,22 @@ async def execute_official_live(
             await api_client.healthcheck_auth(), sut_config
         )
     contract_stable = sut_api_contract_matches(api_start, api_end)
+    source_end = None
+    source_stable = None
+    if not development_mode:
+        async with SeexrSutClient(sut_config) as source_client:
+            source_end = normalize_sut_source_fingerprint(
+                await source_client.sut_source_fingerprint()
+            )
+        atomic_write_json(run_dir / "sut_source_end.json", source_end)
+        source_stable = sut_source_fingerprint_matches(source_start, source_end)
     completion = {
         "status": "completed",
         **run_summary.as_dict(),
         "auth_recovery_count": auth_recoveries,
         "sut_api_end": api_end,
         "sut_api_contract_stable": contract_stable,
+        "sut_source_stable": source_stable,
         "elapsed_ms": round((perf_counter() - started) * 1000),
         "completed_at_utc": _utc_now(),
     }

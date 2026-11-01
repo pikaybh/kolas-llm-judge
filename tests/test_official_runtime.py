@@ -17,7 +17,7 @@ def test_frozen_official_runtime_has_benchmarked_concurrency() -> None:
     assert runtime.judge.model == "gpt-5.6-sol"
     assert runtime.judge.reasoning_effort == "medium"
     assert runtime.qualification is None
-    assert runtime.independent_judge_validation["official_gate_required"] is False
+    assert runtime.independent_judge_validation["official_gate_required"] is True
     assert runtime.metrics.primary_metric == "hazard_identification_accuracy"
     assert runtime.metrics.primary_rule_version == "hazard-identification-v1"
     assert runtime.metrics.primary_rule == "(same_hazard_mechanism AND context_compatible) OR accident_compatible"

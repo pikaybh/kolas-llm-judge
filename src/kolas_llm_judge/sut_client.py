@@ -449,6 +449,18 @@ class SeexrSutClient:
             else {"data": data}
         )
 
+    async def sut_source_fingerprint(self) -> dict[str, Any]:
+        """Read Core + Agents runtime artifacts using the scoped evaluation API key."""
+        if not self.config.api_key:
+            raise RuntimeError("SUT source fingerprint requires SEEXR_API_KEY")
+        response = await self._request_with_auth_retry(
+            "GET", "/system/sut-fingerprint",
+        )
+        data = _unwrap(response.json())
+        if not isinstance(data, dict):
+            raise RuntimeError("SUT fingerprint response is not an object")
+        return data
+
     async def evaluation_account_state(
         self,
     ) -> dict[str, Any]:

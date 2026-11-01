@@ -374,6 +374,23 @@ async def run_doctor(
                      or api_contract.get("reason", "API contract unavailable")),
                 )
                 if official:
+                    try:
+                        from .manifest import normalize_sut_source_fingerprint
+                        fingerprint = normalize_sut_source_fingerprint(
+                            await sut.sut_source_fingerprint()
+                        )
+                        add(
+                            "sut_source_fingerprint",
+                            True,
+                            "Core=" + fingerprint["core"]["artifact_sha256"] +
+                            " Agents=" + fingerprint["agents"]["artifact_sha256"],
+                        )
+                    except Exception as error:
+                        add(
+                            "sut_source_fingerprint",
+                            False,
+                            f"{type(error).__name__}: {error}",
+                        )
                     account_state = (
                         await sut.evaluation_account_state()
                     )

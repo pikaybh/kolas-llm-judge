@@ -146,8 +146,8 @@ class OfficialRuntimeConfig(BaseModel):
         if self.runtime_version == "official-runtime-v2":
             if self.qualification is not None:
                 raise ValueError("v2 official runtime must not depend on AJQG")
-            if self.independent_judge_validation.get("official_gate_required") is not False:
-                raise ValueError("v2 Judge qualification is independent, not an official gate")
+            if self.independent_judge_validation.get("official_gate_required") is not True:
+                raise ValueError("v2 requires independent AJQG PASS evidence before official execution")
             if "AJQG" in self.acceptance.procedure_validity_rule.upper():
                 raise ValueError("v2 procedure validity must not require AJQG")
         if self.judge.pipeline_version != "binary-checklist-v1":

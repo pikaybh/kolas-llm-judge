@@ -240,12 +240,13 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
     qualification_ok = (
         qualification.get("gate_pass") is True
         if protocol == "automated-kolas-v1"
-        else protocol == "automated-kolas-v2"
+        else qualification.get("gate_pass") is True and qualification.get("mode") == "independent-required-pass"
     )
     procedure_valid = bool(
         processed == selected
         and qualification_ok
         and contract_stable is True
+        and (protocol != "automated-kolas-v2" or completion.get("sut_source_stable") is True)
         and infrastructure_failures == 0
         and not development_exception
     )
@@ -290,6 +291,7 @@ def collect_automated_report(run_dir: Path) -> dict[str, Any]:
         },
         "qualification": qualification,
         "sut_api_contract_stable": contract_stable,
+        "sut_source_stable": completion.get("sut_source_stable"),
         "evaluator_or_infrastructure_failure_count": infrastructure_failures,
         "procedure_valid": procedure_valid,
         "note": (

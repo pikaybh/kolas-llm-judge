@@ -1,8 +1,8 @@
 {
   "manifest_version": "submission-integrity-v1",
   "status": "CANDIDATE",
-  "generated_at_utc": "2026-10-31T03:21:33.815558+00:00",
-  "repository_base_head_at_generation": "ac69d5a4c61a0a2c4d129e329ffa158d553918a4",
+  "generated_at_utc": "2026-11-01T15:04:09.947209+00:00",
+  "repository_base_head_at_generation": "89959dcd6683c35118739430888a933c0f93e3af",
   "generator": {
     "path": "tools/build_submission_manifest.py",
     "sha256": "cd3bb578bade3922c6327d0b25e0acbebef070f07bfbbb5ba74278f9550b6aee"
@@ -13,8 +13,8 @@
     "includes_integrity_report_md": false,
     "integrity_report_exclusion_reason": "Avoid self-reference; the report records this manifest file SHA-256 and artifact root."
   },
-  "artifact_count": 89,
-  "artifact_root_sha256": "d5d19e71586bc5e1a57e440805bd9c35701c205af47ff43f4466852f69e96622",
+  "artifact_count": 90,
+  "artifact_root_sha256": "82fe26c601c645f594295e70babb6faeab912c952bd15395681fc45cbb586b94",
   "artifacts": [
     {
       "path": ".env.example",
@@ -23,8 +23,8 @@
     },
     {
       "path": "README.md",
-      "size": 16150,
-      "sha256": "d5393f06e81f9fd708f2f8c82904a59655b915e4b2d23e2e7395152a915f72cb"
+      "size": 16437,
+      "sha256": "85def1cb69f175a40de7b7815d2dc80cce25789b1518bf8608f597ccc8b8afe1"
     },
     {
       "path": "configs/ajqg_gate_v1.yaml",
@@ -53,8 +53,8 @@
     },
     {
       "path": "configs/official_runtime_v2.yaml",
-      "size": 2662,
-      "sha256": "8ac8b66ca4a0083c9e0beab47cc3c53d18a68eb13e784af0a3215ee712641fbc"
+      "size": 2669,
+      "sha256": "2485a03327cbfddfba17635bca0c4d93ea9c4e27c74992ff8bcfa21e6be8f06c"
     },
     {
       "path": "configs/rubric_binary_v1.yaml",
@@ -303,13 +303,13 @@
     },
     {
       "path": "src/kolas_llm_judge/automated_manifest.py",
-      "size": 6035,
-      "sha256": "1c1e0c8c2198dec34833add045814908645ab1065822b49b968ad7d1fc295873"
+      "size": 6087,
+      "sha256": "1a5042c3425b41bd2004bdf55dbbeaba2a28f084fa6504532e4da0ca546df4f8"
     },
     {
       "path": "src/kolas_llm_judge/automated_report.py",
-      "size": 13111,
-      "sha256": "2785252c6a3735e70965a1fb82332f6b689e39d1c8307c2e9f780b1aa8d17102"
+      "size": 13338,
+      "sha256": "e4ed92d48feecc474f21615f5779ea5a72ddd9691a96037ae2d855f9d8bff894"
     },
     {
       "path": "src/kolas_llm_judge/binary_evaluation.py",
@@ -353,8 +353,8 @@
     },
     {
       "path": "src/kolas_llm_judge/doctor.py",
-      "size": 12605,
-      "sha256": "559972ab31b1baaa4e5ab6b4094d896b00383e01130702a309cafbab8ff9c7cb"
+      "size": 13430,
+      "sha256": "01071b3f1b3fdddc9dd78f33c321da2ef461d3dd246a9c52d9a0bc4f4becf88a"
     },
     {
       "path": "src/kolas_llm_judge/identification.py",
@@ -373,8 +373,8 @@
     },
     {
       "path": "src/kolas_llm_judge/manifest.py",
-      "size": 10714,
-      "sha256": "6bb46f45bbbe25578ff26a6fd0e6a2109f2ea7ddf382469bf5655c6677b10c42"
+      "size": 12883,
+      "sha256": "8b46b5267400da1a1a1c88d56bd005b81a93663cdffc1dc98c4cdcd41eb9c9e6"
     },
     {
       "path": "src/kolas_llm_judge/matching.py",
@@ -393,13 +393,13 @@
     },
     {
       "path": "src/kolas_llm_judge/official_live.py",
-      "size": 9952,
-      "sha256": "f442b3451131cd3719de8b1b176ef99aad76478c1715c0c4eb723475fd2e9642"
+      "size": 11638,
+      "sha256": "ea133e8a65503fd385d78c10dc22a7784f027e64ea728aa201df72fae64b3fc1"
     },
     {
       "path": "src/kolas_llm_judge/official_runtime.py",
-      "size": 14454,
-      "sha256": "957e91b54dbea43c1dad9bdbef3dfd526606751ae83c5fb892eca72fb31cc723"
+      "size": 14462,
+      "sha256": "cb27ddcd20e7fa182e44ca025148067b909a5a98abf1a73f8724a4b857c15a3a"
     },
     {
       "path": "src/kolas_llm_judge/parallel_runner.py",
@@ -420,6 +420,11 @@
       "path": "src/kolas_llm_judge/qualification_controls.py",
       "size": 11084,
       "sha256": "be759e962a2625bc4515768096895bd8078557a3a752b12c6be1c8326d3fa5d5"
+    },
+    {
+      "path": "src/kolas_llm_judge/qualification_evidence.py",
+      "size": 3586,
+      "sha256": "96068f10a661e3c65a7abc2e6c7fb8955684f18a9ca2878bd37fcdeadd210063"
     },
     {
       "path": "src/kolas_llm_judge/repeatability.py",
@@ -443,8 +448,8 @@
     },
     {
       "path": "src/kolas_llm_judge/sut_client.py",
-      "size": 28203,
-      "sha256": "c539890e55640b9567a15803dbf2d975f6c65b16f77423d60cdb3fa3bdeecfed"
+      "size": 28757,
+      "sha256": "76e76e18022532670fcb07ec6cf37b748872c9e6757a5306ce7debd3e4bc5ec7"
     },
     {
       "path": "tools/build_submission_manifest.py",

@@ -76,6 +76,50 @@ def capture_sut_api_contract(response: dict[str, Any], sut: SutConfig) -> dict[s
             "api_contract_sha256": digest, "evidence": "authenticated GET /agents"}
 
 
+def normalize_sut_source_fingerprint(response: dict[str, Any]) -> dict[str, Any]:
+    """Capture authenticated live compiled artifacts; never substitute an API schema hash."""
+    from datetime import datetime, timezone
+
+    if not isinstance(response, dict) or response.get("schema_version") != "seexr-sut-source-v1":
+        raise ValueError("SUT_SOURCE_SCHEMA_INVALID")
+    result = {"schema_version": "seexr-sut-source-v1",
+              "observed_at_utc": datetime.now(timezone.utc).isoformat()}
+    for key in ("core", "agents"):
+        component = response.get(key)
+        if not isinstance(component, dict) or component.get("component") != key:
+            raise ValueError(f"SUT_SOURCE_{key.upper()}_MISSING")
+        digest = component.get("artifact_sha256")
+        if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+            raise ValueError(f"SUT_SOURCE_{key.upper()}_HASH_INVALID")
+        if not isinstance(component.get("process_pid"), int) or component["process_pid"] <= 0:
+            raise ValueError(f"SUT_SOURCE_{key.upper()}_PROCESS_MISSING")
+        started = component.get("process_start_utc")
+        if not isinstance(started, str) or not started:
+            raise ValueError(f"SUT_SOURCE_{key.upper()}_PROCESS_START_MISSING")
+        result[key] = {
+            "component": key, "artifact_sha256": digest,
+            "process_pid": component["process_pid"],
+            "process_start_utc": started,
+            "artifact_scope": component.get("artifact_scope"),
+            "files_hashed": component.get("files_hashed"),
+        }
+    return result
+
+
+def sut_source_fingerprint_matches(first: dict[str, Any], second: dict[str, Any]) -> bool:
+    """Compare active executable identity, ignoring observation timestamps."""
+    try:
+        a = normalize_sut_source_fingerprint(first)
+        b = normalize_sut_source_fingerprint(second)
+    except (ValueError, TypeError):
+        return False
+    return all(
+        all(a[key][field] == b[key][field]
+            for field in ("artifact_sha256", "process_pid", "process_start_utc"))
+        for key in ("core", "agents")
+    )
+
+
 def sut_api_contract_matches(first: dict[str, Any], second: dict[str, Any]) -> bool:
     """Fail closed if either API contract observation is missing or changed."""
     return (

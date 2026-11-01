@@ -1,6 +1,6 @@
 runtime_version: official-runtime-v2
 protocol: automated-kolas-v2
-evaluator_source_sha256: 95059f38667b65909e901706ef05ed6ddac8c31567b2741e39208dcd772eb40a
+evaluator_source_sha256: f9fc1d8b7b77e497f6652b451db1225695dbb1ce62cb857cb4d01cd1f1619189
 dataset:
   dataset_id: KOLAS_RA_GT
   dataset_version: 1.0.0
@@ -62,7 +62,7 @@ benchmark_evidence:
   fifty_case_source_stable: true
   fifty_case_procedure_valid: true
 independent_judge_validation:
-  status: optional-separate-evidence
+  status: required-before-every-official-run
   command: qualify-judge
-  official_gate_required: false
+  official_gate_required: true
   testing_lab_approval: pending

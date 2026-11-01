@@ -163,7 +163,7 @@ def test_smoke_with_saved_instructions_is_not_officially_valid(tmp_path: Path) -
     )
     assert collect_automated_report(tmp_path)["procedure_valid"] is False
 
-def test_v2_procedure_validity_does_not_depend_on_ajqg(tmp_path: Path) -> None:
+def test_v2_requires_ajqg_pass_and_sut_source_stability(tmp_path: Path) -> None:
     _write_fixture(tmp_path, failure_class="sut_non_completion")
     manifest_path = tmp_path / "manifest.json"
     import json
@@ -173,8 +173,20 @@ def test_v2_procedure_validity_does_not_depend_on_ajqg(tmp_path: Path) -> None:
     atomic_write_json(manifest_path, manifest)
     report = collect_automated_report(tmp_path)
     assert report["protocol"] == "automated-kolas-v2"
-    assert report["procedure_valid"] is True
+    assert report["procedure_valid"] is False
     assert report["qualification"]["gate_pass"] is None
+    manifest["qualification"] = {"mode": "independent-required-pass", "gate_pass": True}
+    atomic_write_json(manifest_path, manifest)
+    completion_path = tmp_path / "completion.json"
+    completion = json.loads(completion_path.read_text(encoding="utf-8"))
+    completion["sut_source_stable"] = True
+    atomic_write_json(completion_path, completion)
+    assert collect_automated_report(tmp_path)["procedure_valid"] is True
+    completion["sut_source_stable"] = False
+    atomic_write_json(completion_path, completion)
+    assert collect_automated_report(tmp_path)["procedure_valid"] is False
+    completion["sut_source_stable"] = True
+    atomic_write_json(completion_path, completion)
 
     # Neither an evaluator failure nor a saved-instruction exception is waived by v2.
     (tmp_path / "preflight.json").write_text(

@@ -20,7 +20,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 - [x] Wilson 95% CI 및 case macro statistics
 - [x] atomic per-stage checkpoint and resume
 - [x] immutable run manifest
-- [x] production Core/Agents working-tree fingerprint 기록
+- [x] 인증된 GET /api/system/sut-fingerprint를 통한 Blue Core/Agents **실제 컴파일 배포물** fingerprint 조회 및 시험 시작·종료 비교
 - [x] 실행 전/후 인증된 SUT API 계약 상태 비교 (`GET /agents`) — 외부 API 계약 검증이며 운영 서버의 소스 커밋 증빙과는 별개
 - [x] legacy ordinal human calibration template/gate (research compatibility)
 - [x] official Boolean blinded Human–LLM calibration template/gate under `derived/`
@@ -46,17 +46,17 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 **Monitoring presentation policy:** CLI progress and result screens show HIA (Hazard Identification Accuracy) as the only performance KPI, highlighted in bold bright cyan, plus operational status, validation failures, and artifact paths. All other metrics (semantic recall, coverage, schema compliance, Judge qualification/calibration details, token usage, etc.) remain computed and stored unmodified in JSON/CSV evidence. This display-only policy applies to smoke, pilot, official-live, derived and repeatability monitoring; do not suppress failures or weaken official gates.
 
-**KOLAS 평가 프로토콜 후보 v2:** 시험 시작 시 AJQG를 자동 실행하지 않습니다. AJQG는 외부에서 선택적으로 실행하는 독립 Judge 검증 절차로 유지합니다. 시험기관과 v2 시험절차 변경 합의는 아직 필요합니다.
+**KOLAS 평가 프로토콜 v2 (2026-11-01 시험기관 요청 반영):** 각 회차 본시험 전에 `qualify-judge`를 **시험기관이 독립적으로 실행**하여 PASS를 확인합니다. 공식 실행기는 120분 이내의 새 PASS 증적(104 controls, 2 repeats, frozen evaluator prompt/rubric)을 자동 확인하며, 누락·FAIL·재사용 시 본시험을 시작하지 않습니다.
 
-선택적으로 별도 실행하는 Judge 검증(본시험의 필수 게이트 아님):
+**본시험 필수 선행 절차:**
 
     /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge qualify-judge
 
-시험 당일 one-click 전체 실행:
+AJQG PASS를 확인한 직후 425건 본시험 실행:
 
     /home/pikaybh/.local/bin/uv run --env-file .env kolas-llm-judge official-live
 
-`official-live`는 **preflight → 425-case bounded parallel evaluation → production source fingerprint 재검증 → report → SHA-256 seal → self-verification**을 자동 수행합니다. 공식 모드에서는 case 일부 실행을 허용하지 않습니다. AJQG는 스킵 옵션 없이 처음부터 본시험 경로에서 분리되어 있습니다.
+`official-live`는 **preflight → 새 AJQG PASS 증적 검사 → 인증된 배포물 fingerprint 조회 → 425건 평가 → 종료 시 Core/Agents fingerprint·API 계약 비교 → report → SHA-256 seal → self-verification**을 수행합니다. AJQG는 시험기관이 별도 명령으로 실행하되, PASS 증적이 없으면 공식시험 실행을 차단합니다.
 
 현재 공식 시험 절차 후보는 `configs/official_runtime_v2.yaml`이며, v1 파일은 과거 시험용 기록으로 보존합니다: **case queue 24 / SUT 6 / Judge 12 / GPT-5.6 Sol medium**. 50-case production load test에서 255.38초, SUT p95 36.72초, retry/reconnect/auth recovery 0, source stable, procedure valid, seal verified를 확인했습니다. 공식 모드에서는 CLI/.env의 model·concurrency·chunk·SUT-method override를 무시하며 `.env`는 자격증명만 제공합니다. dataset·binary Judge prompt·rubric SHA와 평가기 소스 해시는 v2 runtime에 고정됩니다. AJQG seed/gate/control은 독립 검증용으로 분리되어 본시험 동결 입력에 포함되지 않습니다.
 
@@ -66,7 +66,7 @@ SEEXR 위험성평가 시스템의 KOLAS 시험 대응을 위한 독립 LLM-as-J
 
 실패는 자동 분류합니다. `sut_non_completion`(예: `<ask_user>`, 누락/비정상 risk XML)은 제품의 completion 측정값으로 남기되 시험 절차 자체를 무효화하지 않습니다. `evaluator_failure` 또는 retry 후 지속되는 `infrastructure_failure`는 official candidate를 무효화합니다.
 
-별도의 AJQG v1 명령은 여전히 8개 대표 위험에서 104개 control을 생성하며 control-suite SHA-256, family별 정확도, structured completion, 반복 안정성을 JSON/CSV로 기록할 수 있습니다. 단 본시험 실행 여부·절차 유효성에는 관여하지 않습니다.
+AJQG v1은 104개 control을 2회 평가하고, 판정/토큰 사용량을 `runs/_qualification/<UTC>/summary.json` 및 `control_results.csv`에 남깁니다. PASS 시 해당 실행의 SHA-256을 공식 manifest에 연결하며, 같은 PASS의 재사용을 금지합니다. 시험기관은 AJQG를 수행하는 데 실제 OpenAI 토큰 비용이 발생함을 안내받았습니다.
 
 시험 전 독립 Human–LLM 검증이 필요한 경우에는 official Boolean Rubric 그대로 blinded 표본을 생성합니다. 이 경로는 **official-live의 필수 gate가 아니며**, sealed source run을 수정하지 않고 `derived/binary_calibration/<run_id>/`에만 산출물을 둡니다.
 
